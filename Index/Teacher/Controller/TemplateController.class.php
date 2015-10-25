@@ -56,5 +56,3 @@ class TemplateController extends \Home\Controller\TemplateController
         return $cnt;
     }
 }
-
-?>

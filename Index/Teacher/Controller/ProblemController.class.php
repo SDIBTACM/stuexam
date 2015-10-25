@@ -14,8 +14,8 @@ class ProblemController extends TemplateController
         if (isset($_GET['eid']) && isset($_GET['type'])) {
             $this->eid = intval($_GET['eid']);
             $type = intval($_GET['type']);
-            $this->assign('eid', $this->eid);
-            $this->assign('type', $type);
+            $this->zadd('eid', $this->eid);
+            $this->zadd('type', $type);
             if (!$this->isowner($this->eid)) {
                 $this->error('You have no privilege of this exam~');
             }
@@ -63,13 +63,13 @@ class ProblemController extends TemplateController
                 $haveadded[$value['choose_id']] = $this->checkadded($this->eid, 1, $value['choose_id']);
             }
         }
-        $this->assign('row', $row);
-        $this->assign('added', $haveadded);
-        $this->assign('mypage', $mypage);
-        $this->assign('numofchoose', $numofchoose);
-        $this->assign('isadmin', $isadmin);
-        $this->assign('search', $sch['search']);
-        $this->assign('problem', $sch['problem']);
+        $this->zadd('row', $row);
+        $this->zadd('added', $haveadded);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('numofchoose', $numofchoose);
+        $this->zadd('isadmin', $isadmin);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('problem', $sch['problem']);
 
         $this->auto_display('choose');
     }
@@ -88,13 +88,13 @@ class ProblemController extends TemplateController
                 $haveadded[$value['judge_id']] = $this->checkadded($this->eid, 2, $value['judge_id']);
             }
         }
-        $this->assign('row', $row);
-        $this->assign('added', $haveadded);
-        $this->assign('numofjudge', $numofjudge);
-        $this->assign('isadmin', $isadmin);
-        $this->assign('mypage', $mypage);
-        $this->assign('search', $sch['search']);
-        $this->assign('problem', $sch['problem']);
+        $this->zadd('row', $row);
+        $this->zadd('added', $haveadded);
+        $this->zadd('numofjudge', $numofjudge);
+        $this->zadd('isadmin', $isadmin);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('problem', $sch['problem']);
         $this->auto_display('judge');
     }
 
@@ -112,13 +112,13 @@ class ProblemController extends TemplateController
                 $haveadded[$value['fill_id']] = $this->checkadded($this->eid, 3, $value['fill_id']);
             }
         }
-        $this->assign('added', $haveadded);
-        $this->assign('mypage', $mypage);
-        $this->assign('numoffill', $numoffill);
-        $this->assign('isadmin', $isadmin);
-        $this->assign('row', $row);
-        $this->assign('search', $sch['search']);
-        $this->assign('problem', $sch['problem']);
+        $this->zadd('added', $haveadded);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('numoffill', $numoffill);
+        $this->zadd('isadmin', $isadmin);
+        $this->zadd('row', $row);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('problem', $sch['problem']);
         $this->auto_display('fill');
     }
 
@@ -144,9 +144,9 @@ class ProblemController extends TemplateController
             $answernumC = M('exp_question')->where('exam_id=%d and type=4', $this->eid)
                 ->count();
             $key = set_post_key();
-            $this->assign('mykey', $key);
-            $this->assign('answernumC', $answernumC);
-            $this->assign('ansrow', $ansrow);
+            $this->zadd('mykey', $key);
+            $this->zadd('answernumC', $answernumC);
+            $this->zadd('ansrow', $ansrow);
             $this->auto_display('program');
         }
     }

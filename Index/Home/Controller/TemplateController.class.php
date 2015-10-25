@@ -52,4 +52,8 @@ class TemplateController extends Controller
         layout($layout);
         $this->display($view);
     }
+
+    protected function zadd($name, $data) {
+        $this->assign($name, $data);
+    }
 }

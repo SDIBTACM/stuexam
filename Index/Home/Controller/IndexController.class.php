@@ -18,8 +18,8 @@ class IndexController extends TemplateController
         $row = M($table)->field('exam_id,title,start_time,end_time')
             ->where($where)->order('exam_id desc')->limit($mypage['sqladd'])
             ->select();
-        $this->assign('row', $row);
-        $this->assign('mypage', $mypage);
+        $this->zadd('row', $row);
+        $this->zadd('mypage', $mypage);
         $this->auto_display();
     }
 
@@ -41,9 +41,9 @@ class IndexController extends TemplateController
 
             $name = M('users')->field('nick')->where("user_id='%s'", $user_id)->find();
 
-            $this->assign('isruning', $isruning);
-            $this->assign('row', $row);
-            $this->assign('name', $name['nick']);
+            $this->zadd('isruning', $isruning);
+            $this->zadd('row', $row);
+            $this->zadd('name', $name['nick']);
 
             $this->auto_display();
         } else {
@@ -58,8 +58,8 @@ class IndexController extends TemplateController
         $query = "SELECT `title`,`exam`.`exam_id`,`score`,`choosesum`,`judgesum`,`fillsum`,`programsum` FROM `exam`,`ex_student` WHERE `ex_student`.`user_id`='" . $user_id . "'
 			AND `exam`.`visible`='Y' AND `ex_student`.`exam_id`=`exam`.`exam_id` ORDER BY `exam`.`exam_id` DESC";
         $score = M()->query($query);
-        $this->assign('score', $score);
-        $this->assign('row', $row);
+        $this->zadd('score', $score);
+        $this->zadd('row', $row);
         $this->auto_display();
     }
 }

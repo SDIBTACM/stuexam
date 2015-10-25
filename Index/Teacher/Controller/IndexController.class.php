@@ -13,10 +13,10 @@ class IndexController extends TemplateController
         $row = M('exam')->field('exam_id,title,start_time,end_time,creator')
             ->where($sch['sql'])->order('exam_id desc')
             ->limit($mypage['sqladd'])->select();
-        $this->assign('row', $row);
-        $this->assign('mypage', $mypage);
-        $this->assign('search', $sch['search']);
-        $this->assign('mykey', $key);
+        $this->zadd('row', $row);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('mykey', $key);
         $this->auto_display();
     }
 
@@ -29,13 +29,13 @@ class IndexController extends TemplateController
         $row = M('ex_choose')->field('choose_id,question,creator,point,easycount')
             ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
             ->select();
-        $this->assign('row', $row);
-        $this->assign('mypage', $mypage);
-        $this->assign('numofchoose', $numofchoose);
-        $this->assign('isadmin', $isadmin);
-        $this->assign('mykey', $key);
-        $this->assign('search', $sch['search']);
-        $this->assign('problem', $sch['problem']);
+        $this->zadd('row', $row);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('numofchoose', $numofchoose);
+        $this->zadd('isadmin', $isadmin);
+        $this->zadd('mykey', $key);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('problem', $sch['problem']);
         $this->auto_display();
     }
 
@@ -49,13 +49,13 @@ class IndexController extends TemplateController
         $row = M('ex_judge')->field('judge_id,question,creator,point,easycount')
             ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
             ->select();
-        $this->assign('row', $row);
-        $this->assign('numofjudge', $numofjudge);
-        $this->assign('isadmin', $isadmin);
-        $this->assign('mykey', $key);
-        $this->assign('mypage', $mypage);
-        $this->assign('search', $sch['search']);
-        $this->assign('problem', $sch['problem']);
+        $this->zadd('row', $row);
+        $this->zadd('numofjudge', $numofjudge);
+        $this->zadd('isadmin', $isadmin);
+        $this->zadd('mykey', $key);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('problem', $sch['problem']);
         $this->auto_display();
     }
 
@@ -68,13 +68,13 @@ class IndexController extends TemplateController
         $row = m('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
             ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
             ->select();
-        $this->assign('row', $row);
-        $this->assign('mypage', $mypage);
-        $this->assign('numoffill', $numoffill);
-        $this->assign('isadmin', $isadmin);
-        $this->assign('mykey', $key);
-        $this->assign('search', $sch['search']);
-        $this->assign('problem', $sch['problem']);
+        $this->zadd('row', $row);
+        $this->zadd('mypage', $mypage);
+        $this->zadd('numoffill', $numoffill);
+        $this->zadd('isadmin', $isadmin);
+        $this->zadd('mykey', $key);
+        $this->zadd('search', $sch['search']);
+        $this->zadd('problem', $sch['problem']);
         $this->auto_display();
     }
 
@@ -83,7 +83,7 @@ class IndexController extends TemplateController
             $this->error('Sorry,Only admin can do');
         }
         $pnt = M('ex_point')->order('point_pos')->select();
-        $this->assign('pnt', $pnt);
+        $this->zadd('pnt', $pnt);
         $this->auto_display();
     }
 

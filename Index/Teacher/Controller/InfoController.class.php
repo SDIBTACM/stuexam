@@ -43,15 +43,15 @@ class InfoController extends TemplateController
                     $fillans2[$value['fill_id']] = AdminproblemModel::instance()->getproblemans($value['fill_id'], 4);
                 }
             }
-            $this->assign('title', $row['title']);
-            $this->assign('allscore', $allscore);
-            $this->assign('choosearr', $choosearr);
-            $this->assign('judgearr', $judgearr);
-            $this->assign('fillarr', $fillarr);
-            $this->assign('chooseans', $chooseans);
-            $this->assign('judgeans', $judgeans);
-            $this->assign('fillans', $fillans);
-            $this->assign('fillans2', $fillans2);
+            $this->zadd('title', $row['title']);
+            $this->zadd('allscore', $allscore);
+            $this->zadd('choosearr', $choosearr);
+            $this->zadd('judgearr', $judgearr);
+            $this->zadd('fillarr', $fillarr);
+            $this->zadd('chooseans', $chooseans);
+            $this->zadd('judgeans', $judgeans);
+            $this->zadd('fillans', $fillans);
+            $this->zadd('fillans2', $fillans2);
 
             $this->auto_display('paper');
         } else {

@@ -38,9 +38,9 @@ class AddController extends TemplateController
             if ($row) {
                 if (!checkAdmin(4, $row['creator']))
                     $this->error('You have no privilege!');
-                $this->assign('page', $page);
-                $this->assign('row', $row);
-                $this->assign('mykey', $key);
+                $this->zadd('page', $page);
+                $this->zadd('row', $row);
+                $this->zadd('mykey', $key);
                 $this->auto_display();
             } else {
                 $this->error('No Such Exam!');
@@ -48,8 +48,8 @@ class AddController extends TemplateController
         } else {
             $page = I('get.page', 1, 'intval');
             $key = set_post_key();
-            $this->assign('page', $page);
-            $this->assign('mykey', $key);
+            $this->zadd('page', $page);
+            $this->zadd('mykey', $key);
             $this->auto_display();
         }
     }
@@ -76,10 +76,10 @@ class AddController extends TemplateController
             if ($row) {
                 if ($this->checkrow($row['isprivate'], $row['creator']) == -1)
                     $this->error('You have no privilege!');
-                $this->assign('page', $page);
-                $this->assign('row', $row);
-                $this->assign('mykey', $key);
-                $this->assign('pnt', $pnt);
+                $this->zadd('page', $page);
+                $this->zadd('row', $row);
+                $this->zadd('mykey', $key);
+                $this->zadd('pnt', $pnt);
                 $this->auto_display();
             } else {
                 $this->error('No Such Problem!');
@@ -88,9 +88,9 @@ class AddController extends TemplateController
             $pnt = M('ex_point')->select();
             $page = I('get.page', 1, 'intval');
             $key = set_post_key();
-            $this->assign('page', $page);
-            $this->assign('mykey', $key);
-            $this->assign('pnt', $pnt);
+            $this->zadd('page', $page);
+            $this->zadd('mykey', $key);
+            $this->zadd('pnt', $pnt);
             $this->auto_display();
         }
     }
@@ -120,18 +120,18 @@ class AddController extends TemplateController
             } else {
                 $this->error('No Such Problem!');
             }
-            $this->assign('page', $page);
-            $this->assign('row', $row);
-            $this->assign('mykey', $key);
-            $this->assign('pnt', $pnt);
+            $this->zadd('page', $page);
+            $this->zadd('row', $row);
+            $this->zadd('mykey', $key);
+            $this->zadd('pnt', $pnt);
             $this->auto_display();
         } else {
             $page = I('get.page', 1, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
-            $this->assign('page', $page);
-            $this->assign('mykey', $key);
-            $this->assign('pnt', $pnt);
+            $this->zadd('page', $page);
+            $this->zadd('mykey', $key);
+            $this->zadd('pnt', $pnt);
             $this->auto_display();
         }
     }
@@ -162,12 +162,12 @@ class AddController extends TemplateController
                 if ($row['answernum'] != 0) {
                     $ansrow = M('fill_answer')->field('answer_id,answer')
                         ->where('fill_id=%d', $id)->order('answer_id')->select();
-                    $this->assign('ansrow', $ansrow);
+                    $this->zadd('ansrow', $ansrow);
                 }
-                $this->assign('page', $page);
-                $this->assign('row', $row);
-                $this->assign('mykey', $key);
-                $this->assign('pnt', $pnt);
+                $this->zadd('page', $page);
+                $this->zadd('row', $row);
+                $this->zadd('mykey', $key);
+                $this->zadd('pnt', $pnt);
                 $this->auto_display();
             } else {
                 $this->error('No Such Problem!');
@@ -176,9 +176,9 @@ class AddController extends TemplateController
             $page = I('get.page', 1, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
-            $this->assign('page', $page);
-            $this->assign('mykey', $key);
-            $this->assign('pnt', $pnt);
+            $this->zadd('page', $page);
+            $this->zadd('mykey', $key);
+            $this->zadd('pnt', $pnt);
             $this->auto_display();
         }
     }

@@ -14,7 +14,7 @@ class ExamController extends TemplateController
         parent::_initialize();
         if (isset($_GET['eid'])) {
             $this->eid = intval($_GET['eid']);
-            $this->assign('eid', $this->eid);
+            $this->zadd('eid', $this->eid);
         } else if (isset($_POST['eid'])) {
             $this->eid = intval($_POST['eid']);
         } else {
@@ -47,19 +47,19 @@ class ExamController extends TemplateController
         $numofprgfill = 0;
         $numofprogram = count($programans);
 
-        $this->assign('allscore', $allscore);
-        $this->assign('chooseans', $chooseans);
-        $this->assign('judgeans', $judgeans);
-        $this->assign('fillans', $fillans);
-        $this->assign('fillans2', $fillans2);
-        $this->assign('programans', $programans);
+        $this->zadd('allscore', $allscore);
+        $this->zadd('chooseans', $chooseans);
+        $this->zadd('judgeans', $judgeans);
+        $this->zadd('fillans', $fillans);
+        $this->zadd('fillans2', $fillans2);
+        $this->zadd('programans', $programans);
 
-        $this->assign('choosenum', $numofchoose);
-        $this->assign('judgenum', $numofjudge);
-        $this->assign('fillnum', $numoffill);
-        $this->assign('prgansnum', $numofprgans);
-        $this->assign('prgfillnum', $numofprgfill);
-        $this->assign('programnum', $numofprogram);
+        $this->zadd('choosenum', $numofchoose);
+        $this->zadd('judgenum', $numofjudge);
+        $this->zadd('fillnum', $numoffill);
+        $this->zadd('prgansnum', $numofprgans);
+        $this->zadd('prgfillnum', $numofprgfill);
+        $this->zadd('programnum', $numofprogram);
 
         $this->auto_display();
     }
@@ -82,9 +82,9 @@ class ExamController extends TemplateController
             }
             unset($online);
         }
-        $this->assign('row', $row);
-        $this->assign('isonline', $isonline);
-        $this->assign('end_timeC', strtotime($prirow['end_time']));
+        $this->zadd('row', $row);
+        $this->zadd('isonline', $isonline);
+        $this->zadd('end_timeC', strtotime($prirow['end_time']));
         $this->auto_display();
     }
 
@@ -119,8 +119,8 @@ class ExamController extends TemplateController
                     unset($row);
                 }
                 $key = set_post_key();
-                $this->assign('mykey', $key);
-                $this->assign('ulist', $ulist);
+                $this->zadd('mykey', $key);
+                $this->zadd('ulist', $ulist);
                 $this->auto_display();
             }
         }
@@ -149,10 +149,10 @@ class ExamController extends TemplateController
         $fd[] = M('ex_student')->where("score>=80 and score<90 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=90 and score<=100 and exam_id=$this->eid $sqladd")->count();
 
-        $this->assign('totalnum', $totalnum);
-        $this->assign('row', $row[0]);
-        $this->assign('fd', $fd);
-        $this->assign('student', $student);
+        $this->zadd('totalnum', $totalnum);
+        $this->zadd('row', $row[0]);
+        $this->zadd('fd', $fd);
+        $this->zadd('student', $student);
 
         $this->auto_display();
     }
@@ -162,7 +162,7 @@ class ExamController extends TemplateController
             $this->error('Sorry,Only admin can do');
         } else {
             $key = set_post_key();
-            $this->assign('mykey', $key);
+            $this->zadd('mykey', $key);
             $this->auto_display();
         }
     }
