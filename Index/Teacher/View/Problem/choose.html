@@ -46,7 +46,7 @@
 					<if condition="isset($added[$r['choose_id']]) and $added[$r['choose_id']] gt 0">
 						<td>已添加</td>
 					<else/>
-					<td><a href="##" onclick="addtoexam(this,{$eid},{$r['choose_id']},1)">添加到试卷</a></td>
+					<td><a href="javascript:void(0);" onclick="addtoexam(this,{$eid},{$r['choose_id']},1)">添加到试卷</a></td>
 					</if>
 				</tr>
 			</foreach>
