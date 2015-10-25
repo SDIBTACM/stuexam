@@ -1,0 +1,1 @@
+a:5:{i:0;s:7:"exam_id";i:1;s:11:"question_id";i:2;s:4:"type";s:3:"_pk";a:3:{i:0;s:7:"exam_id";i:1;s:11:"question_id";i:2;s:4:"type";}s:5:"_type";a:3:{s:7:"exam_id";s:7:"int(11)";s:11:"question_id";s:7:"int(11)";s:4:"type";s:10:"tinyint(4)";}}

@@ -1,0 +1,1 @@
+a:5:{i:0;s:7:"fill_id";i:1;s:9:"answer_id";i:2;s:6:"answer";s:3:"_pk";a:2:{i:0;s:7:"fill_id";i:1;s:9:"answer_id";}s:5:"_type";a:3:{s:7:"fill_id";s:7:"int(11)";s:9:"answer_id";s:10:"tinyint(4)";s:6:"answer";s:12:"varchar(255)";}}
