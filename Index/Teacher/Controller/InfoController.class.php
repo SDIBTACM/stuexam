@@ -19,10 +19,8 @@ class InfoController extends TemplateController
             $rightstr = "e$eid";
             $row = M('exam')->field('title')->where('exam_id=%d', $eid)->find();
 
-            $prirow = $this->isallow($eid, true);
-            if (time() < strtotime($prirow['end_time'])) {
-                $this->error('Exam is Runing!');
-            }
+            $this->isallow($eid);
+
             $num = M('ex_privilege')->where("user_id='%s' and rightstr='%s'", $users, $rightstr)
                 ->count();
             if (!$num) {
