@@ -7,12 +7,12 @@
 	<meta name="description" content="程序设计考试 山东工商学院">
 	<meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
 	<!-- yours css -->
-	<link rel="stylesheet" type="text/css" href="/JudgeOnline/stuexam/Public/Css/examsys.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stuexam/Public/Css/examsys.min.css" />
 	<!-- Bootstrap -->
-	<link rel="stylesheet" type="text/css" href="/JudgeOnline/stuexam/Public/Css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stuexam/Public/Css/bootstrap.min.css" />
 	<!--[if lt IE 9]>
-		<script src="/JudgeOnline/stuexam/Public/Js/html5shiv.min.js"></script>
-		<script src="/JudgeOnline/stuexam/Public/Js/respond.min.js"></script>
+		<script src="/stuexam/Public/Js/html5shiv.min.js"></script>
+		<script src="/stuexam/Public/Js/respond.min.js"></script>
 	<![endif]-->
 </head>
 <script type="text/javascript">
@@ -125,7 +125,7 @@ window.onload=GetRTime;
 				<?php echo ($numoffill+1); ?>.<?php echo ($fillans[$fsx]['question']); ?></div>
 				<div class="panel-body">
 				  <p>
-					<?php $__FOR_START_1068774199__=1;$__FOR_END_1068774199__=$fillans[$fsx]['answernum']+1;for($i=$__FOR_START_1068774199__;$i < $__FOR_END_1068774199__;$i+=1){ ?>答案<?php echo ($i); ?>.<input type="text" maxlength="100" name="<?php echo ($fillans[$fsx]['fill_id']); ?>tkda<?php echo ($i); ?>" value="<?php echo ((isset($fillarr[$fillans[$fsx]['fill_id']][$i]) && ($fillarr[$fillans[$fsx]['fill_id']][$i] !== ""))?($fillarr[$fillans[$fsx]['fill_id']][$i]):''); ?>" class='form-control'><br/><?php } ?>
+					<?php $__FOR_START_612260484__=1;$__FOR_END_612260484__=$fillans[$fsx]['answernum']+1;for($i=$__FOR_START_612260484__;$i < $__FOR_END_612260484__;$i+=1){ ?>答案<?php echo ($i); ?>.<input type="text" maxlength="100" name="<?php echo ($fillans[$fsx]['fill_id']); ?>tkda<?php echo ($i); ?>" value="<?php echo ((isset($fillarr[$fillans[$fsx]['fill_id']][$i]) && ($fillarr[$fillans[$fsx]['fill_id']][$i] !== ""))?($fillarr[$fillans[$fsx]['fill_id']][$i]):''); ?>" class='form-control'><br/><?php } ?>
 				  </p>
 				</div>
 			</div><?php endforeach; endif; ?>
@@ -193,9 +193,9 @@ window.onload=GetRTime;
 		</div>
 		</div>
 	</div>
-	<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/jquery-1.11.2.min.js"></script>
-	<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/Home.min.js"></script>
+	<script type="text/javascript" src="/stuexam/Public/Js/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="/stuexam/Public/Js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/stuexam/Public/Js/Home.min.js"></script>
 </body>
 <script type="text/javascript">
 $(function(){

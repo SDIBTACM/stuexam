@@ -1,3 +1,5 @@
 <?php
-return array('cutlen'=>20);
-?>
+return array(
+    'cutlen' => 20
+);
+

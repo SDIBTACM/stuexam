@@ -7,12 +7,12 @@
 	<meta name="description" content="程序设计考试 山东工商学院">
 	<meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
 	<!-- yours css -->
-	<link rel="stylesheet" type="text/css" href="/JudgeOnline/stuexam/Public/Css/examsys.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stuexam/Public/Css/examsys.min.css" />
 	<!-- Bootstrap -->
-	<link rel="stylesheet" type="text/css" href="/JudgeOnline/stuexam/Public/Css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stuexam/Public/Css/bootstrap.min.css" />
 	<!--[if lt IE 9]>
-		<script src="/JudgeOnline/stuexam/Public/Js/html5shiv.min.js"></script>
-		<script src="/JudgeOnline/stuexam/Public/Js/respond.min.js"></script>
+		<script src="/stuexam/Public/Js/html5shiv.min.js"></script>
+		<script src="/stuexam/Public/Js/respond.min.js"></script>
 	<![endif]-->
 </head>
 <body>
@@ -43,8 +43,8 @@
    </div> <!-- collapse navbar-collapse end -->
   </div> <!-- container-fluid end -->
 </div> <!-- navbar end -->
-<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/jquery-1.11.2.min.js"></script>
-<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/Home.min.js"></script>
+<script type="text/javascript" src="/stuexam/Public/Js/jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="/stuexam/Public/Js/Home.min.js"></script>
 <script>
 $(function(){
 	var url = window.location.href;
@@ -85,9 +85,9 @@ var diff=new Date("<?=date("Y/m/d H:i:s")?>").getTime()-new Date().getTime();
 	</div>
 	<?php echo (showpagelast($mypage,U("Home/Index/index"))); ?>
 </div>
-<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/modernizr.custom.js"></script>
-<link rel="stylesheet" type="text/css" href="/JudgeOnline/stuexam/Public/Css/component.min.css" />
-<link rel="stylesheet" type="text/css" href="/JudgeOnline/stuexam/Public/Css/default.min.css" />
+<script type="text/javascript" src="/stuexam/Public/Js/modernizr.custom.js"></script>
+<link rel="stylesheet" type="text/css" href="/stuexam/Public/Css/component.min.css" />
+<link rel="stylesheet" type="text/css" href="/stuexam/Public/Css/default.min.css" />
 <style>
 #examFooter, #examFooter ul li {
 	background-color: #252525;
@@ -132,6 +132,6 @@ color : #959595;
 </div>
 </div>
 </footer>
-<script type="text/javascript" src="/JudgeOnline/stuexam/Public/Js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/stuexam/Public/Js/bootstrap.min.js"></script>
 </body>
 </html>

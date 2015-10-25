@@ -1,1 +1,0 @@
-a:5:{i:0;s:7:"user_id";i:1;s:8:"rightstr";i:2;s:7:"randnum";s:3:"_pk";a:2:{i:0;s:7:"user_id";i:1;s:8:"rightstr";}s:5:"_type";a:3:{s:7:"user_id";s:11:"varchar(20)";s:8:"rightstr";s:11:"varchar(30)";s:7:"randnum";s:7:"int(11)";}}
