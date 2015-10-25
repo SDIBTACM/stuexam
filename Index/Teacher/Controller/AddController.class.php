@@ -13,6 +13,10 @@ class AddController extends TemplateController
     private $typename_ch = array('选择题', '判断题', '填空题', '考试');
     private $typename_en = array('choose', 'judge', 'fill', 'index');
 
+    public function _initialize() {
+        parent::_initialize();
+    }
+
     public function exam() {
         if (IS_POST) {
             if (!check_post_key())

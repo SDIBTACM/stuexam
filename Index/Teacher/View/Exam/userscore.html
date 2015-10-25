@@ -64,7 +64,7 @@
 <td>{$r['fillsum']}</td>
 <td>{$r['programsum']}</td>
 <td>{$r['score']}</td>
-<if condition="$r['score'] eq ''">
+<if condition="is_null($r['score'])">
 	<if condition="isset($isonline[$r['user_id']])">
 		<if condition="time() gt $end_timeC">
 			<td><span class='label label-warning'>未交卷</span></td>
@@ -78,9 +78,13 @@
 	<td><a class='label label-info' href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">查看试卷>></a></td>
 </if>
 
-<if condition="$r['score'] eq ''">
-	<if condition="isset($isonline[$r['user_id']]) and time() gt $end_timeC">
-		<td><a class='label label-success' href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">提交试卷>></a></td>
+<if condition="is_null($r['score'])">
+	<if condition="isset($isonline[$r['user_id']])">
+		<if condition="time() gt $end_timeC">
+            <td><a class='label label-success' href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">提交试卷>></a></td>
+        <else/>
+            <td><a class='label label-warning' href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid))}">强制交卷>></a></td>
+        </if>
 	<else/>
 		<td>无</td>
 	</if>

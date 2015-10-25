@@ -138,7 +138,7 @@ class ExamController extends TemplateController
                 }
             }
         } else {
-            $this->redirect('Home/Index/index', '', 3, 'Wrong Method');
+            $this->redirect('/Home', '', 3, 'Wrong Method');
         }
     }
 
