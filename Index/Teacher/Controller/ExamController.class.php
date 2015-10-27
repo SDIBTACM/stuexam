@@ -82,8 +82,16 @@ class ExamController extends TemplateController
             }
             unset($online);
         }
+        $xsid = I('get.xsid', '');
+        $xsname = I('get.xsname','');
+        $sortanum = I('get.sortanum', 0, 'intval');
+        $sortdnum = I('get.sortdnum', 0, 'intval');
         $this->zadd('row', $row);
+        $this->zadd('xsid', $xsid);
+        $this->zadd('xsname', $xsname);
         $this->zadd('isonline', $isonline);
+        $this->zadd('asortnum', $sortanum);
+        $this->zadd('dsortnum', $sortdnum);
         $this->zadd('end_timeC', strtotime($prirow['end_time']));
         $this->auto_display();
     }
