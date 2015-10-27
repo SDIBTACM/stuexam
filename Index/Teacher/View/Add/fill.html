@@ -118,7 +118,9 @@
 		<input type="hidden" name="numanswer" id="numanswer" value="{$row['answernum']|default=0}">
 		<input type="hidden" name='page' value="{$page}">
 		<input type='hidden' name="postkey" value="{$mykey}">
-		<if condition="isset($row['fill_id'])">
+        <input type='hidden' name='problem' value="{$problemType}">
+
+        <if condition="isset($row['fill_id'])">
 			<input type="hidden" name="fillid" value="{$row['fill_id']}">
 		</if>
 

@@ -73,7 +73,7 @@ class ExamController extends TemplateController
             $this->zadd('judgeans', $judgeans);
             $this->zadd('fillans', $fillans);
             $this->zadd('programans', $programans);
-            $this->display();
+            $this->auto_display(null, false);
         } else {
             $this->error('No Such Exam');
         }

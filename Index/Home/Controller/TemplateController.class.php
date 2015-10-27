@@ -8,7 +8,7 @@ class TemplateController extends Controller
 
     protected $userInfo = null;
 
-    protected $isNeedLogin = false;
+    protected $isNeedLogin = true;
     protected $isNeedFilterSql = false;
 
     public function _initialize() {
@@ -29,8 +29,7 @@ class TemplateController extends Controller
             $this->userInfo['user_id'] = session('user_id');
         }
         if (empty($userId) && $this->isNeedLogin) {
-            $this->error('请先登录账号!');
-            // todo there is a bug here
+            redirect('/JudgeOnline/loginpage.php', 1, 'Please Login First!!');
         }
     }
 

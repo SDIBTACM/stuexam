@@ -117,7 +117,9 @@
 		</div>
 		<input type='hidden' name="postkey" value="{$mykey}">
 		<input type='hidden' name='page' value="{$page}">
-		<if condition="isset($row['choose_id'])">
+        <input type='hidden' name='problem' value="{$problemType}">
+
+        <if condition="isset($row['choose_id'])">
 			<input type="hidden" name="chooseid" value="{$row['choose_id']}">
 		</if>
 		<div class="form-group">

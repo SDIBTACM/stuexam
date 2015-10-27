@@ -68,6 +68,7 @@ class AddController extends TemplateController
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
+            $problemType = I('get.problem', 0, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
             $row = M('ex_choose')
@@ -79,6 +80,7 @@ class AddController extends TemplateController
                 $this->zadd('page', $page);
                 $this->zadd('row', $row);
                 $this->zadd('mykey', $key);
+                $this->zadd('problemType', $problemType);
                 $this->zadd('pnt', $pnt);
                 $this->auto_display();
             } else {
@@ -87,10 +89,12 @@ class AddController extends TemplateController
         } else {
             $pnt = M('ex_point')->select();
             $page = I('get.page', 1, 'intval');
+            $problemType = I('get.problem', 0, 'intval');
             $key = set_post_key();
             $this->zadd('page', $page);
             $this->zadd('mykey', $key);
             $this->zadd('pnt', $pnt);
+            $this->zadd('problemType', $problemType);
             $this->auto_display();
         }
     }
@@ -110,6 +114,7 @@ class AddController extends TemplateController
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
+            $problemType = I('get.problem', 0, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
             $row = M('ex_judge')->field('judge_id,question,answer,creator,point,easycount,isprivate')
@@ -124,12 +129,15 @@ class AddController extends TemplateController
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
             $this->zadd('pnt', $pnt);
+            $this->zadd('problemType', $problemType);
             $this->auto_display();
         } else {
             $page = I('get.page', 1, 'intval');
             $pnt = M('ex_point')->select();
+            $problemType = I('get.problem', 0, 'intval');
             $key = set_post_key();
             $this->zadd('page', $page);
+            $this->zadd('problemType', $problemType);
             $this->zadd('mykey', $key);
             $this->zadd('pnt', $pnt);
             $this->auto_display();
@@ -149,8 +157,10 @@ class AddController extends TemplateController
                 $this->checkflag($flag, 2);
             }
         } else if (IS_GET && I('get.id') != '') {
+            dbg('yyyyyy');
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
+            $problemType = I('get.problem', 0, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
             $row = M('ex_fill')
@@ -168,17 +178,21 @@ class AddController extends TemplateController
                 $this->zadd('row', $row);
                 $this->zadd('mykey', $key);
                 $this->zadd('pnt', $pnt);
+                $this->zadd('problemType', $problemType);
                 $this->auto_display();
             } else {
                 $this->error('No Such Problem!');
             }
         } else {
+            dbg('xxxxxx');
             $page = I('get.page', 1, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
+            $problemType = I('get.problem', 0, 'intval');
             $this->zadd('page', $page);
             $this->zadd('mykey', $key);
             $this->zadd('pnt', $pnt);
+            $this->zadd('problemType', $problemType);
             $this->auto_display();
         }
     }
@@ -214,7 +228,8 @@ class AddController extends TemplateController
         if (is_bool($flag)) {
             if ($flag === true) {
                 $page = I('post.page', 1, 'intval');
-                $this->success("$typech 添加成功!", U("Teacher/Index/$typeen", array('page' => $page)), $second);
+                $problem = I('post.problem',0,'intval');
+                $this->success("$typech 添加成功!", U("Teacher/Index/$typeen", array('page' => $page,'problem' => $problem)), $second);
             } else {
                 $this->error("$typech 添加失败！");
             }
@@ -225,7 +240,8 @@ class AddController extends TemplateController
                 $this->error("$typech 修改失败！");
             } else if ($flag === 1) {
                 $page = I('post.page', 1, 'intval');
-                $this->success("$typech 修改成功!", U("Teacher/Index/$typeen", array('page' => $page)), $second);
+                $problem = I('post.problem',0,'intval');
+                $this->success("$typech 修改成功!", U("Teacher/Index/$typeen", array('page' => $page,'problem'=> $problem)), $second);
             }
         }
     }
