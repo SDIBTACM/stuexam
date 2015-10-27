@@ -53,14 +53,26 @@
                     <option value='1' <?php echo ($asortnum & 16) ? 'selected' : '';?> >升序</option>
                     <option value='2' <?php echo ($dsortnum & 16) ? 'selected' : '';?> >降序</option>
                 </select></td>
-                <td colspan='2'>
+                <td>
                     <button type='button' class='btn btn-info' onclick="xs_search()">
                         Search
                     </button>
                 </td>
+                <td>
+                <button type='button' class='btn btn-success' onclick="suredo('{:U('Teacher/Info/submitAllPaper', array('eid' => $eid) )}','确认帮所有考生提交试卷嘛?')">
+                    一键交卷
+                </button></td>
             </form>
         </tr>
 
+        <tr>
+            <td></td><td></td><td></td><td></td>
+            <td></td><td></td><td></td><td></td>
+            <td>
+
+            </td>
+            <td></td>
+        </tr>
         <foreach name='row' item='r' key='k'>
             <tr>
                 <td>{$k+1}</td>
@@ -110,7 +122,6 @@
                 </if>
             </tr>
         </foreach>
-
         </tbody>
     </table>
 </div>

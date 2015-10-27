@@ -75,7 +75,7 @@ window.onload=GetRTime;
 		<h4>一.选择题</h4>
 		<foreach name='choosesx' item='csx' key='numofchoose'>
 		  <div class="panel panel-default">
-			<div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']}</div>
+			<div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}</div>
 			<div class="panel-body">
 			  <p>
 			  	<div class="radio"><label>
@@ -110,7 +110,7 @@ window.onload=GetRTime;
 		<h4>二.判断题</h4>
 		<foreach name='judgesx' item='jsx' key='numofjudge'>
 			<div class="panel panel-default">
-				<div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$judgeans[$jsx]['question']}</div>
+				<div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$judgeans[$jsx]['question']|nl2br}</div>
 				<div class="panel-body">
 				  <p>
 				  	<div class="radio"><label>
@@ -141,7 +141,7 @@ window.onload=GetRTime;
 					<else/>
 						<font color='red'>({$allscore['prgfill']} 分)</font>
 					</if>
-				{$numoffill+1}.{$fillans[$fsx]['question']}</div>
+				{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</div>
 				<div class="panel-body">
 				  <p>
 					<for start='1' end="$fillans[$fsx]['answernum']+1">

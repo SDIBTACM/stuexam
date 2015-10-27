@@ -3,6 +3,7 @@ namespace Teacher\Controller;
 
 use Teacher\Model\AdminexamModel;
 use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamModel;
 use Think\Controller;
 
 class InfoController extends TemplateController
@@ -73,6 +74,50 @@ class InfoController extends TemplateController
             }
         } else {
             $this->error('Wrong Path');
+        }
+    }
+
+    public function submitAllPaper() {
+        $eid = I('get.eid', 0, 'intval');
+        if (!empty($eid)) {
+
+            if (!checkAdmin(2) || !$this->isowner($eid)) {
+                $this->error('You have no privilege to do it!');
+            }
+
+            $allTakeIn = M('ex_stuanswer')->distinct('user_id')->field('user_id')->where('exam_id=%d', $eid)
+                ->select();
+            $allHaveScore = M('ex_student')->distinct('user_id')->field('user_id')
+                ->where('exam_id=%d', $eid)->select();
+
+
+            $haveScoreUserIds = array();
+            $userIds2Submit = array();
+
+            foreach($allHaveScore as $uid) {
+                $haveScoreUserIds[] = $uid['user_id'];
+            }
+
+            foreach ($allTakeIn as $userId) {
+                if (!in_array($userId['user_id'], $haveScoreUserIds)) {
+                    $userIds2Submit[] = $userId['user_id'];
+                }
+            }
+
+            if (!empty($userIds2Submit)) {
+                $field = array('start_time','end_time');
+                $prirow = ExamModel::instance()->getExamInfoById($eid, $field);
+                $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
+                $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
+
+                foreach ($userIds2Submit as $_uid) {
+                    $this->rejudgepaper($_uid, $eid, $start_timeC, $end_timeC, 0);
+                    usleep(10000);
+                }
+            }
+            $this->redirect("Exam/userscore", array('eid' => $eid));
+        } else {
+            $this->alertError('Invaild Exam');
         }
     }
 
