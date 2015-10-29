@@ -11,8 +11,32 @@ class IndexController extends TemplateController
     }
 
     public function index() {
+
+        if (!$this->isSuperAdmin()) {
+            if ($this->isCreator()) {
+                $userId = $this->userInfo['user_id'];
+                $where = "`visible`='Y' AND (`isPrivate`=0 or `creator` like '$userId')";
+            } else {
+                $where = array(
+                    'user_id' => $this->userInfo['user_id']
+                );
+                $fields = array('rightstr');
+                $privileges = M('ex_privilege')->field($fields)->where($where)->select();
+                $examIds = array();
+                foreach ($privileges as $privilege) {
+                    $rightstr = $privilege['rightstr'];
+                    $examIds[] = intval(substr($rightstr, 1));
+                }
+                $where = array(
+                    'visible' => 'Y',
+                    'exam_id' => array('in', $examIds),
+                );
+            }
+        } else {
+            $where = array('visible' => 'Y');
+        }
+
         $table = 'exam';
-        $where['visible'] = 'Y';
         $mypage = splitpage($table, $where);
 
         $row = M($table)->field('exam_id,title,start_time,end_time')

@@ -11,17 +11,31 @@
 	<button type="submit" class="btn btn-default btn-lg">Search</button>
 	</form>
 	<div class='row'>
-		<div class="col-md-2">
-			<h1><input type="button" value="查看公共题库" class="btn btn-default" onclick="window.location.href='?problem=0'"></h1>
-		</div>
-		<div class="col-md-2">
-			<h1><input type="button" value="查看私人题库" class="btn btn-default" onclick="window.location.href='?problem=1'"></h1>
-		</div>
-		<if condition="$isadmin eq true">
-			<div class="col-md-2">
-				<h1><input type="button" value="查看隐藏题库" class="btn btn-default" onclick="window.location.href='?problem=2'"></h1>
-			</div>
-		</if>
+        <div class="col-md-2">
+            <if condition="$problem eq 0">
+                <h1><input type="button" value="公共题库" class="btn btn-success" onclick="window.location.href='?problem=0'"></h1>
+                <else />
+                <h1><input type="button" value="公共题库" class="btn btn-default" onclick="window.location.href='?problem=0'"></h1>
+            </if>
+        </div>
+
+        <div class="col-md-2">
+            <if condition="$problem eq 1">
+                <h1><input type="button" value="私人题库" class="btn btn-success" onclick="window.location.href='?problem=1'"></h1>
+                <else />
+                <h1><input type="button" value="私人题库" class="btn btn-default" onclick="window.location.href='?problem=1'"></h1>
+            </if>
+        </div>
+
+        <if condition="$isadmin eq true">
+            <div class="col-md-2">
+                <if condition="$problem eq 2">
+                    <h1><input type="button" value="隐藏题库" class="btn btn-success" onclick="window.location.href='?problem=2'"></h1>
+                    <else />
+                    <h1><input type="button" value="隐藏题库" class="btn btn-default" onclick="window.location.href='?problem=2'"></h1>
+                </if>
+            </div>
+        </if>
 	</div>
 	<table class="table table-hover table-bordered table-condensed">
 		<thread>
@@ -55,9 +69,9 @@
 	{$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"search=$search&problem=$problem"}
 </div>
 <script type="text/javascript">
-$(function(){
-	$("#exam_choose").addClass('active');
+    var addtoexamurl = "{:U('Teacher/Problem/addpte')}";
+    $(function(){
+    $("#exam_choose").addClass('active');
 	$('[data-toggle="popover"]').popover();
 });
-var addtoexamurl = "{:U('Teacher/Problem/addpte')}";
 </script>

@@ -22,7 +22,7 @@ class AdminexamModel
     public function upd_exam() {
         $eid = intval($_POST['examid']);
         $tmp = ExamModel::instance()->getExamInfoById($eid, array('creator'));
-        if (!$tmp || !checkAdmin(4, $tmp['creator'])) {
+        if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else {
             $arr['start_time'] = intval($_POST['syear']) . "-" . intval($_POST['smonth']) . "-" . intval($_POST['sday']) . " " . intval($_POST['shour']) . ":" . intval($_POST['sminute']) . ":00";
@@ -39,6 +39,7 @@ class AdminexamModel
             $arr['prgfill'] = I('post.cxtkfs', 0, 'intval');
             $arr['programscore'] = I('post.cxfs', 0, 'intval');
             $arr['isvip'] = I('post.isvip', 'Y');
+            $arr['isprivate'] = I('post.isprivate',0, 'intval');
 
             $result = ExamModel::instance()->updateExamInfoById($eid, $arr);
             if ($result !== false) {
@@ -62,6 +63,7 @@ class AdminexamModel
         $arr['prgfill'] = I('post.cxtkfs', 0, 'intval');
         $arr['programscore'] = I('post.cxfs', 0, 'intval');
         $arr['isvip'] = I('post.isvip', 'Y');
+        $arr['isprivate'] = I('post.isprivate',0, 'intval');
 
         $title = $_POST['examname'];
         if (get_magic_quotes_gpc()) {
@@ -91,8 +93,9 @@ class AdminexamModel
                 $query = "INSERT INTO `ex_privilege`(`user_id`,`rightstr`,`randnum`) VALUES('" . trim($pieces[0]) . "','e$eid','$randnum')";
                 for ($i = 1; $i < count($pieces); $i++) {
                     $randnum = rand(1, 39916800);
-                    if (isset($pieces[$i]))
+                    if (isset($pieces[$i])) {
                         $query = $query . ",('" . trim($pieces[$i]) . "','e$eid','$randnum')";
+                    }
                 }
                 M()->execute($query);
                 return true;

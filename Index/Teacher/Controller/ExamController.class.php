@@ -66,7 +66,7 @@ class ExamController extends TemplateController
 
     public function userscore() {
         $sqladd = SortStuScore('stu');
-        $prirow = $this->isallow($this->eid, true);
+        $prirow = $this->isCanWatchInfo($this->eid, true);
         $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`
 			FROM (SELECT `users`.`user_id`,`users`.`nick` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND
 			 `ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND 
@@ -100,7 +100,7 @@ class ExamController extends TemplateController
         if (IS_POST && I('post.eid') != '') {
             if (!check_post_key()) {
                 $this->error('发生错误！');
-            } else if (!checkAdmin(2)) {
+            } else if (!$this->isCreator()) {
                 $this->error('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
@@ -135,11 +135,12 @@ class ExamController extends TemplateController
     }
 
     public function analysis() {
-        $this->isallow($this->eid);
+        $this->isCanWatchInfo($this->eid);
         $student = I('get.student', '', 'htmlspecialchars');
         $sqladd = '';
-        if (!empty($student))
+        if (!empty($student)) {
             $sqladd = " AND `user_id` like '%$student%'";
+        }
 
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")
             ->count();
@@ -166,7 +167,7 @@ class ExamController extends TemplateController
     }
 
     public function rejudge() {
-        if (!checkAdmin(1)) {
+        if (!$this->isSuperAdmin()) {
             $this->error('Sorry,Only admin can do');
         } else {
             $key = set_post_key();

@@ -23,7 +23,7 @@ class AdminchooseModel
         $chooseid = intval($_POST['chooseid']);
         $tmp = M("ex_choose")->field('creator,isprivate')
             ->where('choose_id=%d', $chooseid)->find();
-        if (!$tmp || !checkAdmin(4, $tmp['creator'])) {
+        if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else if ($tmp['isprivate'] == 2 && !checkAdmin(1)) {
             return -1;

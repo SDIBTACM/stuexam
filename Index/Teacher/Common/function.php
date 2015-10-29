@@ -1,12 +1,13 @@
 <?php
-function getexamsearch() {
-    $search = I('get.search', '');
-    if ($search != '')
-        $sql = "`visible`='Y' AND (`creator` like '%$search%' or `title` like '%$search%')";
-    else
+function getexamsearch($userId) {
+
+    $isadmin = checkAdmin(1);
+    if ($isadmin === false) {
+        $sql = "`visible`='Y' AND (`isPrivate`=0 or `creator` like '$userId')";
+    } else {
         $sql = "`visible`='Y'";
-    return array('search' => $search,
-        'sql' => $sql);
+    }
+    return $sql;
 }
 
 function problemshow($problem, $searchsql) {

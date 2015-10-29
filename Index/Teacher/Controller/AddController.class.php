@@ -5,6 +5,7 @@ use Teacher\Model\AdminchooseModel;
 use Teacher\Model\AdminexamModel;
 use Teacher\Model\AdminfillModel;
 use Teacher\Model\AdminjudgeModel;
+use Teacher\Model\ExamModel;
 use Think\Controller;
 
 class AddController extends TemplateController
@@ -21,8 +22,9 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key())
                 $this->error('发生错误！');
-            if (!checkAdmin(2))
+            if (!$this->isCreator()) {
                 $this->error('You have no privilege!');
+            }
             if (isset($_POST['examid'])) {
                 $flag = AdminexamModel::instance()->upd_exam();
                 $this->checkflag($flag, 3);
@@ -36,8 +38,9 @@ class AddController extends TemplateController
             $key = set_post_key();
             $row = M('exam')->where("exam_id=%d and visible='Y'", $eid)->find();
             if ($row) {
-                if (!checkAdmin(4, $row['creator']))
+                if (!$this->isOwnerByUserId($row['creator'])) {
                     $this->error('You have no privilege!');
+                }
                 $this->zadd('page', $page);
                 $this->zadd('row', $row);
                 $this->zadd('mykey', $key);
@@ -75,8 +78,9 @@ class AddController extends TemplateController
                 ->field('choose_id,question,ams,bms,cms,dms,answer,creator,point,easycount,isprivate')
                 ->where('choose_id=%d', $id)->find();
             if ($row) {
-                if ($this->checkrow($row['isprivate'], $row['creator']) == -1)
+                if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                     $this->error('You have no privilege!');
+                }
                 $this->zadd('page', $page);
                 $this->zadd('row', $row);
                 $this->zadd('mykey', $key);
@@ -120,8 +124,9 @@ class AddController extends TemplateController
             $row = M('ex_judge')->field('judge_id,question,answer,creator,point,easycount,isprivate')
                 ->where('judge_id=%d', $id)->find();
             if ($row) {
-                if ($this->checkrow($row['isprivate'], $row['creator']) == -1)
+                if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                     $this->error('You have no privilege!');
+                }
             } else {
                 $this->error('No Such Problem!');
             }
@@ -157,7 +162,6 @@ class AddController extends TemplateController
                 $this->checkflag($flag, 2);
             }
         } else if (IS_GET && I('get.id') != '') {
-            dbg('yyyyyy');
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
@@ -167,8 +171,9 @@ class AddController extends TemplateController
                 ->field('fill_id,question,answernum,creator,point,easycount,kind,isprivate')
                 ->where('fill_id=%d', $id)->find();
             if ($row) {
-                if ($this->checkrow($row['isprivate'], $row['creator']) == -1)
+                if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                     $this->error('You have no privilege!');
+                }
                 if ($row['answernum'] != 0) {
                     $ansrow = M('fill_answer')->field('answer_id,answer')
                         ->where('fill_id=%d', $id)->order('answer_id')->select();
@@ -184,7 +189,6 @@ class AddController extends TemplateController
                 $this->error('No Such Problem!');
             }
         } else {
-            dbg('xxxxxx');
             $page = I('get.page', 1, 'intval');
             $pnt = M('ex_point')->select();
             $key = set_post_key();
@@ -211,13 +215,39 @@ class AddController extends TemplateController
         }
     }
 
-    private function checkrow($pvt, $crt) {
-        if ($pvt == 2 && !checkAdmin(1)) {
+    public function copyOneExam() {
+        $eid = I('get.eid', 0, 'intval');
+        $row = M('exam')->where("exam_id=%d and visible='Y'", $eid)->find();
+        if (!empty($row)) {
+            if (!$this->isOwnerByUserId($row['creator'])) {
+                $this->error('You have no privilege!');
+            } else {
+                // copy exam's base info
+                unset($row['exam_id']);
+                $row['creator'] = $this->userInfo['user_id'];
+                dbg($row);
+                $examId = ExamModel::instance()->addExamBaseInfo($row);
+                // copy exam's problem
+                $exQDao = M('exp_question');
+                $res = $exQDao->field('exam_id,question_id,type')->where('exam_id=%d', $eid)->select();
+                foreach ($res as &$r) {
+                    $r['exam_id'] = $examId;
+                }
+                unset($r);
+                $exQDao->addAll($res);
+                $this->success('考试复制成功!', U('/Teacher'), 1);
+            }
+        }
+    }
+
+    private function checkProblemPrivate($private, $crt) {
+        if ($private == 2 && !$this->isSuperAdmin()) {
             return -1;
         }
-        if (!checkAdmin(1)) {
-            if ($pvt == 1 && $crt != $this->userInfo['user_id'])
+        if (!$this->isSuperAdmin()) {
+            if ($private == 1 && $crt != $this->userInfo['user_id']) {
                 return -1;
+            }
         }
         return 1;
     }

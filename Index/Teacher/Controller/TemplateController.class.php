@@ -8,31 +8,41 @@ class TemplateController extends \Home\Controller\TemplateController
 {
     public function _initialize() {
         parent::_initialize();
-        if (!checkAdmin(3)) {
+        if (!$this->isTeacher()) {
             $this->error('请先登陆管理员账号！');
         }
     }
 
     protected function isowner($eid) {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
         $field = array('creator');
         $res = ExamModel::instance()->getExamInfoById(intval($eid), $field);
-        if (empty($res) || !checkAdmin(4, $res['creator'])) {
+        if (empty($res) || $res['creator'] != $this->userInfo['user_id']) {
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
-    protected function isallow($eid, $isReturn = false) {
-        $now = time();
-        $field = array('creator, start_time, end_time');
+    protected function isOwnerByUserId($userId) {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        return ($userId == $this->userInfo['user_id']);
+    }
+
+    protected function isCanWatchInfo($eid, $isReturn = false) {
+        $field = array('creator','isPrivate');
         $res = ExamModel::instance()->getExamInfoById(intval($eid), $field);
 
         $hasPrivilege = 0;
-        if ($now > strtotime($res['end_time']) && isset($_SESSION['contest_creator'])) {
+        if ($res['isPrivate'] == 0 && $this->isCreator()) {
             $hasPrivilege = 1;
         }
 
-        if (!checkAdmin(5, $res['creator'], $hasPrivilege)) {
+        if (!($this->isSuperAdmin() || $this->isOwnerByUserId($res['creator']) || $hasPrivilege !=0 )) {
             $this->error('You have no privilege of this exam');
         }
         if ($isReturn) {
@@ -40,13 +50,16 @@ class TemplateController extends \Home\Controller\TemplateController
         }
     }
 
-    protected function candel($pvt, $crt) {
-        if (!checkAdmin(4, $crt)) {
-            return false;
-        } else if ($pvt == 2 && !checkAdmin(1)) {
-            return false;
+    protected function isProblemCanDelete($pvt, $crt) {
+        if ($this->isSuperAdmin()) {
+            return true;
+        } else {
+            if ($pvt != 2) {
+                return $this->isOwnerByUserId($crt);
+            } else {
+                return false;
+            }
         }
-        return true;
     }
 
     protected function checkadded($eid, $type, $id) {

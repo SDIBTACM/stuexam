@@ -50,7 +50,7 @@ class ProblemController extends TemplateController
     private function addchoose() {
 
         $sch = getproblemsearch();
-        $isadmin = checkAdmin(1);
+        $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_choose')->field('choose_id,question,creator,point,easycount')
@@ -76,7 +76,7 @@ class ProblemController extends TemplateController
 
     private function addjudge() {
         $sch = getproblemsearch();
-        $isadmin = checkAdmin(1);
+        $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = m('ex_judge')->field('judge_id,question,creator,point,easycount')
@@ -100,7 +100,7 @@ class ProblemController extends TemplateController
 
     private function addfill() {
         $sch = getproblemsearch();
-        $isadmin = checkAdmin(1);
+        $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
@@ -126,7 +126,7 @@ class ProblemController extends TemplateController
         if (IS_POST && I('post.eid')) {
             if (!check_post_key()) {
                 $this->error('发生错误！');
-            } else if (!checkAdmin(2)) {
+            } else if (!$this->isCreator()) {
                 $this->error('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');

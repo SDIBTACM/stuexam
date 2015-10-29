@@ -55,4 +55,33 @@ class TemplateController extends Controller
     protected function zadd($name, $data) {
         $this->assign($name, $data);
     }
+
+    protected function isSuperAdmin() {
+        $isadmin = session('administrator');
+        return !empty($isadmin);
+    }
+
+    protected function isCreator() {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        $isCreator = session('contest_creator');
+        return !empty($isCreator);
+    }
+
+    protected function isProblemSetter() {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        $isSetter = session('problem_editor');
+        return !empty($isSetter);
+    }
+
+    protected function isTeacher() {
+        if ($this->isSuperAdmin() || $this->isCreator() || $this->isProblemSetter()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

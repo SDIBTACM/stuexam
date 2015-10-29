@@ -28,7 +28,10 @@ class ExamModel {
 
     public function getExamInfoById($eid, $field = array()) {
         $examDao = M('exam');
-        $where = array('exam_id' => $eid);
+        $where = array(
+            'exam_id' => $eid,
+            'visible' => 'Y'
+            );
         $result = $examDao->field($field)->where($where)->find();
         return $result;
     }

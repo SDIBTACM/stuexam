@@ -7,7 +7,7 @@
 	<h4>一.选择题</h4>
 	<foreach name='chooseans' item='cans' key='numofchoose'>
 	<div class="panel panel-default">
-		<div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$cans['question']}</div>
+		<div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$cans['question']|nl2br}</div>
 		<div class="panel-body">
 			<p>(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
 		</div>
@@ -18,7 +18,7 @@
 	<h4>二.判断题</h4>
 	<foreach name='judgeans' item='jans' key='numofjudge'>
 		<div class="panel panel-default">
-			<div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']}</div>
+			<div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</div>
 			<div class="panel-body"><strong>我的答案:{$judgearr[$jans['judge_id']]|default=""}</strong></div>
 			<div class="panel-footer"><strong>正确答案:{$jans['answer']}</strong></div>
 		</div>
@@ -35,7 +35,7 @@
 				<else/>
 					<font color='red'>({$allscore['prgfill']} 分)</font>
 				</if>
-			{$numoffill+1}.{$fans['question']}</div>
+			{$numoffill+1}.{$fans['question']|nl2br}</div>
 			<div class="panel-body">
 				<for start='1' end="$fans['answernum']+1">
 					<if condition="$i eq 1">

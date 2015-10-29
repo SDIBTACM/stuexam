@@ -16,11 +16,11 @@ class InfoController extends TemplateController
     public function showpaper() {
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
+            $this->isCanWatchInfo($eid);
+
             $users = trim($_GET['users']);
             $rightstr = "e$eid";
             $row = M('exam')->field('title')->where('exam_id=%d', $eid)->find();
-
-            $this->isallow($eid);
 
             $num = M('ex_privilege')->where("user_id='%s' and rightstr='%s'", $users, $rightstr)
                 ->count();
@@ -64,7 +64,7 @@ class InfoController extends TemplateController
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
-            if (!checkAdmin(2) || !$this->isowner($eid)) {
+            if (!$this->isowner($eid)) {
                 $this->error('You have no privilege to do it!');
             } else {
                 M('ex_student')
@@ -81,7 +81,7 @@ class InfoController extends TemplateController
         $eid = I('get.eid', 0, 'intval');
         if (!empty($eid)) {
 
-            if (!checkAdmin(2) || !$this->isowner($eid)) {
+            if (!$this->isowner($eid)) {
                 $this->error('You have no privilege to do it!');
             }
 
@@ -125,7 +125,7 @@ class InfoController extends TemplateController
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
-            if (!checkAdmin(2) || !$this->isowner($eid)) {
+            if (!$this->isowner($eid)) {
                 $this->error('You have no privilege to do it!');
             }
             $flag = $this->dojudgeone($eid, $users);
@@ -140,6 +140,9 @@ class InfoController extends TemplateController
     public function hardSubmit() {
         $eid = I('get.eid', 0, 'intval');
         $userId = I('get.userId', '');
+        if (!$this->isowner($eid) ) {
+            $this->error('You have no privilege to do it!');
+        }
         if (empty($eid) && empty($userId)) {
         } else {
             $this->dojudgeone($eid, $userId);
@@ -149,7 +152,7 @@ class InfoController extends TemplateController
 
     public function dorejudge() {
         if (IS_POST && I('post.eid')) {
-            if (!check_post_key() || !checkAdmin(1)) {
+            if (!check_post_key() || !$this->isSuperAdmin()) {
                 $this->error('发生错误！');
             }
             $eid = intval($_POST['eid']);

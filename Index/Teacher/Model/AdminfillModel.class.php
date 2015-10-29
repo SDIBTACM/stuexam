@@ -23,7 +23,7 @@ class AdminfillModel
         $fillid = intval($_POST['fillid']);
         $tmp = M("ex_fill")->field('creator,isprivate')
             ->where('fill_id=%d', $fillid)->find();
-        if (!$tmp || !checkAdmin(4, $tmp['creator'])) {
+        if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else if ($tmp['isprivate'] == 2 && !checkAdmin(1)) {
             return -1;
@@ -44,8 +44,9 @@ class AdminfillModel
                     $answer = test_input($_POST["answer$i"]);
                     $ins[] = array("fill_id" => "$fillid", "answer_id" => "$i", "answer" => "$answer");
                 }
-                if ($arr['answernum'])
+                if ($arr['answernum']) {
                     M('fill_answer')->addAll($ins);
+                }
                 return 1;
             } else {
                 return -2;

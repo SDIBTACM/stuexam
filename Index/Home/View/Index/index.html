@@ -1,4 +1,11 @@
 <div class="container exam_content">
+    <if condition="empty($row)">
+        <div class="jumbotron">
+            <h1>您没有任何可参加的考试!</h1>
+            <p>快去OJ刷刷题把^_^</p>
+            <p><a class="btn btn-primary btn-lg" href="/JudgeOnline" role="button">Go Back To OJ</a></p>
+        </div>
+        <else/>
 	<header class='clearfix'>
 		<h1>&nbsp;&nbsp;&nbsp;Start Time</h1>
 		<h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -6,7 +13,7 @@
 		<h1>Exam Title</h1>
 	</header>
 	<div class="main">
-		<ul class="cbp_tmtimeline">
+        <ul class="cbp_tmtimeline">
 			<foreach name='row' item='r'>
 				<li>
 				<time class="cbp_tmtime" datetime="{$r['start_time']}"><span>{$r['start_time']|strtotime|date='Y/m/d',###}</span> <span>{$r['start_time']|strtotime|date='H:i',###}</span></time>
@@ -29,6 +36,7 @@
 		</ul>
 	</div>
 	{$mypage|showpagelast=###,U("Home/Index/index")}
+    </if>
 </div>
 <js file="__PUBLIC__/Js/modernizr.custom.js" />
 <css file="__PUBLIC__/Css/component.min.css" />

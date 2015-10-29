@@ -20,9 +20,7 @@ class DelController extends TemplateController
     }
 
     public function exam() {
-        $tmp = ExamModel::instance()->getExamInfoById($this->id, array('creator'));
-
-        if (!checkAdmin(4, $tmp['creator'])) {
+        if (!$this->isowner($this->id)) {
             $this->error('You have no privilege!');
         } else {
             $data['visible'] = 'N';
@@ -40,7 +38,7 @@ class DelController extends TemplateController
     public function choose() {
         $tmp = M("ex_choose")->field('creator,isprivate')
             ->where('choose_id=%d', $this->id)->find();
-        if (!$this->candel($tmp['isprivate'], $tmp['creator'])) {
+        if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->error('You have no privilege!');
         } else {
             M('ex_choose')->where('choose_id=%d', $this->id)->delete();
@@ -55,7 +53,7 @@ class DelController extends TemplateController
     public function judge() {
         $tmp = M("ex_judge")->field('creator,isprivate')
             ->where('judge_id=%d', $this->id)->find();
-        if (!$this->candel($tmp['isprivate'], $tmp['creator'])) {
+        if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->error('You have no privilege!');
         } else {
             M('ex_judge')->where('judge_id=%d', $this->id)->delete();
@@ -70,7 +68,7 @@ class DelController extends TemplateController
     public function fill() {
         $tmp = M("ex_fill")->field('creator,isprivate')
             ->where('fill_id=%d', $this->id)->find();
-        if (!$this->candel($tmp['isprivate'], $tmp['creator'])) {
+        if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->error('You have no privilege!');
         } else {
             M('ex_fill')->where('fill_id=%d', $this->id)->delete();
