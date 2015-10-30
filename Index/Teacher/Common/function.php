@@ -3,7 +3,7 @@ function getexamsearch($userId) {
 
     $isadmin = checkAdmin(1);
     if ($isadmin === false) {
-        $sql = "`visible`='Y' AND (`isPrivate`=0 or `creator` like '$userId')";
+        $sql = "`visible`='Y' AND (`isprivate`=0 or `creator` like '$userId')";
     } else {
         $sql = "`visible`='Y'";
     }

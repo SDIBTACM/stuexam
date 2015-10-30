@@ -34,11 +34,11 @@ class TemplateController extends \Home\Controller\TemplateController
     }
 
     protected function isCanWatchInfo($eid, $isReturn = false) {
-        $field = array('creator','isPrivate');
+        $field = array('creator','isprivate');
         $res = ExamModel::instance()->getExamInfoById(intval($eid), $field);
 
         $hasPrivilege = 0;
-        if ($res['isPrivate'] == 0 && $this->isCreator()) {
+        if ($res['isprivate'] == 0 && $this->isCreator()) {
             $hasPrivilege = 1;
         }
 
