@@ -6,6 +6,7 @@ use Think\Controller;
 
 class TemplateController extends \Home\Controller\TemplateController
 {
+
     public function _initialize() {
         parent::_initialize();
         if (!$this->isTeacher()) {

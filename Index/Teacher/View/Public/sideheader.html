@@ -1,6 +1,7 @@
 <div style='padding-bottom:7px'>
 <ul class="nav nav-pills">
-<li id='exam_index'><a href="{:U('Teacher/Exam/index',array('eid'=>$eid))}">试卷一览</a></li>
+    <li><a href="{:U('Home/Exam/showquestion',array('eid'=>$eid))}" target="_blank">进入考试页面</a></li>
+    <li id='exam_index'><a href="{:U('Teacher/Exam/index',array('eid'=>$eid))}">试卷一览</a></li>
 <li id='exam_choose'><a href="{:U('Teacher/Problem/add',array('eid'=>$eid,'type'=>1))}">选择题</a></li>
 <li id='exam_judge'><a href="{:U('Teacher/Problem/add',array('eid'=>$eid,'type'=>2))}">判断题</a></li>
 <li id='exam_fill'><a href="{:U('Teacher/Problem/add',array('eid'=>$eid,'type'=>3))}">填空题</a></li>

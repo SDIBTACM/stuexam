@@ -8,15 +8,26 @@ class TemplateController extends Controller
 
     protected $userInfo = null;
 
+    public $module = null;
+    public $controller = null;
+    public $action = null;
+
     protected $isNeedLogin = true;
     protected $isNeedFilterSql = false;
 
-    public function _initialize() {
+    private $teacerFilterUrl = array(
+        'home_index_index', 'home_index_about'
+    );
 
+    public function _initialize() {
         header("Pragma: no-cache");
         // HTTP/1.0
         header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         // HTTP/1.1
+
+        $this->module = strtolower(MODULE_NAME);
+        $this->controller = strtolower(CONTROLLER_NAME);
+        $this->action = strtolower(ACTION_NAME);
 
         $this->initSqlInjectionFilter();
         $this->initLoginUserInfo();
@@ -31,11 +42,21 @@ class TemplateController extends Controller
         if (empty($userId) && $this->isNeedLogin) {
             redirect('/JudgeOnline/loginpage.php', 1, 'Please Login First!!');
         }
+        $this->specialLogicality();
     }
 
     private function initSqlInjectionFilter() {
         if (function_exists('sqlInjectionFilter') && $this->isNeedFilterSql) {
             sqlInjectionFilter();
+        }
+    }
+
+    private function specialLogicality() {
+        if($this->isTeacher()) {
+            $url = $this->module . '_' . $this->controller . '_' . $this->action;
+            if (in_array($url, $this->teacerFilterUrl)) {
+                redirect(U('/Teacher'));
+            }
         }
     }
 
