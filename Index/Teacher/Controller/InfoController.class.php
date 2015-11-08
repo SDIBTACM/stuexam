@@ -3,7 +3,7 @@ namespace Teacher\Controller;
 
 use Teacher\Model\AdminexamModel;
 use Teacher\Model\AdminproblemModel;
-use Teacher\Model\ExamModel;
+use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
 class InfoController extends TemplateController
@@ -106,7 +106,7 @@ class InfoController extends TemplateController
 
             if (!empty($userIds2Submit)) {
                 $field = array('start_time','end_time');
-                $prirow = ExamModel::instance()->getExamInfoById($eid, $field);
+                $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
                 $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
                 $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
 

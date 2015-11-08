@@ -28,6 +28,10 @@ class ChooseBaseModel extends GeneralModel
         return DbConfigModel::TABLE_CHOOSE;
     }
 
+    protected function getTableFields() {
+        return DbConfigModel::$TABLE_CHOOSE_FILEDS;
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;

@@ -2,7 +2,7 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ExamModel;
+use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Think\Controller;
@@ -27,7 +27,7 @@ class DelController extends TemplateController
             $this->error('You have no privilege!');
         } else {
             $data = array('visible' => 'N');
-            ExamModel::instance()->updateExamInfoById($this->id, $data);
+            ExamBaseModel::instance()->updateExamInfoById($this->id, $data);
             $this->success("考试删除成功", U("Teacher/Index/index", array('page' => $this->page)), 2);
             //if the exam was deleted
             //the info of exam was deleted

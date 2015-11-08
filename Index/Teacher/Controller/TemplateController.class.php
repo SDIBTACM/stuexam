@@ -1,7 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
-use Teacher\Model\ExamModel;
+use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
 class TemplateController extends \Home\Controller\TemplateController
@@ -19,7 +19,7 @@ class TemplateController extends \Home\Controller\TemplateController
             return true;
         }
         $field = array('creator');
-        $res = ExamModel::instance()->getExamInfoById(intval($eid), $field);
+        $res = ExamBaseModel::instance()->getExamInfoById(intval($eid), $field);
         if (empty($res) || $res['creator'] != $this->userInfo['user_id']) {
             return false;
         } else {
@@ -36,7 +36,7 @@ class TemplateController extends \Home\Controller\TemplateController
 
     protected function isCanWatchInfo($eid, $isReturn = false) {
         $field = array('creator','isprivate', 'end_time');
-        $res = ExamModel::instance()->getExamInfoById(intval($eid), $field);
+        $res = ExamBaseModel::instance()->getExamInfoById(intval($eid), $field);
 
         $hasPrivilege = 0;
         if ($res['isprivate'] == 0 && $this->isCreator()) {

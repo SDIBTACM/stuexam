@@ -9,8 +9,12 @@
 namespace Teacher\Model;
 
 
-class ExamModel extends GeneralModel
+class ExamBaseModel extends GeneralModel
 {
+
+    const EXAM_NOT_START = 0;
+    const EXAM_RUNNING = 1;
+    const EXAM_END = -1;
 
     private static $_instance = null;
 
@@ -26,6 +30,10 @@ class ExamModel extends GeneralModel
 
     protected function getTableName() {
         return DbConfigModel::TABLE_EXAM;
+    }
+
+    protected function getTableFields() {
+        return DbConfigModel::$TABLE_EXAM_FILEDS;
     }
 
     public static function instance() {
@@ -71,15 +79,11 @@ class ExamModel extends GeneralModel
     public function getExamInfoByQuery($query, $field = array()) {
         $where = array();
         $dao = $this->getDao();
-
-        if (!empty($query['exam_id'])) {
-            $where['exam_id'] = $query['exam_id'];
-        }
-        if (!empty($query['isprivate'])) {
-            $where['isprivate'] = $query['isprivate'];
-        }
-        if (!empty($query['isvip'])) {
-            $where['isvip'] = $query['isvip'];
+        $tableFields = $this->getTableFields();
+        foreach ($tableFields as $k => $v) {
+            if (!empty($query[$k])) {
+                $where[$k] = $query[$k];
+            }
         }
 
         $dao = $dao->field($field)->where($where);

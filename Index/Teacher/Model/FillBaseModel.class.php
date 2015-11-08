@@ -28,6 +28,10 @@ class FillBaseModel extends GeneralModel
         return DbConfigModel::TABLE_FILL;
     }
 
+    protected function getTableFields() {
+        return DbConfigModel::$TABLE_FILL_FILEDS;
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;

@@ -31,6 +31,7 @@ class TemplateController extends Controller
 
         $this->initSqlInjectionFilter();
         $this->initLoginUserInfo();
+        $this->specialLogicality();
     }
 
     private function initLoginUserInfo() {
@@ -42,7 +43,6 @@ class TemplateController extends Controller
         if (empty($userId) && $this->isNeedLogin) {
             redirect('/JudgeOnline/loginpage.php', 1, 'Please Login First!!');
         }
-        $this->specialLogicality();
     }
 
     private function initSqlInjectionFilter() {

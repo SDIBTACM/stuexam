@@ -21,7 +21,7 @@ class AdminexamModel
 
     public function upd_exam() {
         $eid = intval($_POST['examid']);
-        $tmp = ExamModel::instance()->getExamInfoById($eid, array('creator'));
+        $tmp = ExamBaseModel::instance()->getExamInfoById($eid, array('creator'));
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else {
@@ -41,7 +41,7 @@ class AdminexamModel
             $arr['isvip'] = I('post.isvip', 'Y');
             $arr['isprivate'] = I('post.isprivate',0, 'intval');
 
-            $result = ExamModel::instance()->updateExamInfoById($eid, $arr);
+            $result = ExamBaseModel::instance()->updateExamInfoById($eid, $arr);
             if ($result !== false) {
                 return 1;
             } else {
@@ -70,7 +70,7 @@ class AdminexamModel
             $title = stripslashes($title);
         }
         $arr['title'] = $title;
-        $return = ExamModel::instance()->addExamBaseInfo($arr);
+        $return = ExamBaseModel::instance()->addExamBaseInfo($arr);
         if ($return) {
             return true;
         } else {
@@ -114,7 +114,7 @@ class AdminexamModel
             'prgfill',
             'programscore'
         );
-        $allScore = ExamModel::instance()->getExamInfoById($eid, $field);
+        $allScore = ExamBaseModel::instance()->getExamInfoById($eid, $field);
         return $allScore;
     }
 

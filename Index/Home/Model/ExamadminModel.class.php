@@ -1,6 +1,8 @@
 <?php
 namespace Home\Model;
 
+use Teacher\Model\ExamBaseModel;
+
 class ExamadminModel
 {
 
@@ -32,14 +34,16 @@ class ExamadminModel
      */
     public function chkexamprivilege($eid, $user_id, $havetaken = false) {
         $num = $this->chkprivilege($user_id, $eid);
-        if (!(checkAdmin(2) || $num)) return 0;
-        $row = M('exam')
-            ->field('title,start_time,end_time,isvip,visible')
-            ->where('exam_id=%d', $eid)
-            ->find();
-        if (!$row || $row['visible'] == 'N') {
+        if (!(checkAdmin(2) || $num)) {
+            return 0;
+        }
+
+        $field = array('title', 'start_time', 'end_time', 'isvip', 'visible');
+        $row = ExamBaseModel::instance()->getExamInfoById($eid, $field);
+        if (empty($row)) {
             return -1;
         }
+
         if (C('OJ_VIP_CONTEST')) {
             if ($row['isvip'] == 'Y') {
                 $today = date('Y-m-d');
@@ -47,15 +51,21 @@ class ExamadminModel
                 $sql = "SELECT `user_id` FROM `loginlog` WHERE `user_id`='$user_id' AND `time`>='$today' AND ip<>'$ip1' AND
 				 `user_id` NOT IN( SELECT `user_id` FROM `privilege` WHERE `rightstr`='administrator' or `rightstr`='contest_creator') ORDER BY `time` DESC limit 0,1";
                 $tmprow = M()->query($sql);
-                if ($tmprow) return -2;
+                if ($tmprow) {
+                    return -2;
+                }
             }
         }
+
         if ($havetaken) {
             $num = M('ex_student')
                 ->where("user_id='%s' and exam_id=%d", $user_id, $eid)
                 ->count();
-            if ($num) return -3;
+            if ($num) {
+                return -3;
+            }
         }
+
         return $row;
     }
 
@@ -69,10 +79,13 @@ class ExamadminModel
         $start_timeC = strtotime($starttime);
         $end_timeC = strtotime($endtime);
         $now = time();
-        if ($now < $start_timeC) $isruning = -1;
-        else if ($now > $end_timeC) $isruning = 0;
-        else $isruning = 1;
-        return $isruning;
+        if ($now < $start_timeC) {
+            return ExamBaseModel::EXAM_NOT_START;
+        } else if ($now > $end_timeC) {
+            return ExamBaseModel::EXAM_END;
+        } else {
+            return ExamBaseModel::EXAM_RUNNING;
+        }
     }
 
     /**

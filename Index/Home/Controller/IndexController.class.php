@@ -2,6 +2,7 @@
 namespace Home\Controller;
 
 use Home\Model\ExamadminModel;
+use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
 class IndexController extends TemplateController
@@ -36,12 +37,18 @@ class IndexController extends TemplateController
             $where = array('visible' => 'Y');
         }
 
-        $table = 'exam';
-        $mypage = splitpage($table, $where);
+        $mypage = splitpage('exam', $where);
 
-        $row = M($table)->field('exam_id,title,start_time,end_time')
-            ->where($where)->order('exam_id desc')->limit($mypage['sqladd'])
-            ->select();
+        $where['order'] = array('exam_id desc');
+        $where['limit'] = $mypage['sqladd'];
+        $field = array('exam_id', 'title', 'start_time', 'end_time');
+        $row = ExamBaseModel::instance()->getExamInfoByQuery($where, $field);
+
+//        $table = 'exam';
+//        $row = M($table)->field('exam_id,title,start_time,end_time')
+//            ->where($where)->order('exam_id desc')->limit($mypage['sqladd'])
+//            ->select();
+
         $this->zadd('row', $row);
         $this->zadd('mypage', $mypage);
         $this->auto_display();
@@ -85,5 +92,9 @@ class IndexController extends TemplateController
         $this->zadd('score', $score);
         $this->zadd('row', $row);
         $this->auto_display();
+    }
+
+    public function exam() {
+
     }
 }

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="程序设计考试 山东工商学院">
+    <meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
+    <!-- yours css -->
+    <css file="__PUBLIC__/Css/examsys.min.css" />
+    <!-- Bootstrap -->
+    <css file="__PUBLIC__/Css/bootstrap.min.css" />
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__/Js/html5shiv.min.js"></script>
+    <script src="__PUBLIC__/Js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<style>
+    .nocopy{
+        -moz-user-select:none;
+    }
+    body{
+        padding-top:0 !important;
+    }
+</style>
+
+<body oncontextmenu="return false" onselectstart="return false" class="nocopy">
+<div class="container">
+    <div style="text-align:center">
+        <h1>程序设计考试系统<br>
+            <small>考试名称:{$row['title']}</small><br/>
+        </h1>
+    </div>
+    <table class='mytxtable'>
+        <tr><td class='tixinga'><h4>距考试结束还有:</h4></td></tr>
+        <tr><td class='tixingb'><h4><strong id="RemainH">XX</strong>:<strong id="RemainM">XX</strong>:<strong id="RemainS">XX</strong></h4></td></tr>
+        <tr><td class='tixing'><button type='button' id='saveanswer' onclick='saveanswer()' class='btn btn-info'>保存答案<span id="saveover"></span></button></td></tr>
+        <tr><td><button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">交卷</button></td></tr>
+    </table>
+
+    <form name="exam" id="exam" action="{:U('Home/Exam/submitpaper')}" method="post">
+        <input type="hidden" name="eid" value="{$Think.get.eid}">
+        <h3>选择题</h3>
+        <foreach name='choosesx' item='csx' key='numofchoose'>
+            <div class="panel panel-default">
+                <div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}</div>
+                <div class="panel-body">
+                    <p>
+                    <div class="radio"><label>
+                        <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'A'">
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="A" checked>(A) {$chooseans[$csx]['ams']}<br/>
+                            <else />
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="A">(A) {$chooseans[$csx]['ams']}<br/>
+                        </if></label></div>
+                    <div class="radio"><label>
+                        <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'B'">
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="B" checked>(B) {$chooseans[$csx]['bms']}<br/>
+                            <else />
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="B">(B) {$chooseans[$csx]['bms']}<br/>
+                        </if></label></div>
+                    <div class="radio"><label>
+                        <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'C'">
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="C" checked>(C) {$chooseans[$csx]['cms']}<br/>
+                            <else />
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="C">(C) {$chooseans[$csx]['cms']}<br/>
+                        </if></label></div>
+                    <div class="radio"><label>
+                        <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'D'">
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="D" checked>(D) {$chooseans[$csx]['dms']}
+                            <else />
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="D">(D) {$chooseans[$csx]['dms']}
+                        </if></label></div>
+                    </p>
+                </div>
+            </div>
+        </foreach>
+    </form>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">操作确认</h4>
+            </div>
+            <div class="modal-body">确定要提交试卷吗？提交后无法撤销!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="submitpaper()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<js file="__PUBLIC__/Js/jquery-1.11.2.min.js" />
+<js file="__PUBLIC__/Js/bootstrap.min.js" />
+<js file="__PUBLIC__/Js/Home.min.js" />
+
+</body>
+<script type="text/javascript">
+    $(function(){
+        $("body").keydown(function(event){
+            if(event.keyCode==116){
+                event.returnValue=false;
+                alert("当前设置不允许使用F5刷新键");
+                return false;
+            }
+            if((event.ctrlKey)&&(event.keyCode==83)){
+                event.returnValue=false;
+                alert("当前设置不允许使用Ctrl+S键");
+                return false;
+            }
+            if(event.keyCode==123){
+                event.returnValue=false;
+                alert("当前设置不允许使用F12键");
+                return false;
+            }
+        });
+    });
+    var answersaveurl = "{:U('Home/Exam/saveanswer')}";
+    var codesubmiturl = "{:U('Home/Exam/prgsubmit')}";
+    var updresulturl = "{:U('Home/Exam/updresult')}";
+</script>
+</html>

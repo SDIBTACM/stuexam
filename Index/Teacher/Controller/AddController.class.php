@@ -5,7 +5,7 @@ use Teacher\Model\AdminchooseModel;
 use Teacher\Model\AdminexamModel;
 use Teacher\Model\AdminfillModel;
 use Teacher\Model\AdminjudgeModel;
-use Teacher\Model\ExamModel;
+use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
 class AddController extends TemplateController
@@ -226,7 +226,7 @@ class AddController extends TemplateController
                 unset($row['exam_id']);
                 $row['creator'] = $this->userInfo['user_id'];
                 dbg($row);
-                $examId = ExamModel::instance()->addExamBaseInfo($row);
+                $examId = ExamBaseModel::instance()->addExamBaseInfo($row);
                 // copy exam's problem
                 $exQDao = M('exp_question');
                 $res = $exQDao->field('exam_id,question_id,type')->where('exam_id=%d', $eid)->select();

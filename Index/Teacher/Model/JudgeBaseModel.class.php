@@ -28,6 +28,10 @@ class JudgeBaseModel extends GeneralModel
         return DbConfigModel::TABLE_JUDGE;
     }
 
+    protected function getTableFields() {
+        return DbConfigModel::$TABLE_JUDGE_FILEDS;
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;

@@ -16,4 +16,6 @@ abstract class GeneralModel
 
     abstract protected function getTableName();
 
+    abstract protected function getTableFields();
+
 }
