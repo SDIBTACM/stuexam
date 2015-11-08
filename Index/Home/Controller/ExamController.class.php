@@ -5,7 +5,6 @@ use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
 use Teacher\Model\AdminexamModel;
 use Teacher\Model\AdminproblemModel;
-use Think\Controller;
 
 class ExamController extends TemplateController
 {

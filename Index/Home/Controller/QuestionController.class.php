@@ -17,17 +17,21 @@ class QuestionController extends TemplateController
     public $examId = null;
     public $randnum = null;
     public $examBase = null;
+    public $isRunning = null;
+    private static $isOnExam = 0;
 
     public function _initialize() {
         parent::_initialize();
-        $this->preExamQuestion();
-        $this->startExamQuestion();
+        if (!self::$isOnExam) {
+            $this->preExamQuestion();
+            $this->startExamQuestion();
+        }
     }
 
     protected function preExamQuestion() {
         $eid = I('eid', 0, 'intval');
         if (empty($eid)) {
-            $this->error('No Such Exam');
+            $this->echoError('No Such Exam!');
         } else {
             $this->examId = $eid;
             $userId = $this->userInfo['user_id'];
@@ -36,9 +40,9 @@ class QuestionController extends TemplateController
             if (is_array($this->examBase)) {
                 $isruning = ExamadminModel::instance()->chkruning($this->examBase['start_time'], $this->examBase['end_time']);
                 if ($isruning != ExamBaseModel::EXAM_RUNNING) {
-                    $this->redirect('Home/Index/index', array(), 3, '<h2>Exam is not running</h2>');
+                    $this->alertError('exam is not running!', U('Home/Index/index'));
                 }
-
+                $this->isRunning = $isruning;
                 $lefttime = strtotime($this->examBase['end_time']) - time();
                 $this->zadd('lefttime', $lefttime);
                 $this->zadd('row', $this->examBase);
@@ -46,13 +50,13 @@ class QuestionController extends TemplateController
             } else {
                 $row = $this->examBase;
                 if ($row == 0) {
-                    $this->error('You have no privilege!');
+                    $this->echoError('You have no privilege!');
                 } else if ($row == -1) {
-                    $this->error('No Such Exam!');
+                    $this->echoError('No Such Exam!');
                 } else if ($row == -2) {
-                    $this->error('Do not login in diff machine,Please Contact administrator');
+                    $this->echoError('Do not login in diff machine,Please Contact administrator');
                 } else if ($row == -3) {
-                    $this->error('You have taken part in it');
+                    $this->echoError('You have taken part in it');
                 }
             }
         }
@@ -72,5 +76,18 @@ class QuestionController extends TemplateController
         }
         $this->randnum = $num;
         $this->zadd('randnum', $num);
+        self::$isOnExam = 1;
+    }
+
+    public function navigation() {
+        $field = array('nick');
+        $where = array(
+            'user_id' => $this->userInfo['user_id']
+        );
+        $name = M('users')->field($field)->where($where)->find();
+        $this->zadd('name', $name['nick']);
+        $this->zadd('eid', $this->examId);
+        $this->zadd('isruning', $this->isRunning);
+        $this->auto_display('Index:about');
     }
 }

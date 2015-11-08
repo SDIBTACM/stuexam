@@ -1,9 +1,7 @@
 <?php
 namespace Home\Controller;
 
-use Home\Model\ExamadminModel;
 use Teacher\Model\ExamBaseModel;
-use Think\Controller;
 
 class IndexController extends TemplateController
 {
@@ -44,42 +42,9 @@ class IndexController extends TemplateController
         $field = array('exam_id', 'title', 'start_time', 'end_time');
         $row = ExamBaseModel::instance()->getExamInfoByQuery($where, $field);
 
-//        $table = 'exam';
-//        $row = M($table)->field('exam_id,title,start_time,end_time')
-//            ->where($where)->order('exam_id desc')->limit($mypage['sqladd'])
-//            ->select();
-
         $this->zadd('row', $row);
         $this->zadd('mypage', $mypage);
         $this->auto_display();
-    }
-
-    public function about() {
-        if (I('get.eid')) {
-            $eid = I('get.eid', '', 'intval');
-            $user_id = $this->userInfo['user_id'];
-            $row = ExamadminModel::instance()->chkexamprivilege($eid, $user_id);
-            if (!is_array($row)) {
-                if ($row == 0) {
-                    $this->error('You have no privilege!');
-                } else if ($row == -1) {
-                    $this->error('No Such Exam');
-                } else if ($row == -2) {
-                    $this->error('Do not login in diff machine,Please Contact administrator');
-                }
-            }
-            $isruning = ExamadminModel::instance()->chkruning($row['start_time'], $row['end_time']);
-
-            $name = M('users')->field('nick')->where("user_id='%s'", $user_id)->find();
-
-            $this->zadd('isruning', $isruning);
-            $this->zadd('row', $row);
-            $this->zadd('name', $name['nick']);
-
-            $this->auto_display();
-        } else {
-            $this->error('No Such Exam');
-        }
     }
 
     public function score() {
@@ -92,9 +57,5 @@ class IndexController extends TemplateController
         $this->zadd('score', $score);
         $this->zadd('row', $row);
         $this->auto_display();
-    }
-
-    public function exam() {
-
     }
 }

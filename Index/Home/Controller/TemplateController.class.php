@@ -31,7 +31,7 @@ class TemplateController extends Controller
 
         $this->initSqlInjectionFilter();
         $this->initLoginUserInfo();
-        $this->specialLogicality();
+        // $this->specialLogicality();
     }
 
     private function initLoginUserInfo() {
@@ -66,6 +66,15 @@ class TemplateController extends Controller
         echo "<script>function Mytips(){alert('{$errmsg}');{$url}}</script>";
         echo "</head><body onload='Mytips()'></body></html>";
         exit;
+    }
+
+    protected function echoError($errmsg) {
+        if (IS_AJAX) {
+            echo $errmsg;
+            exit(0);
+        } else {
+            $this->error($errmsg);
+        }
     }
 
     protected function auto_display($view = null, $layout = true) {
