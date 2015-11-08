@@ -20,9 +20,9 @@ class AdminfillModel
     }
 
     public function upd_question() {
-        $fillid = intval($_POST['fillid']);
-        $tmp = M("ex_fill")->field('creator,isprivate')
-            ->where('fill_id=%d', $fillid)->find();
+        $fillid = I('post.fillid', 0, 'intval');
+        $field = array('creator', 'isprivate');
+        $tmp = FillBaseModel::instance()->getFillById($fillid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else if ($tmp['isprivate'] == 2 && !checkAdmin(1)) {
@@ -34,8 +34,7 @@ class AdminfillModel
             $arr['answernum'] = intval($_POST['numanswer']);
             $arr['kind'] = intval($_POST['kind']);
             $arr['isprivate'] = intval($_POST['isprivate']);
-            $result = M('ex_fill')->where('fill_id=%d', $fillid)->data($arr)
-                ->save();
+            $result = FillBaseModel::instance()->updateFillById($fillid, $arr);
             if ($result !== false) {
                 $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$fillid";
                 M()->execute($sql);
@@ -63,7 +62,7 @@ class AdminfillModel
         $arr['isprivate'] = intval($_POST['isprivate']);
         $arr['addtime'] = date('Y-m-d H:i:s');
         $arr['creator'] = $_SESSION['user_id'];
-        $fillid = M('ex_fill')->add($arr);
+        $fillid = FillBaseModel::instance()->insertFillInfo($arr);
         if ($fillid) {
             for ($i = 1; $i <= $arr['answernum']; $i++) {
                 $answer = test_input($_POST["answer$i"]);

@@ -42,7 +42,7 @@ class ExamController extends TemplateController
             $rnd = M('ex_privilege')->field('randnum')
                 ->where("user_id='$user_id' and rightstr='e$eid'")
                 ->find();
-            if (checkAdmin(2)) $rnd['randnum'] = 0;
+            if ($this->isCreator()) $rnd['randnum'] = 0;
             $isruning = self::$isruning;
             if ($isruning != 1) {
                 $this->redirect('Home/Index/index', '', 3, "<h2>Exam is not running</h2>");

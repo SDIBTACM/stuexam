@@ -240,18 +240,6 @@ class AddController extends TemplateController
         }
     }
 
-    private function checkProblemPrivate($private, $crt) {
-        if ($private == 2 && !$this->isSuperAdmin()) {
-            return -1;
-        }
-        if (!$this->isSuperAdmin()) {
-            if ($private == 1 && $crt != $this->userInfo['user_id']) {
-                return -1;
-            }
-        }
-        return 1;
-    }
-
     private function checkflag($flag, $type, $second = 1) {
         $typech = $this->typename_ch[$type];
         $typeen = $this->typename_en[$type];

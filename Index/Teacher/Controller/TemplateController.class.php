@@ -35,7 +35,7 @@ class TemplateController extends \Home\Controller\TemplateController
     }
 
     protected function isCanWatchInfo($eid, $isReturn = false) {
-        $field = array('creator','isprivate');
+        $field = array('creator','isprivate', 'end_time');
         $res = ExamModel::instance()->getExamInfoById(intval($eid), $field);
 
         $hasPrivilege = 0;
@@ -61,6 +61,18 @@ class TemplateController extends \Home\Controller\TemplateController
                 return false;
             }
         }
+    }
+
+    protected function checkProblemPrivate($private, $creator) {
+        if ($private == 2 && !$this->isSuperAdmin()) {
+            return -1;
+        }
+        if (!$this->isSuperAdmin()) {
+            if ($private == 1 && $creator != $this->userInfo['user_id']) {
+                return -1;
+            }
+        }
+        return 1;
     }
 
     protected function checkadded($eid, $type, $id) {

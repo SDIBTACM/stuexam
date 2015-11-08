@@ -20,9 +20,9 @@ class AdminchooseModel
     }
 
     public function upd_question() {
-        $chooseid = intval($_POST['chooseid']);
-        $tmp = M("ex_choose")->field('creator,isprivate')
-            ->where('choose_id=%d', $chooseid)->find();
+        $chooseid = I('post.chooseid', 0, 'intval');
+        $field = array('creator', 'isprivate');
+        $tmp = ChooseBaseModel::instance()->getChooseById($chooseid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else if ($tmp['isprivate'] == 2 && !checkAdmin(1)) {
@@ -37,8 +37,7 @@ class AdminchooseModel
             $arr['answer'] = $_POST['answer'];
             $arr['easycount'] = intval($_POST['easycount']);
             $arr['isprivate'] = intval($_POST['isprivate']);
-            $result = M('ex_choose')->where('choose_id=%d', $chooseid)
-                ->data($arr)->save();
+            $result = ChooseBaseModel::instance()->updateChooseById($chooseid, $arr);
             if ($result !== false) {
                 return 1;
             } else {
@@ -59,10 +58,7 @@ class AdminchooseModel
         $arr['addtime'] = date('Y-m-d H:i:s');
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);
-        if (M('ex_choose')->add($arr)) {
-            return true;
-        } else {
-            return false;
-        }
+        $lastId = ChooseBaseModel::instance()->insertChooseInfo($arr);
+        return $lastId ? true : false;
     }
 }

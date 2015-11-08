@@ -20,9 +20,9 @@ class AdminjudgeModel
     }
 
     public function upd_question() {
-        $judgeid = intval($_POST['judgeid']);
-        $tmp = M("ex_judge")->field('creator,isprivate')
-            ->where('judge_id=%d', $judgeid)->find();
+        $judgeid = I('post.judgeid', 0, 'intval');
+        $field = array('creator', 'isprivate');
+        $tmp = JudgeBaseModel::instance()->getJudgeById($judgeid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
         } else if ($tmp['isprivate'] == 2 && !checkAdmin(1)) {
@@ -33,8 +33,7 @@ class AdminjudgeModel
             $arr['point'] = test_input($_POST['point']);
             $arr['easycount'] = intval($_POST['easycount']);
             $arr['isprivate'] = intval($_POST['isprivate']);
-            $result = M('ex_judge')->where('judge_id=%d', $judgeid)->data($arr)
-                ->save();
+            $result = JudgeBaseModel::instance()->updateJudgeById($judgeid, $arr);
             if ($result !== false) {
                 return 1;
             } else {
@@ -51,10 +50,7 @@ class AdminjudgeModel
         $arr['isprivate'] = intval($_POST['isprivate']);
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
-        if (M('ex_judge')->add($arr)) {
-            return true;
-        } else {
-            return false;
-        }
+        $lastId = JudgeBaseModel::instance()->insertJudgeInfo($arr);
+        return $lastId ? true : false;
     }
 }
