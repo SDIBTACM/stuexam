@@ -39,7 +39,7 @@
         <tr><td><button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">交卷</button></td></tr>
     </table>
 
-    <form name="exam" id="exam" action="{:U('Home/Exam/submitpaper')}" method="post">
+    <form name="exam" id="exam" action="{:U('Home/Choose/submitPaper')}" method="post">
         <input type="hidden" name="eid" value="{$Think.get.eid}">
         <h3>选择题</h3>
         <foreach name='choosesx' item='csx' key='numofchoose'>
@@ -119,8 +119,6 @@
             }
         });
     });
-    var answersaveurl = "{:U('Home/Exam/saveanswer')}";
-    var codesubmiturl = "{:U('Home/Exam/prgsubmit')}";
-    var updresulturl = "{:U('Home/Exam/updresult')}";
+    var answersaveurl = "{:U('Home/Choose/saveAnswer')}";
 </script>
 </html>

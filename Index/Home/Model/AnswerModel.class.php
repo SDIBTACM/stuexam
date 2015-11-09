@@ -1,6 +1,10 @@
 <?php
 namespace Home\Model;
 
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
+
 class AnswerModel
 {
 
@@ -21,13 +25,13 @@ class AnswerModel
 
     public function answersave($user_id, $eid, $type, $issave = true) {
         switch ($type) {
-            case 1:
+            case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
                 return $this->savechoose($user_id, $eid, $issave);
                 break;
-            case 2:
+            case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
                 return $this->savejudge($user_id, $eid, $issave);
                 break;
-            case 3:
+            case FillBaseModel::FILL_PROBLEM_TYPE:
                 return $this->savefill($user_id, $eid, $issave);
                 break;
         }

@@ -11,6 +11,7 @@ namespace Home\Controller;
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
 use Teacher\Model\ExamServiceModel;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 
 class JudgeController extends QuestionController
@@ -33,5 +34,16 @@ class JudgeController extends QuestionController
         $this->zadd('judgeans', $judgeans);
 
         $this->auto_display('Exam:judge', false);
+    }
+
+    public function saveAnswer() {
+        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+    }
+
+    public function submitPaper() {
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $jright = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $inarr['judgesum'] = $jright * $allscore['judgescore'];
+        // TODO update judge score
     }
 }

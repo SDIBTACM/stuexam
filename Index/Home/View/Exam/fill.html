@@ -15,39 +15,6 @@
     <script src="__PUBLIC__/Js/respond.min.js"></script>
     <![endif]-->
 </head>
-<script type="text/javascript">
-    var isalert = false;
-    var left={$lefttime}*1000;
-    var savetime=(300+{$randnum}%420)*1000;
-    var runtimes=0;
-    function GetRTime(){
-        nMS=left-runtimes*1000;
-        if(nMS>0){
-            var nH=Math.floor(nMS/(1000*60*60));
-            var nM=Math.floor(nMS/(1000*60)) % 60;
-            var nS=Math.floor(nMS/1000) % 60;
-            document.getElementById("RemainH").innerHTML=(nH>=10?nH:"0"+nH);
-            document.getElementById("RemainM").innerHTML=(nM>=10?nM:"0"+nM);
-            document.getElementById("RemainS").innerHTML=(nS>=10?nS:"0"+nS);
-            if(nMS<=5*60*1000&&isalert==false){
-                $('.tixinga').css("color","red");
-                $('.tixingb').css("color","red");
-                isalert=true;
-            }
-            if(nMS>0&&nMS<=1*1000){
-                $('#exam').submit();
-            }
-            //如果出现问题，注释掉下面的if语句
-            if(nMS%savetime==0&&nMS>savetime){
-                saveanswer();
-                setTimeout('history.go(0)',5000);
-            }
-            runtimes++;
-            setTimeout("GetRTime()",1000);
-        }
-    }
-    window.onload=GetRTime;
-</script>
 
 <style>
     .nocopy{
@@ -70,7 +37,7 @@
         <tr><td class='tixing'><button type='button' id='saveanswer' onclick='saveanswer()' class='btn btn-info'>保存答案<span id="saveover"></span></button></td></tr>
         <tr><td><button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">交卷</button></td></tr>
     </table>
-    <form name="exam" id="exam" action="{:U('Home/Exam/submitpaper')}" method="post">
+    <form name="exam" id="exam" action="{:U('Home/Fill/submitPaper')}" method="post">
         <input type="hidden" name="eid" value="{$Think.get.eid}">
         <h3>填空题</h3>
         <foreach name='fillsx' item='fsx' key='numoffill'>
@@ -135,8 +102,6 @@
             }
         });
     });
-    var answersaveurl = "{:U('Home/Exam/saveanswer')}";
-    var codesubmiturl = "{:U('Home/Exam/prgsubmit')}";
-    var updresulturl = "{:U('Home/Exam/updresult')}";
+    var answersaveurl = "{:U('Home/Fill/saveAnswer')}";
 </script>
 </html>

@@ -120,7 +120,7 @@ class ExamServiceModel
 
     public function getUserAnswer($eid, $users, $type) {
         $arr = array();
-        if ($type == 1 || $type == 2) {
+        if ($type == ChooseBaseModel::CHOOSE_PROBLEM_TYPE || $type == JudgeBaseModel::JUDGE_PROBLEM_TYPE) {
             $row = M('ex_stuanswer')->field('question_id,answer')
                 ->where("exam_id=%d and type=%d and user_id='%s'", $eid, $type, $users)
                 ->select();
@@ -130,7 +130,7 @@ class ExamServiceModel
                 }
                 unset($row);
             }
-        } else if ($type == 3) {
+        } else if ($type == FillBaseModel::FILL_PROBLEM_TYPE) {
             $row = M('ex_stuanswer')->field('question_id,answer_id,answer')
                 ->where("exam_id=%d and type=%d and user_id='%s'", $eid, $type, $users)
                 ->select();

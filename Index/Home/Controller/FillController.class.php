@@ -11,6 +11,7 @@ namespace Home\Controller;
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
 use Teacher\Model\ExamServiceModel;
+use Teacher\Model\FillBaseModel;
 use Teacher\Model\ProblemServiceModel;
 
 class FillController extends QuestionController
@@ -33,5 +34,15 @@ class FillController extends QuestionController
         $this->zadd('fillans', $fillans);
 
         $this->auto_display('Exam:fill', false);
+    }
+
+    public function saveAnswer() {
+        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+    }
+
+    public function submitPaper() {
+        $fscore = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
+        $inarr['fillsum'] = $fscore;
+        // TODO update fill score
     }
 }

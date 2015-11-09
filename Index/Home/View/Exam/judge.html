@@ -37,7 +37,7 @@
         <tr><td class='tixing'><button type='button' id='saveanswer' onclick='saveanswer()' class='btn btn-info'>保存答案<span id="saveover"></span></button></td></tr>
         <tr><td><button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">交卷</button></td></tr>
     </table>
-    <form name="exam" id="exam" action="{:U('Home/Exam/submitpaper')}" method="post">
+    <form name="exam" id="exam" action="{:U('Home/Judge/submitPaper')}" method="post">
         <input type="hidden" name="eid" value="{$Think.get.eid}">
         <h3>判断题</h3>
         <foreach name='judgesx' item='jsx' key='numofjudge'>
@@ -105,8 +105,6 @@
             }
         });
     });
-    var answersaveurl = "{:U('Home/Exam/saveanswer')}";
-    var codesubmiturl = "{:U('Home/Exam/prgsubmit')}";
-    var updresulturl = "{:U('Home/Exam/updresult')}";
+    var answersaveurl = "{:U('Home/Judge/saveAnswer')}";
 </script>
 </html>

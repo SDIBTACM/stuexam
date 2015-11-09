@@ -23,18 +23,18 @@ class ExamadminModel
 
     /**
      * 判断用户是否有权限参加此考试,判断包括:
-     * 1.是否在权限列表
-     * 2.考试是否存在或可见
-     * 3.如果是vip考试,是否在不同机器上登陆过
-     * 4.可选。是否已经交卷
+     * 1.是否在权限列表 0
+     * 2.考试是否存在或可见 -1
+     * 3.如果是vip考试,是否在不同机器上登陆过  -2
+     * 4.可选。是否已经交卷 -3
      * @param  number $eid 比赛编号
      * @param  string $user_id 用户ID]
      * @param  boolean $havetaken 是否判断已经参加考试过
      * @return number|array        返回数字表示没有权限，否则有
      */
     public function chkexamprivilege($eid, $user_id, $havetaken = false) {
-        $num = $this->chkprivilege($user_id, $eid);
-        if (!(checkAdmin(2) || $num)) {
+        $hasPrivilege = $this->chkprivilege($user_id, $eid);
+        if (!(checkAdmin(2) || $hasPrivilege)) {
             return 0;
         }
 
@@ -58,10 +58,11 @@ class ExamadminModel
         }
 
         if ($havetaken) {
-            $num = M('ex_student')
+            $score = M('ex_student')
+                ->field('score')
                 ->where("user_id='%s' and exam_id=%d", $user_id, $eid)
-                ->count();
-            if ($num) {
+                ->find();
+            if (!is_null($score['score'])) {
                 return -3;
             }
         }
