@@ -10,8 +10,8 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 
 class JudgeController extends QuestionController
 {
@@ -22,9 +22,9 @@ class JudgeController extends QuestionController
 
     public function index() {
 
-        $allscore = AdminexamModel::instance()->getallscore($this->examId);
-        $judgearr = AdminexamModel::instance()->getuserans($this->examId, $this->userInfo['user_id'], 2);
-        $judgeans = AdminproblemModel::instance()->getproblemans($this->examId, 2);
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $judgearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], 2);
+        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, 2);
         $judgesx = ExamadminModel::instance()->getproblemsx($this->examId, 2, $this->randnum);
 
         $this->zadd('allscore', $allscore);

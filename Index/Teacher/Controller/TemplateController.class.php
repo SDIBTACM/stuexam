@@ -14,7 +14,7 @@ class TemplateController extends \Home\Controller\TemplateController
         }
     }
 
-    protected function isowner($eid) {
+    protected function isOwner4ExamByExamId($eid) {
         if ($this->isSuperAdmin()) {
             return true;
         }
@@ -27,7 +27,7 @@ class TemplateController extends \Home\Controller\TemplateController
         }
     }
 
-    protected function isOwnerByUserId($userId) {
+    protected function isOwner4ExamByUserId($userId) {
         if ($this->isSuperAdmin()) {
             return true;
         }
@@ -43,7 +43,7 @@ class TemplateController extends \Home\Controller\TemplateController
             $hasPrivilege = 1;
         }
 
-        if (!($this->isSuperAdmin() || $this->isOwnerByUserId($res['creator']) || $hasPrivilege !=0 )) {
+        if (!($this->isSuperAdmin() || $this->isOwner4ExamByUserId($res['creator']) || $hasPrivilege !=0 )) {
             $this->error('You have no privilege of this exam');
         }
         if ($isReturn) {
@@ -51,12 +51,12 @@ class TemplateController extends \Home\Controller\TemplateController
         }
     }
 
-    protected function isProblemCanDelete($pvt, $crt) {
+    protected function isProblemCanDelete($private, $creator) {
         if ($this->isSuperAdmin()) {
             return true;
         } else {
-            if ($pvt != 2) {
-                return $this->isOwnerByUserId($crt);
+            if ($private != 2) {
+                return $this->isOwner4ExamByUserId($creator);
             } else {
                 return false;
             }
@@ -75,7 +75,7 @@ class TemplateController extends \Home\Controller\TemplateController
         return 1;
     }
 
-    protected function checkadded($eid, $type, $id) {
+    protected function checkQuestionHasAdded($eid, $type, $id) {
         $cnt = M('exp_question')
             ->where('exam_id=%d and type=%d and question_id=%d', $eid, $type, $id)
             ->count();

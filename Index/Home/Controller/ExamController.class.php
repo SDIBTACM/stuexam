@@ -3,8 +3,8 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 
 class ExamController extends TemplateController
 {
@@ -47,14 +47,14 @@ class ExamController extends TemplateController
                 $this->redirect('Home/Index/index', '', 3, "<h2>Exam is not running</h2>");
             }
             $lefttime = strtotime($row['end_time']) - time();
-            $allscore = AdminexamModel::instance()->getallscore($eid);
-            $choosearr = AdminexamModel::instance()->getuserans($eid, $user_id, 1);
-            $judgearr = AdminexamModel::instance()->getuserans($eid, $user_id, 2);
-            $fillarr = AdminexamModel::instance()->getuserans($eid, $user_id, 3);
-            $chooseans = AdminproblemModel::instance()->getproblemans($eid, 1);
-            $judgeans = AdminproblemModel::instance()->getproblemans($eid, 2);
-            $fillans = AdminproblemModel::instance()->getproblemans($eid, 3);
-            $programans = AdminproblemModel::instance()->getproblemans($eid, 5);
+            $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
+            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, 1);
+            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, 2);
+            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, 3);
+            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 1);
+            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 2);
+            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 3);
+            $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 5);
             $choosesx = ExamadminModel::instance()->getproblemsx($eid, 1, $rnd['randnum']);
             $judgesx = ExamadminModel::instance()->getproblemsx($eid, 2, $rnd['randnum']);
             $fillsx = ExamadminModel::instance()->getproblemsx($eid, 3, $rnd['randnum']);
@@ -120,7 +120,7 @@ class ExamController extends TemplateController
                 } else {
                     $start_timeC = strftime("%Y-%m-%d %X", strtotime($row['start_time']));
                     $end_timeC = strftime("%Y-%m-%d %X", strtotime($row['end_time']));
-                    $allscore = AdminexamModel::instance()->getallscore($eid);
+                    $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
                     $cright = AnswerModel::instance()->answersave($user_id, $eid, 1, false);
                     $jright = AnswerModel::instance()->answersave($user_id, $eid, 2, false);
                     $fscore = AnswerModel::instance()->answersave($user_id, $eid, 3, false);

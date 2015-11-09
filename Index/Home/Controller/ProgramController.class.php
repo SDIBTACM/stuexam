@@ -9,15 +9,15 @@
 namespace Home\Controller;
 
 use Home\Model\AnswerModel;
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 
 class ProgramController extends QuestionController {
 
     public function index() {
 
-        $allscore = AdminexamModel::instance()->getallscore($this->examId);
-        $programans = AdminproblemModel::instance()->getproblemans($this->examId, 5);
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, 5);
 
         $this->zadd('allscore', $allscore);
         $this->zadd('programans', $programans);

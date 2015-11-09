@@ -1,7 +1,7 @@
 <?php
 namespace Teacher\Model;
 
-class AdminfillModel
+class FillServiceModel
 {
 
     private static $_instance = null;
@@ -19,7 +19,7 @@ class AdminfillModel
         return self::$_instance;
     }
 
-    public function upd_question() {
+    public function updateFillInfo() {
         $fillid = I('post.fillid', 0, 'intval');
         $field = array('creator', 'isprivate');
         $tmp = FillBaseModel::instance()->getFillById($fillid, $field);
@@ -53,7 +53,7 @@ class AdminfillModel
         }
     }
 
-    public function add_question() {
+    public function addFillInfo() {
         $arr['question'] = test_input($_POST['fill_des']);
         $arr['point'] = test_input($_POST['point']);
         $arr['easycount'] = intval($_POST['easycount']);

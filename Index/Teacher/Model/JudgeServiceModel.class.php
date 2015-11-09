@@ -1,7 +1,7 @@
 <?php
 namespace Teacher\Model;
 
-class AdminjudgeModel
+class JudgeServiceModel
 {
 
     private static $_instance = null;
@@ -19,7 +19,7 @@ class AdminjudgeModel
         return self::$_instance;
     }
 
-    public function upd_question() {
+    public function updateJudgeInfo() {
         $judgeid = I('post.judgeid', 0, 'intval');
         $field = array('creator', 'isprivate');
         $tmp = JudgeBaseModel::instance()->getJudgeById($judgeid, $field);
@@ -42,7 +42,7 @@ class AdminjudgeModel
         }
     }
 
-    public function add_question() {
+    public function addJudgeInfo() {
         $arr['question'] = test_input($_POST['judge_des']);
         $arr['point'] = test_input($_POST['point']);
         $arr['answer'] = $_POST['answer'];

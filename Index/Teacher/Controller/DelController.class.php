@@ -23,7 +23,7 @@ class DelController extends TemplateController
     }
 
     public function exam() {
-        if (!$this->isowner($this->id)) {
+        if (!$this->isOwner4ExamByExamId($this->id)) {
             $this->error('You have no privilege!');
         } else {
             $data = array('visible' => 'N');

@@ -1,8 +1,8 @@
 <?php
 namespace Teacher\Controller;
 
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 use Think\Controller;
 
 class ExamController extends TemplateController
@@ -24,20 +24,20 @@ class ExamController extends TemplateController
 
     public function index() {
 
-        if (!$this->isowner($this->eid)) {
+        if (!$this->isOwner4ExamByExamId($this->eid)) {
             $this->error('You have no privilege of this exam~');
         }
 
-        $allscore = AdminexamModel::instance()->getallscore($this->eid);
-        $chooseans = AdminproblemModel::instance()->getproblemans($this->eid, 1);
-        $judgeans = AdminproblemModel::instance()->getproblemans($this->eid, 2);
-        $fillans = AdminproblemModel::instance()->getproblemans($this->eid, 3);
-        $programans = AdminproblemModel::instance()->getproblemans($this->eid, 5);
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->eid);
+        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 1);
+        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 2);
+        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 3);
+        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 5);
 
         $fillans2 = array();
         if ($fillans) {
             foreach ($fillans as $key => $value) {
-                $fillans2[$value['fill_id']] = AdminproblemModel::instance()->getproblemans($value['fill_id'], 4);
+                $fillans2[$value['fill_id']] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($value['fill_id'], 4);
             }
         }
         $numofchoose = count($chooseans);
@@ -104,14 +104,14 @@ class ExamController extends TemplateController
                 $this->error('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
-                $flag = AdminexamModel::instance()->addexamuser($eid);
+                $flag = ExamServiceModel::instance()->addUsers2Exam($eid);
                 if ($flag === true)
                     $this->success('考生添加成功', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
                 else
                     $this->error('Invaild Path');
             }
         } else {
-            if (!$this->isowner($this->eid)) {
+            if (!$this->isOwner4ExamByExamId($this->eid)) {
                 $this->error('You have no privilege of this exam');
             } else {
                 $ulist = "";

@@ -10,8 +10,8 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 
 
 class ChooseController extends QuestionController
@@ -23,9 +23,9 @@ class ChooseController extends QuestionController
 
     public function index() {
 
-        $allscore = AdminexamModel::instance()->getallscore($this->examId);
-        $choosearr = AdminexamModel::instance()->getuserans($this->examId, $this->userInfo['user_id'], 1);
-        $chooseans = AdminproblemModel::instance()->getproblemans($this->examId, 1);
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $choosearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], 1);
+        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, 1);
         $choosesx = ExamadminModel::instance()->getproblemsx($this->examId, 1, $this->randnum);
 
         $this->zadd('allscore', $allscore);

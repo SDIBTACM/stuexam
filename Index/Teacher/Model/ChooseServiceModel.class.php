@@ -1,7 +1,7 @@
 <?php
 namespace Teacher\Model;
 
-class AdminchooseModel
+class ChooseServiceModel
 {
 
     private static $_instance = null;
@@ -19,7 +19,7 @@ class AdminchooseModel
         return self::$_instance;
     }
 
-    public function upd_question() {
+    public function updateChooseInfo() {
         $chooseid = I('post.chooseid', 0, 'intval');
         $field = array('creator', 'isprivate');
         $tmp = ChooseBaseModel::instance()->getChooseById($chooseid, $field);
@@ -46,7 +46,7 @@ class AdminchooseModel
         }
     }
 
-    public function add_question() {
+    public function addChooseInfo() {
         $arr['question'] = test_input($_POST['choose_des']);
         $arr['ams'] = test_input($_POST['ams']);
         $arr['bms'] = test_input($_POST['bms']);

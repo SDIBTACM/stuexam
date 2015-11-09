@@ -12,6 +12,8 @@ namespace Teacher\Model;
 class JudgeBaseModel extends GeneralModel
 {
 
+    const JUDGE_PROBLEM_TYPE = 2;
+
     private static $_instance = null;
 
     private function __construct() {
@@ -70,5 +72,13 @@ class JudgeBaseModel extends GeneralModel
         );
         $res = $dao->where($where)->delete();
         return $res;
+    }
+
+    public function getJudgeProblems4Exam($eid) {
+        $type = self::JUDGE_PROBLEM_TYPE;
+        $sql = "SELECT `ex_judge`.`judge_id`,`question`,`answer` FROM `ex_judge`,`exp_question`
+		WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_judge`.`judge_id`=`exp_question`.`question_id` ORDER BY `judge_id`";
+        $ans = M()->query($sql);
+        return $ans;
     }
 }

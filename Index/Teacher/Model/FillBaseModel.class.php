@@ -12,6 +12,8 @@ namespace Teacher\Model;
 class FillBaseModel extends GeneralModel
 {
 
+    const FILL_PROBLEM_TYPE = 3;
+
     private static $_instance = null;
 
     private function __construct() {
@@ -72,4 +74,20 @@ class FillBaseModel extends GeneralModel
         return $res;
     }
 
+    public function getFillProblems4Exam($eid) {
+        $type = self::FILL_PROBLEM_TYPE;
+        $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind` FROM `ex_fill`,`exp_question`
+		WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_fill`.`fill_id`=`exp_question`.`question_id` ORDER BY `fill_id`";
+        $ans = M()->query($sql);
+        return $ans;
+    }
+
+    public function getFillAnswerByFillId($fillid) {
+        $ans = M('fill_answer')
+            ->field('answer_id,answer')
+            ->where('fill_id=%d', $fillid)
+            ->order('answer_id')
+            ->select();
+        return $ans;
+    }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Teacher\Model;
 
-class AdminexamModel
+class ExamServiceModel
 {
 
     private static $_instance = null;
@@ -19,7 +19,7 @@ class AdminexamModel
         return self::$_instance;
     }
 
-    public function upd_exam() {
+    public function updateExamInfo() {
         $eid = intval($_POST['examid']);
         $tmp = ExamBaseModel::instance()->getExamInfoById($eid, array('creator'));
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
@@ -50,7 +50,7 @@ class AdminexamModel
         }
     }
 
-    public function add_exam() {
+    public function addExamInfo() {
         $arr['start_time'] = intval($_POST['syear']) . "-" . intval($_POST['smonth']) . "-" . intval($_POST['sday']) . " " . intval($_POST['shour']) . ":" . intval($_POST['sminute']) . ":00";
         $arr['end_time'] = intval($_POST['eyear']) . "-" . intval($_POST['emonth']) . "-" . intval($_POST['eday']) . " " . intval($_POST['ehour']) . ":" . intval($_POST['eminute']) . ":00";
         $creator = $_SESSION['user_id'];
@@ -78,7 +78,7 @@ class AdminexamModel
         }
     }
 
-    public function addexamuser($eid) {
+    public function addUsers2Exam($eid) {
         if ($eid > 0) {
             M('ex_privilege')->where("rightstr='e$eid'")->delete();
             $pieces = explode("\n", trim($_POST['ulist']));
@@ -105,7 +105,7 @@ class AdminexamModel
         }
     }
 
-    public function getallscore($eid) {
+    public function getBaseScoreByExamId($eid) {
         $field = array(
             'choosescore',
             'judgescore',
@@ -118,7 +118,7 @@ class AdminexamModel
         return $allScore;
     }
 
-    public function getuserans($eid, $users, $type) {
+    public function getUserAnswer($eid, $users, $type) {
         $arr = array();
         if ($type == 1 || $type == 2) {
             $row = M('ex_stuanswer')->field('question_id,answer')

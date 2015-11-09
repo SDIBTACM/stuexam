@@ -31,7 +31,7 @@ class TemplateController extends Controller
 
         $this->initSqlInjectionFilter();
         $this->initLoginUserInfo();
-        // $this->specialLogicality();
+        $this->specialLogicality();
     }
 
     private function initLoginUserInfo() {

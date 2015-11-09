@@ -1,10 +1,10 @@
 <?php
 namespace Teacher\Controller;
 
-use Teacher\Model\AdminchooseModel;
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminfillModel;
-use Teacher\Model\AdminjudgeModel;
+use Teacher\Model\ChooseServiceModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\FillServiceModel;
+use Teacher\Model\JudgeServiceModel;
 use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
@@ -26,11 +26,11 @@ class AddController extends TemplateController
                 $this->error('You have no privilege!');
             }
             if (isset($_POST['examid'])) {
-                $flag = AdminexamModel::instance()->upd_exam();
-                $this->checkflag($flag, 3);
+                $flag = ExamServiceModel::instance()->updateExamInfo();
+                $this->flagChecked($flag, 3);
             } else if (isset($_POST['examname'])) {
-                $flag = AdminexamModel::instance()->add_exam();
-                $this->checkflag($flag, 3);
+                $flag = ExamServiceModel::instance()->addExamInfo();
+                $this->flagChecked($flag, 3);
             }
         } else if (IS_GET && I('get.eid') != '') {
             $eid = I('get.eid', 0, 'intval');
@@ -38,7 +38,7 @@ class AddController extends TemplateController
             $key = set_post_key();
             $row = M('exam')->where("exam_id=%d and visible='Y'", $eid)->find();
             if ($row) {
-                if (!$this->isOwnerByUserId($row['creator'])) {
+                if (!$this->isOwner4ExamByUserId($row['creator'])) {
                     $this->error('You have no privilege!');
                 }
                 $this->zadd('page', $page);
@@ -62,11 +62,11 @@ class AddController extends TemplateController
             if (!check_post_key())
                 $this->error('发生错误！');
             if (isset($_POST['chooseid'])) {
-                $flag = AdminchooseModel::instance()->upd_question();
-                $this->checkflag($flag, 0);
+                $flag = ChooseServiceModel::instance()->updateChooseInfo();
+                $this->flagChecked($flag, 0);
             } else if (isset($_POST['choose_des'])) {
-                $flag = AdminchooseModel::instance()->add_question();
-                $this->checkflag($flag, 0);
+                $flag = ChooseServiceModel::instance()->addChooseInfo();
+                $this->flagChecked($flag, 0);
             }
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
@@ -109,11 +109,11 @@ class AddController extends TemplateController
                 $this->error('发生错误！');
             }
             if (isset($_POST['judgeid'])) {
-                $flag = AdminjudgeModel::instance()->upd_question();
-                $this->checkflag($flag, 1);
+                $flag = JudgeServiceModel::instance()->updateJudgeInfo();
+                $this->flagChecked($flag, 1);
             } else if (isset($_POST['judge_des'])) {
-                $flag = AdminjudgeModel::instance()->add_question();
-                $this->checkflag($flag, 1);
+                $flag = JudgeServiceModel::instance()->addJudgeInfo();
+                $this->flagChecked($flag, 1);
             }
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
@@ -155,11 +155,11 @@ class AddController extends TemplateController
                 $this->error('发生错误！');
             }
             if (isset($_POST['fillid'])) {
-                $flag = AdminfillModel::instance()->upd_question();
-                $this->checkflag($flag, 2);
+                $flag = FillServiceModel::instance()->updateFillInfo();
+                $this->flagChecked($flag, 2);
             } else if (isset($_POST['fill_des'])) {
-                $flag = AdminfillModel::instance()->add_question();
-                $this->checkflag($flag, 2);
+                $flag = FillServiceModel::instance()->addFillInfo();
+                $this->flagChecked($flag, 2);
             }
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
@@ -219,7 +219,7 @@ class AddController extends TemplateController
         $eid = I('get.eid', 0, 'intval');
         $row = M('exam')->where("exam_id=%d and visible='Y'", $eid)->find();
         if (!empty($row)) {
-            if (!$this->isOwnerByUserId($row['creator'])) {
+            if (!$this->isOwner4ExamByUserId($row['creator'])) {
                 $this->error('You have no privilege!');
             } else {
                 // copy exam's base info
@@ -240,7 +240,7 @@ class AddController extends TemplateController
         }
     }
 
-    private function checkflag($flag, $type, $second = 1) {
+    private function flagChecked($flag, $type, $second = 1) {
         $typech = $this->typename_ch[$type];
         $typeen = $this->typename_en[$type];
         if (is_bool($flag)) {

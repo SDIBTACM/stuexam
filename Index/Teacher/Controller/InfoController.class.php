@@ -1,8 +1,8 @@
 <?php
 namespace Teacher\Controller;
 
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
@@ -28,20 +28,20 @@ class InfoController extends TemplateController
                 $this->error("The student have no privilege to take part in it");
             }
 
-            $allscore = AdminexamModel::instance()->getallscore($eid);
+            $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
 
-            $choosearr = AdminexamModel::instance()->getuserans($eid, $users, 1);
-            $judgearr = AdminexamModel::instance()->getuserans($eid, $users, 2);
-            $fillarr = AdminexamModel::instance()->getuserans($eid, $users, 3);
+            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 1);
+            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 2);
+            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 3);
 
-            $chooseans = AdminproblemModel::instance()->getproblemans($eid, 1);
-            $judgeans = AdminproblemModel::instance()->getproblemans($eid, 2);
-            $fillans = AdminproblemModel::instance()->getproblemans($eid, 3);
+            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 1);
+            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 2);
+            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 3);
             $fillans2 = array();
 
             if ($fillans) {
                 foreach ($fillans as $key => $value) {
-                    $fillans2[$value['fill_id']] = AdminproblemModel::instance()->getproblemans($value['fill_id'], 4);
+                    $fillans2[$value['fill_id']] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($value['fill_id'], 4);
                 }
             }
             $this->zadd('title', $row['title']);
@@ -64,7 +64,7 @@ class InfoController extends TemplateController
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
-            if (!$this->isowner($eid)) {
+            if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->error('You have no privilege to do it!');
             } else {
                 M('ex_student')
@@ -81,7 +81,7 @@ class InfoController extends TemplateController
         $eid = I('get.eid', 0, 'intval');
         if (!empty($eid)) {
 
-            if (!$this->isowner($eid)) {
+            if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->error('You have no privilege to do it!');
             }
 
@@ -125,7 +125,7 @@ class InfoController extends TemplateController
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
-            if (!$this->isowner($eid)) {
+            if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->error('You have no privilege to do it!');
             }
             $flag = $this->dojudgeone($eid, $users);
@@ -140,7 +140,7 @@ class InfoController extends TemplateController
     public function hardSubmit() {
         $eid = I('get.eid', 0, 'intval');
         $userId = I('get.userId', '');
-        if (!$this->isowner($eid) ) {
+        if (!$this->isOwner4ExamByExamId($eid) ) {
             $this->error('You have no privilege to do it!');
         }
         if (empty($eid) && empty($userId)) {
@@ -214,9 +214,9 @@ class InfoController extends TemplateController
         $fillsum = 0;
         $programsum = 0;
         $sum = 0;
-        $allscore = AdminexamModel::instance()->getallscore($eid);
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
 
-        $choosearr = AdminexamModel::instance()->getuserans($eid, $users, 1);
+        $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 1);
         $query = "SELECT `choose_id`,`answer` FROM `ex_choose` WHERE `choose_id` IN
 		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1')";
         $row = M()->query($query);
@@ -233,7 +233,7 @@ class InfoController extends TemplateController
         }
         //choose over
 
-        $judgearr = AdminexamModel::instance()->getuserans($eid, $users, 2);;
+        $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 2);;
         $query = "SELECT `judge_id`,`answer` FROM `ex_judge` WHERE `judge_id` IN
 		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='2')";
         $row = M()->query($query);
@@ -250,7 +250,7 @@ class InfoController extends TemplateController
         }
         //judge over
 
-        $fillarr = AdminexamModel::instance()->getuserans($eid, $users, 3);
+        $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 3);
         $query = "SELECT `fill_answer`.`fill_id`,`answer_id`,`answer`,`answernum`,`kind` FROM `fill_answer`,`ex_fill` WHERE
 		`fill_answer`.`fill_id`=`ex_fill`.`fill_id` AND `fill_answer`.`fill_id` IN ( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')";
         $row = M()->query($query);

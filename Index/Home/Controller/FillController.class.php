@@ -10,8 +10,8 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
-use Teacher\Model\AdminexamModel;
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ExamServiceModel;
+use Teacher\Model\ProblemServiceModel;
 
 class FillController extends QuestionController
 {
@@ -22,9 +22,9 @@ class FillController extends QuestionController
 
     public function index() {
 
-        $allscore = AdminexamModel::instance()->getallscore($this->examId);
-        $fillarr = AdminexamModel::instance()->getuserans($this->examId, $this->userInfo['user_id'], 3);
-        $fillans = AdminproblemModel::instance()->getproblemans($this->examId, 3);
+        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $fillarr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], 3);
+        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, 3);
         $fillsx = ExamadminModel::instance()->getproblemsx($this->examId, 3, $this->randnum);
 
         $this->zadd('allscore', $allscore);

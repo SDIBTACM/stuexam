@@ -1,7 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
-use Teacher\Model\AdminproblemModel;
+use Teacher\Model\ProblemServiceModel;
 use Think\Controller;
 
 class ProblemController extends TemplateController
@@ -16,7 +16,7 @@ class ProblemController extends TemplateController
             $type = intval($_GET['type']);
             $this->zadd('eid', $this->eid);
             $this->zadd('type', $type);
-            if (!$this->isowner($this->eid)) {
+            if (!$this->isOwner4ExamByExamId($this->eid)) {
                 $this->error('You have no privilege of this exam~');
             }
         } else if (isset($_POST['eid'])) {
@@ -60,7 +60,7 @@ class ProblemController extends TemplateController
         $haveadded = array();
         if ($row) {
             foreach ($row as $value) {
-                $haveadded[$value['choose_id']] = $this->checkadded($this->eid, 1, $value['choose_id']);
+                $haveadded[$value['choose_id']] = $this->checkQuestionHasAdded($this->eid, 1, $value['choose_id']);
             }
         }
         $this->zadd('row', $row);
@@ -85,7 +85,7 @@ class ProblemController extends TemplateController
         $haveadded = array();
         if ($row) {
             foreach ($row as $value) {
-                $haveadded[$value['judge_id']] = $this->checkadded($this->eid, 2, $value['judge_id']);
+                $haveadded[$value['judge_id']] = $this->checkQuestionHasAdded($this->eid, 2, $value['judge_id']);
             }
         }
         $this->zadd('row', $row);
@@ -109,7 +109,7 @@ class ProblemController extends TemplateController
         $haveadded = array();
         if ($row) {
             foreach ($row as $value) {
-                $haveadded[$value['fill_id']] = $this->checkadded($this->eid, 3, $value['fill_id']);
+                $haveadded[$value['fill_id']] = $this->checkQuestionHasAdded($this->eid, 3, $value['fill_id']);
             }
         }
         $this->zadd('added', $haveadded);
@@ -130,7 +130,7 @@ class ProblemController extends TemplateController
                 $this->error('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
-                $flag = AdminproblemModel::instance()->addprogram($eid);
+                $flag = ProblemServiceModel::instance()->addProgram2Exam($eid);
                 if ($flag === true) {
                     $this->success('程序题添加成功', U('Teacher/Problem/addprogram', array('eid' => $eid, 'type' => 4)), 2);
                 } else {
@@ -156,7 +156,7 @@ class ProblemController extends TemplateController
             $eid = intval($_POST['eid']);
             $quesid = intval($_POST['id']);
             $typeid = intval($_POST['type']);
-            if ($this->isowner($eid) && $eid > 0 && $quesid > 0 && $typeid >= 1 && $typeid <= 3) {
+            if ($this->isOwner4ExamByExamId($eid) && $eid > 0 && $quesid > 0 && $typeid >= 1 && $typeid <= 3) {
                 $arr['type'] = $typeid;
                 $arr['exam_id'] = $eid;
                 $arr['question_id'] = $quesid;
@@ -178,7 +178,7 @@ class ProblemController extends TemplateController
             $eid = intval($_POST['eid']);
             $quesid = intval($_POST['id']);
             $typeid = intval($_POST['type']);
-            if ($this->isowner($eid) && $eid > 0 && $quesid > 0 && $typeid >= 1 && $typeid <= 3) {
+            if ($this->isOwner4ExamByExamId($eid) && $eid > 0 && $quesid > 0 && $typeid >= 1 && $typeid <= 3) {
                 $arr['type'] = $typeid;
                 $arr['exam_id'] = $eid;
                 $arr['question_id'] = $quesid;
