@@ -232,21 +232,21 @@ class ExamController extends TemplateController
                         ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
                         ->count();
                     if ($row_cnt) {
-                        echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
+                        echo "<span color='blue' size='3px'>此题已正确,请不要重复提交</span>";
                     } else {
                         $trow = M('solution')->field('result')
                             ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
                             ->order('solution_id desc')
                             ->find();
                         if (!$trow) {
-                            echo "<font color='green' size='5px'>未提交</font>";
+                            echo "<span color='green' size='5px'>未提交</span>";
                         } else {
                             $ans = $trow['result'];
                             $colorarr = C('judge_color');
                             $resultarr = C('judge_result');
                             $color = $colorarr[$ans];
                             $result = $resultarr[$ans];
-                            echo "<font color=$color size='5px'>$result</font>";
+                            echo "<span color=$color size='5px'>$result</span>";
                         }
                     }
                 }

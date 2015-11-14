@@ -60,7 +60,7 @@ class ProblemServiceModel
                 break;
 
             case self::PROBLEMANS_TYPE_FILL:
-                return $this->getFillAnswerByFillId($eid);
+                return FillBaseModel::instance()->getFillAnswerByFillId($eid);
                 break;
 
             case self::EXAMPROBLEM_TYPE_PROGRAM:

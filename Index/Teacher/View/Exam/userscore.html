@@ -16,6 +16,7 @@
             <th width=5%>总成绩</th>
             <th width=7%>试卷</th>
             <th width=7%>操作</th>
+            <th width=6%>选择</th>
         </tr>
         </thead>
         <tbody>
@@ -23,35 +24,47 @@
             <form class='form-inline'>
                 <td></td>
                 <td class='form-group'>
-                    <input class='form-control' type="text" id="xs_userid" name="xs_userid" value="{$xsid}" placeholder="查询账号"/>
+                    <input class='form-control' type="text" id="xs_userid" name="xs_userid" value="{$xsid}"
+                           placeholder="查询账号"/>
                 </td>
                 <td class='form-group'>
-                    <input class='form-control' type="text" id="xs_name" name="xs_name" value="{$xsname}" placeholder="查询姓名"/>
+                    <input class='form-control' type="text" id="xs_name" name="xs_name" value="{$xsname}"
+                           placeholder="查询姓名"/>
                 </td>
                 <td class='form-group'><select class='form-control' name="xs_choose" id="xs_choose">
                     <option value='0'>排序方式</option>
-                    <option value='1' <?php echo ($asortnum & 1) ? 'selected' : '';?> >升序</option>
-                    <option value='2' <?php echo ($dsortnum & 1) ? 'selected' : '';?> >降序</option>
+                    <option value='1'
+                    <?php echo ($asortnum & 1) ? 'selected' : '';?> >升序</option>
+                    <option value='2'
+                    <?php echo ($dsortnum & 1) ? 'selected' : '';?> >降序</option>
                 </select></td>
                 <td class='form-group'><select class='form-control' name="xs_judge" id="xs_judge">
                     <option value='0'>排序方式</option>
-                    <option value='1' <?php echo ($asortnum & 2) ? 'selected' : '';?> >升序</option>
-                    <option value='2' <?php echo ($dsortnum & 2) ? 'selected' : '';?> >降序</option>
+                    <option value='1'
+                    <?php echo ($asortnum & 2) ? 'selected' : '';?> >升序</option>
+                    <option value='2'
+                    <?php echo ($dsortnum & 2) ? 'selected' : '';?> >降序</option>
                 </select></td>
                 <td class='form-group'><select class='form-control' name="xs_fill" id="xs_fill">
                     <option value='0'>排序方式</option>
-                    <option value='1' <?php echo ($asortnum & 4) ? 'selected' : '';?> >升序</option>
-                    <option value='2' <?php echo ($dsortnum & 4) ? 'selected' : '';?> >降序</option>
+                    <option value='1'
+                    <?php echo ($asortnum & 4) ? 'selected' : '';?> >升序</option>
+                    <option value='2'
+                    <?php echo ($dsortnum & 4) ? 'selected' : '';?> >降序</option>
                 </select></td>
                 <td class='form-group'><select class='form-control' name="xs_program" id="xs_program">
                     <option value='0'>排序方式</option>
-                    <option value='1' <?php echo ($asortnum & 8) ? 'selected' : '';?> >升序</option>
-                    <option value='2' <?php echo ($dsortnum & 8) ? 'selected' : '';?> >降序</option>
+                    <option value='1'
+                    <?php echo ($asortnum & 8) ? 'selected' : '';?> >升序</option>
+                    <option value='2'
+                    <?php echo ($dsortnum & 8) ? 'selected' : '';?> >降序</option>
                 </select></td>
                 <td class='form-group'><select class='form-control' name="xs_score" id="xs_score">
                     <option value='0'>排序方式</option>
-                    <option value='1' <?php echo ($asortnum & 16) ? 'selected' : '';?> >升序</option>
-                    <option value='2' <?php echo ($dsortnum & 16) ? 'selected' : '';?> >降序</option>
+                    <option value='1'
+                    <?php echo ($asortnum & 16) ? 'selected' : '';?> >升序</option>
+                    <option value='2'
+                    <?php echo ($dsortnum & 16) ? 'selected' : '';?> >降序</option>
                 </select></td>
                 <td>
                     <button type='button' class='btn btn-info' onclick="xs_search()">
@@ -59,60 +72,73 @@
                     </button>
                 </td>
                 <td>
-                <button type='button' class='btn btn-success' onclick="suredo('{:U('Teacher/Info/submitAllPaper', array('eid' => $eid) )}','确认帮所有考生提交试卷嘛?')">
-                    一键交卷
-                </button></td>
+                    <button type='button' class='btn btn-success'
+                            onclick="suredo('{:U('Teacher/Info/submitAllPaper', array('eid' => $eid) )}','确认帮所有考生提交试卷嘛?')">
+                        一键交卷
+                    </button>
+                </td>
+                <td>
+                    <input type="checkbox" name="allCheck" id="allCheck">全选
+                    <input type="checkbox" name="rejectCheck" id="rejectCheck">反选
+                </td>
             </form>
         </tr>
-        <foreach name='row' item='r' key='k'>
-            <tr>
-                <td>{$k+1}</td>
-                <td>{$r['user_id']}</td>
-                <td>{$r['nick']}</td>
-                <td>{$r['choosesum']}</td>
-                <td>{$r['judgesum']}</td>
-                <td>{$r['fillsum']}</td>
-                <td>{$r['programsum']}</td>
-                <td>{$r['score']}</td>
-                <if condition="is_null($r['score'])">
-                    <if condition="isset($isonline[$r['user_id']])">
-                        <if condition="time() gt $end_timeC">
-                            <td><span class='label label-warning'>未交卷</span></td>
+        <form name="checkForm" id="checkSubmit" action="{:U('Exam/DelAllUserScore')}" method="post">
+            <input type="hidden" name="eid" value="{$eid}"/>
+            <foreach name='row' item='r' key='k'>
+                <tr>
+                    <td>{$k+1}</td>
+                    <td>{$r['user_id']}</td>
+                    <td>{$r['nick']}</td>
+                    <td>{$r['choosesum']}</td>
+                    <td>{$r['judgesum']}</td>
+                    <td>{$r['fillsum']}</td>
+                    <td>{$r['programsum']}</td>
+                    <td>{$r['score']}</td>
+                    <if condition="is_null($r['score'])">
+                        <if condition="isset($isonline[$r['user_id']])">
+                            <if condition="time() gt $end_timeC">
+                                <td><span class='label label-warning'>未交卷</span></td>
+                                <else/>
+                                <td><a class='label label-danger'
+                                       href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
+                                </td>
+                            </if>
                             <else/>
-                            <td><a class='label label-danger'
-                                   href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
-                            </td>
+                            <td><span class='label label-default'>未参加</span></td>
                         </if>
                         <else/>
-                        <td><span class='label label-default'>未参加</span></td>
+                        <td><a class='label label-info'
+                               href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">查看试卷>></a>
+                        </td>
                     </if>
-                    <else/>
-                    <td><a class='label label-info'
-                           href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">查看试卷>></a>
-                    </td>
-                </if>
 
-                <if condition="is_null($r['score'])">
-                    <if condition="isset($isonline[$r['user_id']])">
-                        <if condition="time() gt $end_timeC">
-                            <td><a class='label label-success'
-                                   href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">提交试卷>></a>
-                            </td>
+                    <if condition="is_null($r['score'])">
+                        <if condition="isset($isonline[$r['user_id']])">
+                            <if condition="time() gt $end_timeC">
+                                <td><a class='label label-success'
+                                       href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">提交试卷>></a>
+                                </td>
+                                <else/>
+                                <td><a class='label label-warning'
+                                       href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid))}">强制交卷>></a>
+                                </td>
+                            </if>
                             <else/>
-                            <td><a class='label label-warning'
-                                   href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid))}">强制交卷>></a>
-                            </td>
+                            <td>无</td>
                         </if>
                         <else/>
-                        <td>无</td>
+                        <td><a class='label label-danger'
+                               href="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid))}"
+                               onclick="return suredo('','是否要删除该考生成绩,让考生重新参加考试？')">删除分数 X</a>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="check{$r['user_id']}" class="delCheck" value="1">
+                        </td>
                     </if>
-                    <else/>
-                    <td><a class='label label-danger'
-                           href="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid))}"
-                           onclick="return suredo('','是否要删除该考生成绩,让考生重新参加考试？')">删除分数 X</a></td>
-                </if>
-            </tr>
-        </foreach>
+                </tr>
+            </foreach>
+        </form>
         </tbody>
     </table>
 </div>
@@ -120,5 +146,23 @@
     var scoreurl = "{:U('Teacher/Exam/userscore')}";
     $(function () {
         $("#exam_userscore").addClass('active');
+
+        $("#allCheck").click(function () {
+            if (this.checked) {
+                $(".delCheck").prop('checked', true);
+            } else {
+                $(".delCheck").prop('checked', false);
+            }
+        });
+
+        $("#rejectCheck").click(function () {
+            $(".delCheck").each(function () {
+                if (this.checked) {
+                    $(this).prop('checked', false);
+                } else {
+                    $(this).prop('checked', true);
+                }
+            });
+        });
     });
 </script>

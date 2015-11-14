@@ -175,4 +175,8 @@ class ExamController extends TemplateController
             $this->auto_display();
         }
     }
+
+    public function DelAllUserScore() {
+        ddbg(I('post.'));
+    }
 }

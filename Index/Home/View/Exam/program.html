@@ -7,17 +7,17 @@
     <meta name="description" content="程序设计考试 山东工商学院">
     <meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
     <!-- yours css -->
-    <css file="__PUBLIC__/Css/examsys.min.css" />
+    <css file="__PUBLIC__/Css/examsys.min.css"/>
     <!-- Bootstrap -->
-    <css file="__PUBLIC__/Css/bootstrap.min.css" />
+    <css file="__PUBLIC__/Css/bootstrap.min.css"/>
     <!--[if lt IE 9]>
     <script src="__PUBLIC__/Js/html5shiv.min.js"></script>
     <script src="__PUBLIC__/Js/respond.min.js"></script>
     <![endif]-->
 </head>
 <style>
-    body{
-        padding-top:0 !important;
+    body {
+        padding-top: 0 !important;
     }
 </style>
 <body>
@@ -28,33 +28,58 @@
         </h1>
     </div>
     <table class='mytxtable'>
-        <tr><td class='tixinga'><h4>距考试结束还有:</h4></td></tr>
-        <tr><td class='tixingb'><h4><strong id="RemainH">XX</strong>:<strong id="RemainM">XX</strong>:<strong id="RemainS">XX</strong></h4></td></tr>
-        <tr><td class='tixing'><button type='button' id='saveanswer' onclick='saveanswer()' class='btn btn-info'>保存答案<span id="saveover"></span></button></td></tr>
-        <tr><td><button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">交卷</button></td></tr>
+        <tr>
+            <td class='tixinga'><h4>距考试结束还有:</h4></td>
+        </tr>
+        <tr>
+            <td class='tixingb'><h4><strong id="RemainH">XX</strong>:<strong id="RemainM">XX</strong>:<strong
+                    id="RemainS">XX</strong></h4></td>
+        </tr>
+        <tr>
+            <td class='tixing'>
+                <button type='button' id='saveanswer' onclick='saveanswer()' class='btn btn-info'>保存答案<span
+                        id="saveover"></span></button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">
+                    交卷
+                </button>
+            </td>
+        </tr>
     </table>
     <h3>程序设计题</h3>
     <foreach name='programans' item='pans' key='numofprogram'>
         <div class="panel panel-default">
             <div class="panel-heading"><span color='red'>({$allscore['programscore']} 分)</span>
-                第{$numofprogram+1}题.{$pans['title']|nl2br}<a class="btn-sm btn btn-success" data-toggle="collapse" href="#collapseExample{$pans['program_id']}" aria-expanded="false" aria-controls="collapseExample">点击开闭
+                第{$numofprogram+1}题.{$pans['title']|nl2br}<a class="btn-sm btn btn-success" data-toggle="collapse"
+                                                             href="#collapseExample{$pans['program_id']}"
+                                                             aria-expanded="false" aria-controls="collapseExample">点击开闭
                 </a></div>
 
             <div class="collapse" id="collapseExample{$pans['program_id']}">
                 <div class="panel-body">
                     <h4><strong>Description</strong></h4>
+
                     <p>{$pans['description']}</p>
                     <h4><strong>Input</strong></h4>
+
                     <p>{$pans['input']}</p>
                     <h4><strong>Output</strong></h4>
+
                     <p>{$pans['output']}</p>
                     <h4><strong>Sample Input</strong></h4>
+
                     <p>{$pans['sample_input']|nl2br}</p>
                     <h4><strong>Sample Output</strong></h4>
+
                     <p>{$pans['sample_output']|nl2br}</p>
+
                     <p>
                         <label for="code{$pans['program_id']}">Code here:</label>
-						<textarea class='form-control' id="code{$pans['program_id']}" name="code{$pans['program_id']}" rows="30">
+						<textarea class='form-control' id="code{$pans['program_id']}" name="code{$pans['program_id']}"
+                                  rows="30">
 						</textarea>
                     </p>
                 </div>
@@ -68,40 +93,50 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-success" onclick="submitcode('span{$pans['program_id']}','code{$pans['program_id']}','language{$pans['program_id']}','{$pans['program_id']}','{$Think.get.eid}')">提交</button>
+                        <button type="button" class="btn btn-success"
+                                onclick="submitcode('span{$pans['program_id']}','code{$pans['program_id']}','language{$pans['program_id']}','{$pans['program_id']}','{$Think.get.eid}')">
+                            提交
+                        </button>
                     </div>
                     <div class="col-md-3">
-                        <button class='btn btn-info' onclick="updateresult(this,'span{$pans['program_id']}','{$pans['program_id']}','{$Think.get.eid}')">点击刷新结果</button>
+                        <button class='btn btn-info'
+                                onclick="updateresult(this,'span{$pans['program_id']}','{$pans['program_id']}','{$Think.get.eid}')">
+                            点击刷新结果
+                        </button>
                     </div>
                     <div class="col-md-4">
-                        <span id="span{$pans['program_id']}"><font color='green' size='3px'>未提交</font></span>
+                        <span id="span{$pans['program_id']}"><span color='green' size='3px'>未提交</span></span>
                     </div>
                 </div>
             </div>
         </div>
     </foreach>
+    <form name="programForm" id="programExam" action="{:U('Home/Program/submitPaper')}" method="post">
+    </form>
 </div>
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="myModalLabel">操作确认</h4>
             </div>
             <div class="modal-body">确定要提交试卷吗？提交后无法撤销!
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" onclick="submitpaper()">确定</button>
+                <button type="button" class="btn btn-primary" onclick="submitProgramPaper()">确定</button>
             </div>
         </div>
     </div>
 </div>
 
-<js file="__PUBLIC__/Js/jquery-1.11.2.min.js" />
-<js file="__PUBLIC__/Js/bootstrap.min.js" />
-<js file="__PUBLIC__/Js/Home.min.js" />
+<js file="__PUBLIC__/Js/jquery-1.11.2.min.js"/>
+<js file="__PUBLIC__/Js/bootstrap.min.js"/>
+<js file="__PUBLIC__/Js/Home.min.js"/>
 </body>
 <script type="text/javascript">
     var codesubmiturl = "{:U('Home/Program/prgsubmit')}";
