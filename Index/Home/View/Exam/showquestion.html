@@ -21,20 +21,23 @@
     var savetime = (300 + {$randnum} % 420) * 1000;
     var runtimes = 0;
     function GetRTime() {
-        nMS = left - runtimes * 1000;
+        var nMS = left - runtimes * 1000;
         if (nMS > 0) {
             var nH = Math.floor(nMS / (1000 * 60 * 60));
             var nM = Math.floor(nMS / (1000 * 60)) % 60;
             var nS = Math.floor(nMS / 1000) % 60;
-            document.getElementById("RemainH").innerHTML = (nH >= 10 ? nH : "0" + nH);
-            document.getElementById("RemainM").innerHTML = (nM >= 10 ? nM : "0" + nM);
-            document.getElementById("RemainS").innerHTML = (nS >= 10 ? nS : "0" + nS);
+            var nHstr = (nH >= 10 ? nH : "0" + nH);
+            var nMstr = (nM >= 10 ? nM : "0" + nM);
+            var nSstr = (nS >= 10 ? nS : "0" + nS);
+            $("#RemainH").html(nHstr);
+            $("#RemainM").html(nMstr);
+            $("#RemainS").html(nSstr);
             if (nMS <= 5 * 60 * 1000 && isalert == false) {
                 $('.tixinga').css("color", "red");
                 $('.tixingb').css("color", "red");
                 isalert = true;
             }
-            if (nMS > 0 && nMS <= 1 * 1000) {
+            if (nMS > 0 && nMS <= 1000) {
                 $('#exam').submit();
             }
             //如果出现问题，注释掉下面的if语句

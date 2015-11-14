@@ -16,7 +16,9 @@
             <th width=5%>总成绩</th>
             <th width=7%>试卷</th>
             <th width=7%>操作</th>
-            <th width=6%>选择</th>
+            <if condition="$isEnd eq true and $isShowDel eq true">
+                <th width=6%>选择</th>
+            </if>
         </tr>
         </thead>
         <tbody>
@@ -72,18 +74,26 @@
                     </button>
                 </td>
                 <td>
-                    <button type='button' class='btn btn-success'
-                            onclick="suredo('{:U('Teacher/Info/submitAllPaper', array('eid' => $eid) )}','确认帮所有考生提交试卷嘛?')">
-                        一键交卷
-                    </button>
+                    <if condition="$isEnd eq true and $isShowDel eq true">
+                        <button type='button' class='btn btn-success' id="oneClickDel">
+                            一键删除
+                        </button>
+                    <else />
+                        <button type='button' class='btn btn-success'
+                                onclick="suredo('{:U('Teacher/Info/submitAllPaper', array('eid' => $eid) )}','确认帮所有考生提交试卷嘛?')">
+                            一键交卷
+                        </button>
+                    </if>
                 </td>
-                <td>
-                    <input type="checkbox" name="allCheck" id="allCheck">全选
-                    <input type="checkbox" name="rejectCheck" id="rejectCheck">反选
-                </td>
+                <if condition="$isEnd eq true and $isShowDel eq true">
+                    <td>
+                        <input type="checkbox" name="allCheck" id="allCheck">全选
+                        <input type="checkbox" name="rejectCheck" id="rejectCheck">反选
+                    </td>
+                </if>
             </form>
         </tr>
-        <form name="checkForm" id="checkSubmit" action="{:U('Exam/DelAllUserScore')}" method="post">
+        <form name="checkForm" id="checkSubmit" action="{:U('Info/DelAllUserScore')}" method="post">
             <input type="hidden" name="eid" value="{$eid}"/>
             <foreach name='row' item='r' key='k'>
                 <tr>
@@ -97,7 +107,7 @@
                     <td>{$r['score']}</td>
                     <if condition="is_null($r['score'])">
                         <if condition="isset($isonline[$r['user_id']])">
-                            <if condition="time() gt $end_timeC">
+                            <if condition="$isEnd eq true">
                                 <td><span class='label label-warning'>未交卷</span></td>
                                 <else/>
                                 <td><a class='label label-danger'
@@ -115,7 +125,7 @@
 
                     <if condition="is_null($r['score'])">
                         <if condition="isset($isonline[$r['user_id']])">
-                            <if condition="time() gt $end_timeC">
+                            <if condition="$isEnd eq true">
                                 <td><a class='label label-success'
                                        href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">提交试卷>></a>
                                 </td>
@@ -125,16 +135,18 @@
                                 </td>
                             </if>
                             <else/>
-                            <td>无</td>
+                                <td>无</td>
                         </if>
                         <else/>
                         <td><a class='label label-danger'
                                href="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid))}"
                                onclick="return suredo('','是否要删除该考生成绩,让考生重新参加考试？')">删除分数 X</a>
                         </td>
-                        <td>
-                            <input type="checkbox" name="check{$r['user_id']}" class="delCheck" value="1">
-                        </td>
+                        <if condition="$isEnd eq true and $isShowDel eq true">
+                            <td>
+                                <input type="checkbox" name="check{$r['user_id']}" class="delCheck" value="1">
+                            </td>
+                        </if>
                     </if>
                 </tr>
             </foreach>
@@ -163,6 +175,13 @@
                     $(this).prop('checked', true);
                 }
             });
+        });
+
+        $("#oneClickDel").click(function(){
+            var c = confirm('确定要删除选定的考生分数嘛?');
+            if (c) {
+                $("#checkSubmit").submit();
+            }
         });
     });
 </script>

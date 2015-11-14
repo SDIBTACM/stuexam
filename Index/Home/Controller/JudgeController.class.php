@@ -24,9 +24,9 @@ class JudgeController extends QuestionController
     public function index() {
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $judgearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], 2);
-        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, 2);
-        $judgesx = ExamadminModel::instance()->getproblemsx($this->examId, 2, $this->randnum);
+        $judgearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $judgesx = ExamadminModel::instance()->getproblemsx($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allscore);
         $this->zadd('judgearr', $judgearr);

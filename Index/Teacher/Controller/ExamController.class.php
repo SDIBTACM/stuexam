@@ -1,7 +1,10 @@
 <?php
 namespace Teacher\Controller;
 
+use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamServiceModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 use Think\Controller;
 
@@ -29,15 +32,15 @@ class ExamController extends TemplateController
         }
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->eid);
-        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 1);
-        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 2);
-        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 3);
-        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, 5);
+        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
+        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ProblemServiceModel::EXAMPROBLEM_TYPE_PROGRAM);
 
         $fillans2 = array();
         if ($fillans) {
             foreach ($fillans as $key => $value) {
-                $fillans2[$value['fill_id']] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($value['fill_id'], 4);
+                $fillans2[$value['fill_id']] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($value['fill_id'], ProblemServiceModel::PROBLEMANS_TYPE_FILL);
             }
         }
         $numofchoose = count($chooseans);
@@ -67,6 +70,9 @@ class ExamController extends TemplateController
     public function userscore() {
         $sqladd = SortStuScore('stu');
         $prirow = $this->isCanWatchInfo($this->eid, true);
+
+        $isExamEnd = (time() > strtotime($prirow['end_time']) ? true : false);
+
         $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`
 			FROM (SELECT `users`.`user_id`,`users`.`nick` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND
 			 `ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND 
@@ -82,6 +88,21 @@ class ExamController extends TemplateController
             }
             unset($online);
         }
+
+        $hasSubmit = 0;
+        $hasSave   = 0;
+        foreach ($row as $r) {
+            if (!is_null($r['score'])) {
+                $hasSubmit++;
+            }
+            if (isset($isonline[$r['user_id']])) {
+                $hasSave++;
+            }
+        }
+        $isShowDel = false;
+        if ($hasSave <= $hasSubmit) {
+            $isShowDel = true;
+        }
         $xsid = I('get.xsid', '');
         $xsname = I('get.xsname','');
         $sortanum = I('get.sortanum', 0, 'intval');
@@ -92,7 +113,8 @@ class ExamController extends TemplateController
         $this->zadd('isonline', $isonline);
         $this->zadd('asortnum', $sortanum);
         $this->zadd('dsortnum', $sortdnum);
-        $this->zadd('end_timeC', strtotime($prirow['end_time']));
+        $this->zadd('isEnd', $isExamEnd);
+        $this->zadd('isShowDel', $isShowDel);
         $this->auto_display();
     }
 
@@ -174,9 +196,5 @@ class ExamController extends TemplateController
             $this->zadd('mykey', $key);
             $this->auto_display();
         }
-    }
-
-    public function DelAllUserScore() {
-        ddbg(I('post.'));
     }
 }

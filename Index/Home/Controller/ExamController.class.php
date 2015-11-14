@@ -3,7 +3,11 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\ChooseServiceModel;
 use Teacher\Model\ExamServiceModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 
 class ExamController extends TemplateController
@@ -48,16 +52,20 @@ class ExamController extends TemplateController
             }
             $lefttime = strtotime($row['end_time']) - time();
             $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
-            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, 1);
-            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, 2);
-            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, 3);
-            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 1);
-            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 2);
-            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 3);
-            $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 5);
-            $choosesx = ExamadminModel::instance()->getproblemsx($eid, 1, $rnd['randnum']);
-            $judgesx = ExamadminModel::instance()->getproblemsx($eid, 2, $rnd['randnum']);
-            $fillsx = ExamadminModel::instance()->getproblemsx($eid, 3, $rnd['randnum']);
+
+            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $user_id, FillBaseModel::FILL_PROBLEM_TYPE);
+
+            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, FillBaseModel::FILL_PROBLEM_TYPE);
+            $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, ProblemServiceModel::EXAMPROBLEM_TYPE_PROGRAM);
+
+            $choosesx = ExamadminModel::instance()->getproblemsx($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $rnd['randnum']);
+            $judgesx = ExamadminModel::instance()->getproblemsx($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $rnd['randnum']);
+            $fillsx = ExamadminModel::instance()->getproblemsx($eid, FillBaseModel::FILL_PROBLEM_TYPE, $rnd['randnum']);
+
             $this->zadd('row', $row);
             $this->zadd('lefttime', $lefttime);
             $this->zadd('randnum', $rnd['randnum']);
@@ -79,7 +87,7 @@ class ExamController extends TemplateController
     }
 
     public function saveanswer() {
-        if (IS_AJAX && I('post.eid')) {
+        if (I('post.eid')) {
             $eid = intval($_POST['eid']);
             $user_id = $this->userInfo['user_id'];
             $row = $this->row;
@@ -89,19 +97,20 @@ class ExamController extends TemplateController
                 if (self::$isruning != 1) {
                     echo "保存失败！";
                 } else {
-                    AnswerModel::instance()->answersave($user_id, $eid, 1);//choose over
-                    AnswerModel::instance()->answersave($user_id, $eid, 2);//judge over
-                    AnswerModel::instance()->answersave($user_id, $eid, 3);//fillover
+                    AnswerModel::instance()->answersave($user_id, $eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
+                    AnswerModel::instance()->answersave($user_id, $eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
+                    AnswerModel::instance()->answersave($user_id, $eid, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
+                    usleep(30000);
                     echo "ok";
                 }
             }
         } else {
-            echo "保存失败！";
+            echo "保存失败啦！";
         }
     }
 
     public function submitpaper() {
-        if (IS_POST && I('post.eid')) {
+        if (I('post.eid')) {
             $eid = intval($_POST['eid']);
             $user_id = $this->userInfo['user_id'];
             $row = $this->row;
@@ -121,9 +130,9 @@ class ExamController extends TemplateController
                     $start_timeC = strftime("%Y-%m-%d %X", strtotime($row['start_time']));
                     $end_timeC = strftime("%Y-%m-%d %X", strtotime($row['end_time']));
                     $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
-                    $cright = AnswerModel::instance()->answersave($user_id, $eid, 1, false);
-                    $jright = AnswerModel::instance()->answersave($user_id, $eid, 2, false);
-                    $fscore = AnswerModel::instance()->answersave($user_id, $eid, 3, false);
+                    $cright = AnswerModel::instance()->answersave($user_id, $eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
+                    $jright = AnswerModel::instance()->answersave($user_id, $eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
+                    $fscore = AnswerModel::instance()->answersave($user_id, $eid, FillBaseModel::FILL_PROBLEM_TYPE, false);
                     $pright = AnswerModel::instance()->getrightprogram($user_id, $eid, $start_timeC, $end_timeC);
                     $inarr['user_id'] = $user_id;
                     $inarr['exam_id'] = $eid;
@@ -142,7 +151,7 @@ class ExamController extends TemplateController
     }
 
     public function prgsubmit() {
-        if (IS_AJAX && I('post.eid')) {
+        if (I('post.eid')) {
             $eid = intval($_POST['eid']);
             $id = intval($_POST['id']);
             $user_id = $this->userInfo['user_id'];
@@ -206,7 +215,7 @@ class ExamController extends TemplateController
                     $resultarr = C('judge_result');
                     $color = $colorarr[0];
                     $result = $resultarr[0];
-                    echo "<font color=$color size='5px'>$result</font>";
+                    echo "<span color=$color size='5px'>$result</span>";
                 }
             }
         } else {
@@ -215,7 +224,7 @@ class ExamController extends TemplateController
     }
 
     public function updresult() {
-        if (IS_AJAX && I('get.id')) {
+        if (I('get.id')) {
             $eid = intval($_GET['eid']);
             $id = intval($_GET['id']);
             $user_id = $this->userInfo['user_id'];

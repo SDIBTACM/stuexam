@@ -3,9 +3,6 @@ namespace Teacher\Model;
 
 class ProblemServiceModel
 {
-    const EXAMPROBLEM_TYPE_CHOOSE = 1;
-    const EXAMPROBLEM_TYPE_JUDGE  = 2;
-    const EXAMPROBLEM_TYPE_FILL   = 3;
     const PROBLEMANS_TYPE_FILL    = 4;
     const EXAMPROBLEM_TYPE_PROGRAM = 5;
 
@@ -47,15 +44,15 @@ class ProblemServiceModel
 
     public function getProblemsAndAnswer4Exam($eid, $type) {
         switch ($type) {
-            case self::EXAMPROBLEM_TYPE_CHOOSE:
+            case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
                 return ChooseBaseModel::instance()->getChooseProblems4Exam($eid);
                 break;
 
-            case self::EXAMPROBLEM_TYPE_JUDGE:
+            case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
                 return JudgeBaseModel::instance()->getJudgeProblems4Exam($eid);
                 break;
 
-            case self::EXAMPROBLEM_TYPE_FILL:
+            case FillBaseModel::FILL_PROBLEM_TYPE:
                 return FillBaseModel::instance()->getFillProblems4Exam($eid);
                 break;
 

@@ -1,7 +1,10 @@
 <?php
 namespace Teacher\Controller;
 
+use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamServiceModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\ExamBaseModel;
 use Think\Controller;
@@ -30,18 +33,19 @@ class InfoController extends TemplateController
 
             $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
 
-            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 1);
-            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 2);
-            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 3);
+            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $users, FillBaseModel::FILL_PROBLEM_TYPE);
 
-            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 1);
-            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 2);
-            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, 3);
+            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, FillBaseModel::FILL_PROBLEM_TYPE);
             $fillans2 = array();
 
             if ($fillans) {
                 foreach ($fillans as $key => $value) {
-                    $fillans2[$value['fill_id']] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($value['fill_id'], 4);
+                    $fillans2[$value['fill_id']] = ProblemServiceModel::instance()
+                        ->getProblemsAndAnswer4Exam($value['fill_id'], ProblemServiceModel::PROBLEMANS_TYPE_FILL);
                 }
             }
             $this->zadd('title', $row['title']);
@@ -94,7 +98,7 @@ class InfoController extends TemplateController
             $haveScoreUserIds = array();
             $userIds2Submit = array();
 
-            foreach($allHaveScore as $uid) {
+            foreach ($allHaveScore as $uid) {
                 $haveScoreUserIds[] = $uid['user_id'];
             }
 
@@ -105,7 +109,7 @@ class InfoController extends TemplateController
             }
 
             if (!empty($userIds2Submit)) {
-                $field = array('start_time','end_time');
+                $field = array('start_time', 'end_time');
                 $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
                 $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
                 $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
@@ -118,6 +122,30 @@ class InfoController extends TemplateController
             $this->redirect("Exam/userscore", array('eid' => $eid));
         } else {
             $this->alertError('Invaild Exam');
+        }
+    }
+
+    public function DelAllUserScore() {
+        $eid = I('post.eid', 0, 'intval');
+        if (!empty($eid)) {
+            if (!$this->isOwner4ExamByExamId($eid)) {
+                $this->error('You have no privilege to do it!');
+            }
+            unset($_POST['eid']);
+            $userIds = array();
+            foreach ($_POST as $k => $v) {
+                $userIds[] = mb_substr($k, 5);
+            }
+            if (!empty($userIds)) {
+                $where = array(
+                    'exam_id' => $eid,
+                    'user_id' => array('in', $userIds)
+                );
+                M('ex_student')
+                    ->where($where)
+                    ->delete();
+            }
+            $this->redirect("Exam/userscore", array('eid' => $eid));
         }
     }
 
@@ -140,7 +168,7 @@ class InfoController extends TemplateController
     public function hardSubmit() {
         $eid = I('get.eid', 0, 'intval');
         $userId = I('get.userId', '');
-        if (!$this->isOwner4ExamByExamId($eid) ) {
+        if (!$this->isOwner4ExamByExamId($eid)) {
             $this->error('You have no privilege to do it!');
         }
         if (empty($eid) && empty($userId)) {
@@ -183,8 +211,8 @@ class InfoController extends TemplateController
     }
 
     private function dojudgeone($eid, $users) {
-        $prirow = M('exam')->field('start_time,end_time')
-            ->where('exam_id=%d', $eid)->find();
+        $field = array('start_time', 'end_time');
+        $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
 
@@ -212,8 +240,6 @@ class InfoController extends TemplateController
         $choosesum = 0;
         $judgesum = 0;
         $fillsum = 0;
-        $programsum = 0;
-        $sum = 0;
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
 
         $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 1);
@@ -266,12 +292,13 @@ class InfoController extends TemplateController
                     $rightans = trim($value['answer']);
 
                     if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
-                        if ($value['kind'] == 1)
+                        if ($value['kind'] == 1) {
                             $fillsum += $allscore['fillscore'];
-                        else if ($value['kind'] == 2)
+                        } else if ($value['kind'] == 2) {
                             $fillsum = $fillsum + $allscore['prgans'] / $value['answernum'];
-                        else if ($value['kind'] == 3)
+                        } else if ($value['kind'] == 3) {
                             $fillsum = $fillsum + $allscore['prgfill'] / $value['answernum'];
+                        }
                     }
                 }
             }

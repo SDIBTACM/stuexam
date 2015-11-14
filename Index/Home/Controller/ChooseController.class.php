@@ -26,7 +26,7 @@ class ChooseController extends QuestionController
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $choosearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, 1);
+        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $choosesx = ExamadminModel::instance()->getproblemsx($this->examId, 1, $this->randnum);
 
         $this->zadd('allscore', $allscore);

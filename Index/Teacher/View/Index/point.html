@@ -19,7 +19,11 @@
 	</div>
 	<div id="sortable">
 		<foreach name='pnt' key='k' item='p'>
-			<li class="ui-state-default" id="point{$p['point_id']}">{$p['point']}<button class='close' onclick="delpoint({$p['point_id']})"><span>&times;</span></button></li>
+			<li class="ui-state-default" id="point{$p['point_id']}">{$p['point']}
+				<button class='close' onclick="delpoint({$p['point_id']})">
+					<span>&times;</span>
+				</button>
+			</li>
 		</foreach>
 	</div>
 </div>
