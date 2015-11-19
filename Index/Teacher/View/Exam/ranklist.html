@@ -12,18 +12,20 @@
 
     <table class="table-bordered table table-bordered">
         <thead>
+            <th>序号</th>
             <th>学号</th>
             <foreach name="programIds" item="pid">
                 <th>{$pid['question_id']}</th>
             </foreach>
         </thead>
         <tbody>
-            <foreach name="programRank" item="prank">
+            <foreach name="programRank" item="prank" key="k">
                 <tr>
-                    <td>{prank['user_id']}</td>
+                    <td>{$k + 1}</td>
+                    <td>{$prank['user_id']}</td>
                     <foreach name="programIds" item="pid">
                         <if condition="isset($userRank[ $prank['user_id'] ][ $pid['question_id'] ])">
-                            <td class="problemac">+1</td>
+                            <td class="problemac">Accept</td>
                         <else />
                             <td></td>
                         </if>

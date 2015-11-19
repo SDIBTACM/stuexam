@@ -185,7 +185,7 @@ class ExamController extends TemplateController
         $where = array(
             'exam_id' => $this->eid,
             'type' => 4,
-            'answer' => 1
+            'answer_id' => 1
         );
         $field = array('user_id', 'question_id');
         $programRank = M('ex_stuanswer')->field($field)->where($where)->select();
