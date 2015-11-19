@@ -281,8 +281,10 @@ class ExamController extends TemplateController
                 ->count();
             if ($row_cnt) {
                 ProblemServiceModel::instance()->syncProgramAnswer($userId, $eid, $pid, 4);
+                echo 4;
+            } else {
+                echo $pid . '___' . $eid;
             }
-            echo $pid . '___' . $eid;
         }
     }
 }

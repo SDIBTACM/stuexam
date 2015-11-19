@@ -195,14 +195,14 @@
 
     <h4>四.程序设计题</h4>
     <foreach name='programans' item='pans' key='numofprogram'>
-        <div class="panel panel-default">
+        <div class="panel panel-default" id="programpanel{$pans['program_id']}">
             <div class="panel-heading"><font color='red'>({$allscore['programscore']} 分)</font>
                 第{$numofprogram+1}题.{$pans['title']|nl2br}<a class="btn-sm btn btn-success upd-stuprogram" data-toggle="collapse"
                                                              href="#collapseExample{$pans['program_id']}" data-pid="{$pans['program_id']}"
                                                              aria-expanded="false" aria-controls="collapseExample">点击开闭
                 </a></div>
 
-            <div class="collapse" id="collapseExample{$pans['program_id']}">
+            <div class="collapse" id="collapseExample{$pans['program_id']}" data-accepted="0">
                 <div class="panel-body">
                     <h4><strong>Description</strong></h4>
 
@@ -286,19 +286,24 @@
         $(".upd-stuprogram").click(function(){
             var eid = $("#examid").val();
             var pid = $(this).data('pid');
-            console.log(pid);
-            $.ajax({
-                url: saveprogram,
-                type: "POST",
-                dataType: "html",
-                data: 'eid=' + eid + '&pid=' + pid,
-                success: function(data) {
-                    console.log(data);
-                },
-                error: function() {
-                    console.log('error update program');
-                }
-            });
+            var panel = "collapseExample" + pid;
+            var accepted = $("#" + panel).data('accepted');
+            if (accepted != 1) {
+                $.ajax({
+                    url: saveprogram,
+                    type: "POST",
+                    dataType: "html",
+                    data: 'eid=' + eid + '&pid=' + pid,
+                    success: function (data) {
+                        if (data == 4) {
+                            $("#" + panel).data('accepted', 1).html("此题你已正确!");//slideUp("slow", function(){$(this).remove();});
+                        }
+                    },
+                    error: function () {
+                        console.log('error update program');
+                    }
+                });
+            }
         });
         $("#saveanswer").click(function(){
             saveanswer();
