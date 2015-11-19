@@ -1,0 +1,40 @@
+<style>
+    .problemac {
+        background-color: #81D881;
+    }
+    .problemac span {
+        color:green;
+    }
+</style>
+<div class="container exam_content">
+    <h2>编程排名</h2>
+    <include file='Public:sideheader' />
+
+    <table class="table-bordered table table-bordered">
+        <thead>
+            <th>学号</th>
+            <foreach name="programIds" item="pid">
+                <th>{$pid['question_id']}</th>
+            </foreach>
+        </thead>
+        <tbody>
+            <foreach name="programRank" item="prank">
+                <tr>
+                    <td>{prank['user_id']}</td>
+                    <foreach name="programIds" item="pid">
+                        <if condition="isset($userRank[ $prank['user_id'] ][ $pid['question_id'] ])">
+                            <td class="problemac">+1</td>
+                        <else />
+                            <td></td>
+                        </if>
+                    </foreach>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#exam_ranklist").addClass('active');
+    });
+</script>

@@ -5,8 +5,8 @@ use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
-use Think\Controller;
 
 class ExamController extends TemplateController
 {
@@ -21,14 +21,14 @@ class ExamController extends TemplateController
         } else if (isset($_POST['eid'])) {
             $this->eid = intval($_POST['eid']);
         } else {
-            $this->error('No Such Exam!');
+            $this->echoError('No Such Exam!');
         }
     }
-
+    //owner can do
     public function index() {
 
         if (!$this->isOwner4ExamByExamId($this->eid)) {
-            $this->error('You have no privilege of this exam~');
+            $this->echoError('You have no privilege of this exam~');
         }
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->eid);
@@ -67,78 +67,26 @@ class ExamController extends TemplateController
         $this->auto_display();
     }
 
-    public function userscore() {
-        $sqladd = SortStuScore('stu');
-        $prirow = $this->isCanWatchInfo($this->eid, true);
-
-        $isExamEnd = (time() > strtotime($prirow['end_time']) ? true : false);
-
-        $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`
-			FROM (SELECT `users`.`user_id`,`users`.`nick` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND
-			 `ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND 
-			`ex_student`.`exam_id`='$this->eid' $sqladd";
-        $row = M()->query($query);
-        $online = M('ex_stuanswer')->distinct('user_id')->field('user_id')->where('exam_id=%d', $this->eid)
-            ->select();
-
-        $isonline = array();
-        if ($online) {
-            foreach ($online as $key => $value) {
-                $isonline[$value['user_id']] = 1;
-            }
-            unset($online);
-        }
-
-        $hasSubmit = 0;
-        $hasSave   = 0;
-        foreach ($row as $r) {
-            if (!is_null($r['score'])) {
-                $hasSubmit++;
-            }
-            if (isset($isonline[$r['user_id']])) {
-                $hasSave++;
-            }
-        }
-        $isShowDel = false;
-        if ($hasSave <= $hasSubmit) {
-            $isShowDel = true;
-        }
-        $xsid = I('get.xsid', '');
-        $xsname = I('get.xsname','');
-        $sortanum = I('get.sortanum', 0, 'intval');
-        $sortdnum = I('get.sortdnum', 0, 'intval');
-        $this->zadd('row', $row);
-        $this->zadd('xsid', $xsid);
-        $this->zadd('xsname', $xsname);
-        $this->zadd('isonline', $isonline);
-        $this->zadd('asortnum', $sortanum);
-        $this->zadd('dsortnum', $sortdnum);
-        $this->zadd('isEnd', $isExamEnd);
-        $this->zadd('isShowDel', $isShowDel);
-        $this->auto_display();
-    }
-
     public function adduser() {
         if (IS_POST && I('post.eid') != '') {
             if (!check_post_key()) {
-                $this->error('发生错误！');
+                $this->echoError('发生错误！');
             } else if (!$this->isCreator()) {
-                $this->error('You have no privilege of this exam');
+                $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
                 $flag = ExamServiceModel::instance()->addUsers2Exam($eid);
                 if ($flag === true)
                     $this->success('考生添加成功', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
                 else
-                    $this->error('Invaild Path');
+                    $this->echoError('Invaild Path');
             }
         } else {
             if (!$this->isOwner4ExamByExamId($this->eid)) {
-                $this->error('You have no privilege of this exam');
+                $this->echoError('You have no privilege of this exam');
             } else {
                 $ulist = "";
-                $row = M('ex_privilege')->field('user_id')
-                    ->where("rightstr='e$this->eid'")->order('user_id')->select();
+                $row = PrivilegeBaseModel::instance()->getUsersByExamId($this->eid, array('user_id'));
                 if ($row) {
                     $cnt = 0;
                     foreach ($row as $key => $value) {
@@ -154,6 +102,48 @@ class ExamController extends TemplateController
                 $this->auto_display();
             }
         }
+    }
+
+    // teacher can do
+    public function userscore() {
+        $sqladd = SortStuScore('stu');
+        $prirow = $this->isCanWatchInfo($this->eid, true);
+
+        $isExamEnd = (time() > strtotime($prirow['end_time']) ? true : false);
+
+        $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`,`extrainfo`
+			FROM (SELECT `users`.`user_id`,`users`.`nick`,`extrainfo` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND
+			 `ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND 
+			`ex_student`.`exam_id`='$this->eid' $sqladd";
+        $row = M()->query($query);
+
+        $hasSubmit = 0;
+        $hasTakeIn = 0;
+        foreach ($row as $r) {
+            if (!is_null($r['score'])) {
+                $hasSubmit++;
+            }
+            if ($r['extrainfo'] != 0) {
+                $hasTakeIn++;
+            }
+        }
+
+        $isShowDel = false;
+        if ($hasTakeIn <= $hasSubmit) {
+            $isShowDel = true;
+        }
+        $xsid = I('get.xsid', '');
+        $xsname = I('get.xsname','');
+        $sortanum = I('get.sortanum', 0, 'intval');
+        $sortdnum = I('get.sortdnum', 0, 'intval');
+        $this->zadd('row', $row);
+        $this->zadd('xsid', $xsid);
+        $this->zadd('xsname', $xsname);
+        $this->zadd('asortnum', $sortanum);
+        $this->zadd('dsortnum', $sortdnum);
+        $this->zadd('isEnd', $isExamEnd);
+        $this->zadd('isShowDel', $isShowDel);
+        $this->auto_display();
     }
 
     public function analysis() {
@@ -188,6 +178,33 @@ class ExamController extends TemplateController
         $this->auto_display();
     }
 
+    public function programRank() {
+
+        $this->isCanWatchInfo($this->eid);
+
+        $where = array(
+            'exam_id' => $this->eid,
+            'type' => 4,
+            'answer' => 1
+        );
+        $field = array('user_id', 'question_id');
+        $programRank = M('ex_stuanswer')->field($field)->where($where)->select();
+        $userRank = array();
+
+        foreach ($programRank as $p) {
+            $userRank[$p['user_id']][$p['question_id']] = 4;
+        }
+        $programs = M('exp_question')->field('question_id')
+            ->where('exam_id=%d and type=4', $this->eid)->order('question_id')
+            ->select();
+
+        $this->zadd('programIds', $programs);
+        $this->zadd('userRank', $userRank);
+        $this->zadd('programRank', $programRank);
+        $this->auto_display('ranklist');
+    }
+
+    // only admin can do
     public function rejudge() {
         if (!$this->isSuperAdmin()) {
             $this->error('Sorry,Only admin can do');

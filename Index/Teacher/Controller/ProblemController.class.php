@@ -17,12 +17,12 @@ class ProblemController extends TemplateController
             $this->zadd('eid', $this->eid);
             $this->zadd('type', $type);
             if (!$this->isOwner4ExamByExamId($this->eid)) {
-                $this->error('You have no privilege of this exam~');
+                $this->echoError('You have no privilege of this exam~');
             }
         } else if (isset($_POST['eid'])) {
             $this->eid = intval($_POST['eid']);
         } else {
-            $this->error('No Such Exam!');
+            $this->echoError('No Such Exam!');
         }
     }
 
@@ -42,7 +42,7 @@ class ProblemController extends TemplateController
                 $this->addprogram();
                 break;
             default:
-                $this->error('Invaild Path');
+                $this->echoError('Invaild Path');
                 break;
         }
     }
@@ -125,24 +125,23 @@ class ProblemController extends TemplateController
     public function addprogram() {
         if (IS_POST && I('post.eid')) {
             if (!check_post_key()) {
-                $this->error('发生错误！');
+                $this->echoError('发生错误！');
             } else if (!$this->isCreator()) {
-                $this->error('You have no privilege of this exam');
+                $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
                 $flag = ProblemServiceModel::instance()->addProgram2Exam($eid);
                 if ($flag === true) {
                     $this->success('程序题添加成功', U('Teacher/Problem/addprogram', array('eid' => $eid, 'type' => 4)), 2);
                 } else {
-                    $this->error('Invaild Path');
+                    $this->echoError('Invaild Path');
                 }
             }
         } else {
             $ansrow = M('exp_question')->field('question_id')
                 ->where('exam_id=%d and type=4', $this->eid)->order('question_id')
                 ->select();
-            $answernumC = M('exp_question')->where('exam_id=%d and type=4', $this->eid)
-                ->count();
+            $answernumC = count($ansrow);
             $key = set_post_key();
             $this->zadd('mykey', $key);
             $this->zadd('answernumC', $answernumC);

@@ -70,4 +70,12 @@ class DbConfigModel
         'visible' => 'char',
         'isprivate' => 'tinyint'
     );
+
+    const TABLE_EX_PRIVILEGE = 'ex_privilege';
+    public static $TABLE_EX_PRIVILEGE_FILEDS = array(
+        'user_id' => 'varchar',
+        'rightstr' => 'varchar',
+        'randnum' => 'int',
+        'extrainfo' => 'int'
+    );
 }

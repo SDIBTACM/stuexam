@@ -10,7 +10,7 @@ class TemplateController extends \Home\Controller\TemplateController
     public function _initialize() {
         parent::_initialize();
         if (!$this->isTeacher()) {
-            $this->error('请先登陆管理员账号！');
+            $this->echoError('请先登陆管理员账号！');
         }
     }
 
@@ -44,7 +44,7 @@ class TemplateController extends \Home\Controller\TemplateController
         }
 
         if (!($this->isSuperAdmin() || $this->isOwner4ExamByUserId($res['creator']) || $hasPrivilege !=0 )) {
-            $this->error('You have no privilege of this exam');
+            $this->echoError('You have no privilege of this exam');
         }
         if ($isReturn) {
             return $res;

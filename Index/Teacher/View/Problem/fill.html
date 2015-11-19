@@ -2,8 +2,10 @@
 <h2>添加填空题</h2>
 <include file='Public:sideheader' />
 <form class='form-inline'>
-<input type="hidden" name="page" value="{$mypage['page']}" >
-<input type="hidden" name="problem" value="{$problem}" >
+	<input type="hidden" name="eid" id="examid" value="{$eid}" >
+	<input type="hidden" name="page" value="{$mypage['page']}" >
+    <input type="hidden" name="problem" value="{$problem}" >
+
 <div class="form-group">
 	<input type="text" class="form-control input-lg search-input" id="search" name='search' value="{$search}" placeholder="查询创建者或考试名称">
 </div>
@@ -69,7 +71,7 @@
 				<if condition="isset($added[$r['fill_id']]) and $added[$r['fill_id']] gt 0">
 					<td>已添加</td>
 				<else/>
-				<td><a href="javascript:void(0);" onclick="addtoexam(this,{$eid},{$r['fill_id']},3)">添加到试卷</a></td>
+				<td><a href="javascript:void(0);" class="addfillexam" data-pid="{$r['fill_id']}">添加到试卷</a></td>
 				</if>
 			</tr>
 		</foreach>
@@ -80,7 +82,12 @@
 <script type="text/javascript">
     var addtoexamurl = "{:U('Teacher/Problem/addpte')}";
     $(function(){
-    $("#exam_fill").addClass('active');
-	$('[data-toggle="popover"]').popover();
-});
+        $("#exam_fill").addClass('active');
+	    $('[data-toggle="popover"]').popover();
+        $(".addfillexam").click(function() {
+            var eid = $("#examid").val();
+            var pid = $(this).data('pid');
+            addtoexam(this, eid, pid, 3);
+        });
+    });
 </script>

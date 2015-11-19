@@ -2,6 +2,7 @@
 namespace Home\Model;
 
 use Teacher\Model\ExamBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 
 class ExamadminModel
 {
@@ -115,15 +116,12 @@ class ExamadminModel
 
     /**
      * 判断用户是否在权限列表
-     * @param  string $users 用户ID
+     * @param  string $userId 用户ID
      * @param  number $eid 比赛编号
      * @return number        是否存在
      */
-    private function chkprivilege($users, $eid) {
-        $rightstr = "e$eid";
-        $num = M('ex_privilege')
-            ->where("user_id='%s' and rightstr='%s'", $users, $rightstr)
-            ->count();
-        return $num;
+    private function chkprivilege($userId, $eid) {
+        $res = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($userId, $eid);
+        return !empty($res);
     }
 }

@@ -22,7 +22,7 @@ class IndexController extends TemplateController
                 );
                 $fields = array('rightstr');
                 $privileges = M('ex_privilege')->field($fields)->where($where)->select();
-                $examIds = array();
+                $examIds = array(0);
                 foreach ($privileges as $privilege) {
                     $rightstr = $privilege['rightstr'];
                     $examIds[] = intval(substr($rightstr, 1));
@@ -67,11 +67,11 @@ class IndexController extends TemplateController
             $row = ExamadminModel::instance()->chkexamprivilege($eid, $user_id);
             if (!is_array($row)) {
                 if ($row == 0) {
-                    $this->error('You have no privilege!');
+                    $this->echoError('You have no privilege!');
                 } else if ($row == -1) {
-                    $this->error('No Such Exam');
+                    $this->echoError('No Such Exam');
                 } else if ($row == -2) {
-                    $this->error('Do not login in diff machine,Please Contact administrator');
+                    $this->echoError('Do not login in diff machine,Please Contact administrator');
                 }
             }
             $isruning = ExamadminModel::instance()->chkruning($row['start_time'], $row['end_time']);
@@ -84,7 +84,7 @@ class IndexController extends TemplateController
 
             $this->auto_display();
         } else {
-            $this->error('No Such Exam');
+            $this->echoError('No Such Exam');
         }
     }
 }

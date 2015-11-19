@@ -71,4 +71,23 @@ class ProblemServiceModel
         $ans = M()->query($sql);
         return $ans;
     }
+
+    public function syncProgramAnswer($userId, $eid, $pid, $answer) {
+        $dao = M('ex_stuanswer');
+        $where = array(
+            'user_id' => $userId,
+            'exam_id' => $eid,
+            'type'    => 4,
+            'question_id' => $pid,
+            'answer_id' => 1
+        );
+        $field = array('answer');
+        $res = $dao->field($field)->where($where)->find();
+        if (empty($res)) {
+            $where['answer'] = $answer;
+            $dao->add($where);
+        } else {
+            // now do nothing
+        }
+    }
 }

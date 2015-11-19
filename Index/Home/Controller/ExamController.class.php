@@ -4,10 +4,10 @@ namespace Home\Controller;
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ChooseServiceModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 
 class ExamController extends TemplateController
@@ -33,19 +33,20 @@ class ExamController extends TemplateController
             $user_id = $this->userInfo['user_id'];
             $row = $this->row;
             if (!is_array($row)) {
-                if ($row == 0) $this->error('You have no privilege!');
-                else if ($row == -1) {
-                    $this->error('No Such Exam');
+                if ($row == 0) {
+                    $this->echoError('You have no privilege!');
+                } else if ($row == -1) {
+                    $this->echoError('No Such Exam');
                 } else if ($row == -2) {
-                    $this->error('Do not login in diff machine,Please Contact administrator');
+                    $this->echoError('Do not login in diff machine,Please Contact administrator');
                 } else if ($row == -3) {
-                    $this->error('You have taken part in it');
+                    $this->echoError('You have taken part in it');
                 }
             }
-            $rnd = M('ex_privilege')->field('randnum')
-                ->where("user_id='$user_id' and rightstr='e$eid'")
-                ->find();
-            if ($this->isCreator()) $rnd['randnum'] = 0;
+            $rnd = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($user_id, $eid, array('randnum'));
+            if ($this->isCreator()) {
+                $rnd['randnum'] = 0;
+            }
             $isruning = self::$isruning;
             if ($isruning != 1) {
                 $this->redirect('Home/Index/index', '', 3, "<h2>Exam is not running</h2>");
@@ -66,6 +67,11 @@ class ExamController extends TemplateController
             $judgesx = ExamadminModel::instance()->getproblemsx($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $rnd['randnum']);
             $fillsx = ExamadminModel::instance()->getproblemsx($eid, FillBaseModel::FILL_PROBLEM_TYPE, $rnd['randnum']);
 
+            $data = array(
+                'extrainfo' => $lefttime + 1
+            );
+            PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId($user_id, $eid, $data);
+
             $this->zadd('row', $row);
             $this->zadd('lefttime', $lefttime);
             $this->zadd('randnum', $rnd['randnum']);
@@ -82,7 +88,7 @@ class ExamController extends TemplateController
             $this->zadd('programans', $programans);
             $this->auto_display(null, false);
         } else {
-            $this->error('No Such Exam');
+            $this->echoError('No Such Exam');
         }
     }
 
@@ -90,19 +96,14 @@ class ExamController extends TemplateController
         if (I('post.eid')) {
             $eid = intval($_POST['eid']);
             $user_id = $this->userInfo['user_id'];
-            $row = $this->row;
-            if (!is_array($row)) {
-                echo "保存失败！";
+            if (self::$isruning == 1) {
+                AnswerModel::instance()->answersave($user_id, $eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
+                AnswerModel::instance()->answersave($user_id, $eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
+                AnswerModel::instance()->answersave($user_id, $eid, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
+                usleep(30000);
+                echo "ok";
             } else {
-                if (self::$isruning != 1) {
-                    echo "保存失败！";
-                } else {
-                    AnswerModel::instance()->answersave($user_id, $eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
-                    AnswerModel::instance()->answersave($user_id, $eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
-                    AnswerModel::instance()->answersave($user_id, $eid, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
-                    usleep(30000);
-                    echo "ok";
-                }
+                echo "保存失败!";
             }
         } else {
             echo "保存失败啦！";
@@ -115,13 +116,13 @@ class ExamController extends TemplateController
             $user_id = $this->userInfo['user_id'];
             $row = $this->row;
             if (!is_array($row)) {
-                if ($row == 0) $this->error('You have no privilege!');
+                if ($row == 0) $this->echoError('You have no privilege!');
                 else if ($row == -1) {
-                    $this->error('No Such Exam');
+                    $this->echoError('No Such Exam');
                 } else if ($row == -2) {
-                    $this->error('Do not login in diff machine,Please Contact administrator');
+                    $this->echoError('Do not login in diff machine,Please Contact administrator');
                 } else if ($row == -3) {
-                    $this->error('You have taken part in it');
+                    $this->echoError('You have taken part in it');
                 }
             } else {
                 if (self::$isruning != 1) {
@@ -158,65 +159,61 @@ class ExamController extends TemplateController
             $language = intval($_POST['language']);
             if ($language > 9 || $language < 0) $language = 0;
             $language = strval($language);
-            $row = $this->row;
-            if (!is_array($row)) {
-                echo "提交失败1";
-            } else {
-                if (self::$isruning != 1) {
-                    echo "提交失败2";
-                } else {
-                    $start_timeC = strftime("%Y-%m-%d %X", strtotime($row['start_time']));
-                    $end_timeC = strftime("%Y-%m-%d %X", strtotime($row['end_time']));
-                    $source = $_POST['source'];
-                    if (get_magic_quotes_gpc()) {
-                        $source = stripslashes($source);
-                    }
-                    $source = addslashes($source);
-                    $len = strlen($source);
-                    $OJ_DATA = C('OJ_DATA');
-                    $OJ_APPENDCODE = C('OJ_APPENDCODE');
-                    $extarr = C('language_ext');
-                    $ext = $extarr[$language];
-                    $prefix_file = "$OJ_DATA/$id/prefix.$ext";
-                    $append_file = "$OJ_DATA/$id/append.$ext";
-                    if ($OJ_APPENDCODE && file_exists($prefix_file)) {
-                        $source = addslashes(file_get_contents($prefix_file) . "\n") . $source;
-                    }
-                    if ($OJ_APPENDCODE && file_exists($append_file)) {
-                        $source .= addslashes("\n" . file_get_contents($append_file));
-                    }
-                    $ip = $_SERVER['REMOTE_ADDR'];
-                    if ($len <= 2) {
-                        echo "Source Code Too Short!";
-                        exit(0);
-                    }
-                    if ($len > 65536) {
-                        echo "Source Code Too Long!";
-                        exit(0);
-                    }
-                    $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
-                    $row = M()->query($sql);
-                    if ($row) {
-                        echo "You should not submit more than twice in 10 seconds.....<br>";
-                        exit(0);
-                    }
-                    $arr['problem_id'] = $id;
-                    $arr['user_id'] = $user_id;
-                    $arr['in_date'] = date('Y-m-d H:i:s');
-                    $arr['language'] = $language;
-                    $arr['ip'] = $ip;
-                    $arr['code_length'] = $len;
-                    $insert_id = M('solution')->add($arr);
-                    $sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
-                    M()->execute($sql);
-                    $sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$id";
-                    M()->execute($sql);
-                    $colorarr = C('judge_color');
-                    $resultarr = C('judge_result');
-                    $color = $colorarr[0];
-                    $result = $resultarr[0];
-                    echo "<span color=$color size='5px'>$result</span>";
+
+            if (self::$isruning == 1) {
+                $source = $_POST['source'];
+                if (get_magic_quotes_gpc()) {
+                    $source = stripslashes($source);
                 }
+                $source = addslashes($source);
+                $len = strlen($source);
+                $OJ_DATA = C('OJ_DATA');
+                $OJ_APPENDCODE = C('OJ_APPENDCODE');
+                $extarr = C('language_ext');
+                $ext = $extarr[$language];
+                $prefix_file = "$OJ_DATA/$id/prefix.$ext";
+                $append_file = "$OJ_DATA/$id/append.$ext";
+                if ($OJ_APPENDCODE && file_exists($prefix_file)) {
+                    $source = addslashes(file_get_contents($prefix_file) . "\n") . $source;
+                }
+                if ($OJ_APPENDCODE && file_exists($append_file)) {
+                    $source .= addslashes("\n" . file_get_contents($append_file));
+                }
+
+                $ip = $_SERVER['REMOTE_ADDR'];
+                if ($len <= 2) {
+                    echo "Source Code Too Short!";
+                    exit(0);
+                }
+                if ($len > 65536) {
+                    echo "Source Code Too Long!";
+                    exit(0);
+                }
+
+                $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
+                $row = M()->query($sql);
+                if ($row) {
+                    echo "You should not submit more than twice in 10 seconds.....<br>";
+                    exit(0);
+                }
+                $arr['problem_id'] = $id;
+                $arr['user_id'] = $user_id;
+                $arr['in_date'] = date('Y-m-d H:i:s');
+                $arr['language'] = $language;
+                $arr['ip'] = $ip;
+                $arr['code_length'] = $len;
+                $insert_id = M('solution')->add($arr);
+                $sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
+                M()->execute($sql);
+                $sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$id";
+                M()->execute($sql);
+                $colorarr = C('judge_color');
+                $resultarr = C('judge_result');
+                $color = $colorarr[0];
+                $result = $resultarr[0];
+                echo "<font color=$color size='5px'>$result</font>";
+            } else {
+                echo "考试已结束!";
             }
         } else {
             echo "提交失败3";
@@ -229,39 +226,63 @@ class ExamController extends TemplateController
             $id = intval($_GET['id']);
             $user_id = $this->userInfo['user_id'];
             $row = $this->row;
-            if (!is_array($row)) {
-                echo "提交失败1";
-            } else {
-                if (self::$isruning != 1) {
-                    echo "提交失败2";
+            if (self::$isruning == 1) {
+                $start_timeC = strftime("%Y-%m-%d %X", strtotime($row['start_time']));
+                $end_timeC = strftime("%Y-%m-%d %X", strtotime($row['end_time']));
+
+                $where = array(
+                    'user_id' => $user_id,
+                    'exam_id' => $eid,
+                    'type'    => 4,
+                    'question_id' => $id,
+                    'answer_id' => 1,
+                    'answer' => 4
+                );
+                $row_cnt = M('ex_stuanswer')->where($where)->find();
+                    //->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
+                if (!empty($row_cnt)) {
+                    echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
                 } else {
-                    $start_timeC = strftime("%Y-%m-%d %X", strtotime($row['start_time']));
-                    $end_timeC = strftime("%Y-%m-%d %X", strtotime($row['end_time']));
-                    $row_cnt = M('solution')
-                        ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
-                        ->count();
-                    if ($row_cnt) {
-                        echo "<span color='blue' size='3px'>此题已正确,请不要重复提交</span>";
+                    $trow = M('solution')->field('result')
+                        ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
+                        ->order('solution_id desc')
+                        ->find();
+                    if (!$trow) {
+                        echo "<font color='green' size='5px'>未提交</font>";
                     } else {
-                        $trow = M('solution')->field('result')
-                            ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
-                            ->order('solution_id desc')
-                            ->find();
-                        if (!$trow) {
-                            echo "<span color='green' size='5px'>未提交</span>";
-                        } else {
-                            $ans = $trow['result'];
-                            $colorarr = C('judge_color');
-                            $resultarr = C('judge_result');
-                            $color = $colorarr[$ans];
-                            $result = $resultarr[$ans];
-                            echo "<span color=$color size='5px'>$result</span>";
+                        $ans = $trow['result'];
+                        if ($ans == 4) {
+                            ProblemServiceModel::instance()->syncProgramAnswer($user_id, $eid, $id, $ans);
                         }
+                        $colorarr = C('judge_color');
+                        $resultarr = C('judge_result');
+                        $color = $colorarr[$ans];
+                        $result = $resultarr[$ans];
+                        echo "<font color=$color size='5px'>$result</font>";
                     }
                 }
+            } else {
+                echo "考试已结束!";
             }
         } else {
             echo "提交失败3";
+        }
+    }
+
+    public function programSave() {
+        if (self::$isruning == 1) {
+            $pid = I('post.pid', 0, 'intval');
+            $eid = I('post.eid', 0, 'intval');
+            $userId = $this->userInfo['user_id'];
+            $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->row['start_time']));
+            $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->row['end_time']));
+            $row_cnt = M('solution')
+                ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
+                ->count();
+            if ($row_cnt) {
+                ProblemServiceModel::instance()->syncProgramAnswer($userId, $eid, $pid, 4);
+            }
+            echo $pid . '___' . $eid;
         }
     }
 }

@@ -83,7 +83,7 @@ class IndexController extends TemplateController
 
     public function point() {
         if (!$this->isSuperAdmin()) {
-            $this->error('Sorry,Only admin can do');
+            $this->echoError('Sorry,Only admin can do');
         }
         $pnt = M('ex_point')->order('point_pos')->select();
         $this->zadd('pnt', $pnt);

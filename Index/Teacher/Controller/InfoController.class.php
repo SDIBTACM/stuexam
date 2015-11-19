@@ -5,6 +5,7 @@ use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\ExamBaseModel;
 use Think\Controller;
@@ -22,13 +23,11 @@ class InfoController extends TemplateController
             $this->isCanWatchInfo($eid);
 
             $users = trim($_GET['users']);
-            $rightstr = "e$eid";
-            $row = M('exam')->field('title')->where('exam_id=%d', $eid)->find();
+            $row = ExamBaseModel::instance()->getExamInfoById($eid, array('title'));
 
-            $num = M('ex_privilege')->where("user_id='%s' and rightstr='%s'", $users, $rightstr)
-                ->count();
-            if (!$num) {
-                $this->error("The student have no privilege to take part in it");
+            $_res = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($users, $eid);
+            if (empty($_res)) {
+                $this->echoError("The student have no privilege to take part in it");
             }
 
             $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
@@ -60,7 +59,7 @@ class InfoController extends TemplateController
 
             $this->auto_display('paper');
         } else {
-            $this->error('Wrong Path');
+            $this->echoError('Wrong Path');
         }
     }
 
@@ -69,7 +68,7 @@ class InfoController extends TemplateController
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
             if (!$this->isOwner4ExamByExamId($eid)) {
-                $this->error('You have no privilege to do it!');
+                $this->echoError('You have no privilege to do it!');
             } else {
                 M('ex_student')
                     ->where("exam_id=%d and user_id='%s'", $eid, $users)
@@ -77,7 +76,7 @@ class InfoController extends TemplateController
                 $this->redirect("Exam/userscore", array('eid' => $eid));
             }
         } else {
-            $this->error('Wrong Path');
+            $this->echoError('Wrong Path');
         }
     }
 
@@ -86,11 +85,11 @@ class InfoController extends TemplateController
         if (!empty($eid)) {
 
             if (!$this->isOwner4ExamByExamId($eid)) {
-                $this->error('You have no privilege to do it!');
+                $this->echoError('You have no privilege to do it!');
             }
 
-            $allTakeIn = M('ex_stuanswer')->distinct('user_id')->field('user_id')->where('exam_id=%d', $eid)
-                ->select();
+            $allTakeIn = PrivilegeBaseModel::instance()->getTakeInExamUsersByExamId($eid);
+
             $allHaveScore = M('ex_student')->distinct('user_id')->field('user_id')
                 ->where('exam_id=%d', $eid)->select();
 
@@ -129,7 +128,7 @@ class InfoController extends TemplateController
         $eid = I('post.eid', 0, 'intval');
         if (!empty($eid)) {
             if (!$this->isOwner4ExamByExamId($eid)) {
-                $this->error('You have no privilege to do it!');
+                $this->echoError('You have no privilege to do it!');
             }
             unset($_POST['eid']);
             $userIds = array();
@@ -154,14 +153,14 @@ class InfoController extends TemplateController
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
             if (!$this->isOwner4ExamByExamId($eid)) {
-                $this->error('You have no privilege to do it!');
+                $this->echoError('You have no privilege to do it!');
             }
             $flag = $this->dojudgeone($eid, $users);
             if ($flag) {
                 $this->redirect("Exam/userscore", array('eid' => $eid));
             }
         } else {
-            $this->error('Wrong Path');
+            $this->echoError('Wrong Path');
         }
     }
 
@@ -169,7 +168,7 @@ class InfoController extends TemplateController
         $eid = I('get.eid', 0, 'intval');
         $userId = I('get.userId', '');
         if (!$this->isOwner4ExamByExamId($eid)) {
-            $this->error('You have no privilege to do it!');
+            $this->echoError('You have no privilege to do it!');
         }
         if (empty($eid) && empty($userId)) {
         } else {
@@ -181,13 +180,12 @@ class InfoController extends TemplateController
     public function dorejudge() {
         if (IS_POST && I('post.eid')) {
             if (!check_post_key() || !$this->isSuperAdmin()) {
-                $this->error('发生错误！');
+                $this->echoError('发生错误！');
             }
             $eid = intval($_POST['eid']);
 
             if (I('post.rjall')) {
-                $prirow = M('exam')->field('start_time,end_time')
-                    ->where('exam_id=%d', $eid)->find();
+                $prirow = ExamBaseModel::instance()->getExamInfoById($eid, array('start_time', 'end_time'));
                 $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
                 $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
                 $userlist = M('ex_student')->field('user_id')->where('exam_id=%d', $eid)->select();
@@ -204,9 +202,9 @@ class InfoController extends TemplateController
                 if ($flag)
                     $this->success('重判成功！', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
             } else
-                $this->error('Invaild Path');
+                $this->echoError('Invaild Path');
         } else {
-            $this->error('Wrong Method');
+            $this->echoError('Wrong Method');
         }
     }
 
@@ -221,10 +219,10 @@ class InfoController extends TemplateController
             ->where("user_id='%s' and rightstr='%s'", $users, $rightstr)
             ->count();
         if ($cnt1 == 0) {
-            $this->error('Student ID is Wrong!');
+            $this->echoError('Student ID is Wrong!');
         } else {
             if (time() < $start_timeC) {
-                $this->error('Exam Not Start');
+                $this->echoError('Exam Not Start');
             }
             $mark = M('ex_student')
                 ->where("exam_id=%d and user_id='%s'", $eid, $users)
