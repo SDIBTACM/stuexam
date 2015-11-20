@@ -1,3 +1,11 @@
+<style>
+	.answerac {
+		color: green;
+	}
+	.answerwa {
+		color: red;
+	}
+</style>
 <div class="container exam_content" style='text-align:left'>
 	<div style="text-align:center">
 		<h1>{$title|default=""}</h1>
@@ -11,7 +19,18 @@
 		<div class="panel-body">
 			<p>(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
 		</div>
-		<div class="panel-footer"><strong>我的答案:{$choosearr[$cans['choose_id']]|default=""}<br/>正确答案:{$cans['answer']}</strong></div>
+		<div class="panel-footer">
+			<strong>我的答案:
+				<php>
+                    $myanswer = $choosearr[ $cans['choose_id'] ] ?: "未选";
+                    if ($myanswer == $cans['answer']) {
+                        echo "<span class='answerac'>$myanswer | 正确</span>";
+                    } else {
+                        echo "<span class='answerwa'>$myanswer | 错误</span>";
+                    }
+				</php>
+				<br/>正确答案:{$cans['answer']}</strong>
+		</div>
 	</div>
 	</foreach>
 
@@ -19,7 +38,15 @@
 	<foreach name='judgeans' item='jans' key='numofjudge'>
 		<div class="panel panel-default">
 			<div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</div>
-			<div class="panel-body"><strong>我的答案:{$judgearr[$jans['judge_id']]|default=""}</strong></div>
+			<div class="panel-body"><strong>我的答案:
+                <php>
+                    $myanswer = $judgearr[ $jans['judge_id'] ] ?: "未选";
+                    if ($myanswer == $jans['answer']) {
+                        echo "<span class='answerac'>$myanswer | 正确</span>";
+                    } else {
+                        echo "<span class='answerwa'>$myanswer | 错误</span>";
+                    }
+                </php></strong></div>
 			<div class="panel-footer"><strong>正确答案:{$jans['answer']}</strong></div>
 		</div>
 	</foreach>
@@ -41,7 +68,17 @@
 					<if condition="$i eq 1">
 						<strong>我的答案:</strong>
 					</if>
-					<strong>答案({$i}) {$fillarr[$fans['fill_id']][$i]|default=''}</strong>
+					<strong>答案({$i})
+                        <php>
+                            $rightans = $fillans2[ $fans['fill_id'] ][$i - 1]['answer'];
+                            $myanswer = $fillarr[$fans['fill_id']][$i] ?: "未选";
+                            if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
+                                echo "<span class='answerac'>$myanswer | 正确</span>";
+                            } else {
+                                echo "<span class='answerwa'>$myanswer | 错误</span>";
+                            }
+                        </php>
+                    </strong>
 				</for>
 			</div>
 			<div class="panel-footer">
