@@ -12,10 +12,11 @@
 
     <table class="table-bordered table table-bordered">
         <thead>
-            <th width="5%">序号</th>
-            <th width="7%">学号</th>
+            <th width="3%">ID</th>
+            <th width="5%">学号</th>
+            <th width="7%">姓名</th>
             <foreach name="programIds" item="pid">
-                <th>{$pid['question_id']}</th>
+                <th width="6%">{$pid['question_id']}</th>
             </foreach>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@
                 <tr>
                     <td>{$k + 1}</td>
                     <td>{$userId}</td>
+                    <td>{$unames[ $userId ]|cutstring=###,12}</td>
                     <foreach name="programIds" item="pid">
                         <if condition="isset($userRank[ $userId ][ $pid['question_id'] ])">
                             <td class="problemac">Accept</td>

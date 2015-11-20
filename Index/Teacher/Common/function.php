@@ -69,10 +69,10 @@ function check_post_key() {
     return true;
 }
 
-function cutstring($str) {
+function cutstring($str, $length = 0) {
     $len = C('cutlen');
-    //$str = strip_tags(htmlspecialchars($str));
-    return mb_substr($str, 0, $len, "utf-8");
+    $length = ($length ?: $len);
+    return mb_substr($str, 0, $length, "utf-8");
 }
 
 function SortStuScore($table) {

@@ -92,7 +92,7 @@
                 <tr>
                     <td>{$k+1}</td>
                     <td>{$r['user_id']}</td>
-                    <td>{$r['nick']}</td>
+                    <td>{$r['nick']|cutstring=###,12}</td>
                     <td>{$r['choosesum']}</td>
                     <td>{$r['judgesum']}</td>
                     <td>{$r['fillsum']}</td>
