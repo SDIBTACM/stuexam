@@ -185,22 +185,42 @@ class ExamController extends TemplateController
         $where = array(
             'exam_id' => $this->eid,
             'type' => 4,
-            'answer_id' => 1
+            'answer_id' => 1,
+            'answer' => 4
         );
         $field = array('user_id', 'question_id');
         $programRank = M('ex_stuanswer')->field($field)->where($where)->select();
         $userRank = array();
+        $users = array();
+        $unames = array();
 
         foreach ($programRank as $p) {
             $userRank[$p['user_id']][$p['question_id']] = 4;
+            $users[] = $p['user_id'];
         }
+        $users = array_unique($users);
+        $users = array_values($users);
+        $userIds_chunk = array_chunk($users, 50);
+        foreach ($userIds_chunk as $_userIds) {
+            $where = array(
+                'user_id' => array('in', $_userIds)
+            );
+            $field = array('user_id', 'nick');
+            $_unames = M('users')->field($field)->where($where)->select();
+            foreach ($_unames as $_uname) {
+                $unames[ $_uname['user_id'] ] = $_uname['nick'];
+            }
+            usleep(10000);
+        }
+
         $programs = M('exp_question')->field('question_id')
             ->where('exam_id=%d and type=4', $this->eid)->order('question_id')
             ->select();
 
+        $this->zadd('unames', $unames);
+        $this->zadd('userIds', $users);
         $this->zadd('programIds', $programs);
         $this->zadd('userRank', $userRank);
-        $this->zadd('programRank', $programRank);
         $this->auto_display('ranklist');
     }
 

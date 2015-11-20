@@ -53,14 +53,17 @@
 
 <style>
     .nocopy {
-        -moz-user-select: none;
+        -webkit-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
     }
 
     body {
         padding-top: 0 !important;
     }
 </style>
-<body oncontextmenu="return false" onselectstart="return false" class="nocopy">
+<body>
 <div class="container">
     <div style="text-align:center">
         <h1>程序设计考试系统<br>
@@ -89,7 +92,7 @@
             </td>
         </tr>
     </table>
-    <form name="exam" id="exam" action="{:U('Home/Exam/submitpaper')}" method="post">
+    <form name="exam" class="nocopy" id="exam" action="{:U('Home/Exam/submitpaper')}" method="post">
         <input type="hidden" name="eid" id="examid" value="{$Think.get.eid}">
         <h4>一.选择题</h4>
         <foreach name='choosesx' item='csx' key='numofchoose'>
