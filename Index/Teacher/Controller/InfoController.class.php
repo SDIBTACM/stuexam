@@ -66,6 +66,8 @@ class InfoController extends TemplateController
     public function delscore() {
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
+            $sortanum = I('get.sortanum', 0, 'intval');
+            $sortdnum = I('get.sortdnum', 0, 'intval');
             $users = trim($_GET['users']);
             if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->echoError('You have no privilege to do it!');
@@ -73,7 +75,11 @@ class InfoController extends TemplateController
                 M('ex_student')
                     ->where("exam_id=%d and user_id='%s'", $eid, $users)
                     ->delete();
-                $this->redirect("Exam/userscore", array('eid' => $eid));
+                $this->redirect("Exam/userscore", array(
+                    'eid' => $eid,
+                    'sortdnum' => $sortdnum,
+                    'sortanum' => $sortanum
+                ));
             }
         } else {
             $this->echoError('Wrong Path');
@@ -84,6 +90,8 @@ class InfoController extends TemplateController
         $eid = I('get.eid', 0, 'intval');
         if (!empty($eid)) {
 
+            $sortanum = I('get.sortanum', 0, 'intval');
+            $sortdnum = I('get.sortdnum', 0, 'intval');
             if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->echoError('You have no privilege to do it!');
             }
@@ -118,7 +126,11 @@ class InfoController extends TemplateController
                     usleep(10000);
                 }
             }
-            $this->redirect("Exam/userscore", array('eid' => $eid));
+            $this->redirect("Exam/userscore", array(
+                'eid' => $eid,
+                'sortdnum' => $sortdnum,
+                'sortanum' => $sortanum
+            ));
         } else {
             $this->alertError('Invaild Exam');
         }
@@ -152,12 +164,18 @@ class InfoController extends TemplateController
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
             $users = trim($_GET['users']);
+            $sortanum = I('get.sortanum', 0, 'intval');
+            $sortdnum = I('get.sortdnum', 0, 'intval');
             if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->echoError('You have no privilege to do it!');
             }
             $flag = $this->dojudgeone($eid, $users);
             if ($flag) {
-                $this->redirect("Exam/userscore", array('eid' => $eid));
+                $this->redirect("Exam/userscore", array(
+                    'eid' => $eid,
+                    'sortdnum' => $sortdnum,
+                    'sortanum' => $sortanum
+                ));
             }
         } else {
             $this->echoError('Wrong Path');
@@ -167,6 +185,8 @@ class InfoController extends TemplateController
     public function hardSubmit() {
         $eid = I('get.eid', 0, 'intval');
         $userId = I('get.userId', '');
+        $sortanum = I('get.sortanum', 0, 'intval');
+        $sortdnum = I('get.sortdnum', 0, 'intval');
         if (!$this->isOwner4ExamByExamId($eid)) {
             $this->echoError('You have no privilege to do it!');
         }
@@ -174,7 +194,11 @@ class InfoController extends TemplateController
         } else {
             $this->dojudgeone($eid, $userId);
         }
-        $this->redirect("Exam/userscore", array('eid' => $eid));
+        $this->redirect("Exam/userscore", array(
+            'eid' => $eid,
+            'sortdnum' => $sortdnum,
+            'sortanum' => $sortanum
+        ));
     }
 
     public function dorejudge() {
