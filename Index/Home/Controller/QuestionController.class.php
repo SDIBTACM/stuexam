@@ -15,17 +15,14 @@ class QuestionController extends TemplateController
 {
 
     public $examId = null;
-    public $randnum = null;
     public $examBase = null;
     public $isRunning = null;
-    private static $isOnExam = 0;
+    public $leftTime = 0;
+    public $randnum = null;
 
     public function _initialize() {
         parent::_initialize();
-        if (!self::$isOnExam) {
-            $this->preExamQuestion();
-            $this->startExamQuestion();
-        }
+        $this->preExamQuestion();
     }
 
     protected function preExamQuestion() {
@@ -44,9 +41,7 @@ class QuestionController extends TemplateController
                 }
                 $this->isRunning = $isruning;
                 $lefttime = strtotime($this->examBase['end_time']) - time();
-                $this->zadd('lefttime', $lefttime);
-                $this->zadd('row', $this->examBase);
-
+                $this->leftTime = $lefttime;
             } else {
                 $row = $this->examBase;
                 if ($row == 0) {
@@ -62,7 +57,7 @@ class QuestionController extends TemplateController
         }
     }
 
-    protected function startExamQuestion() {
+    protected function getStudentRandom() {
         $eid = $this->examId;
         $userId = $this->userInfo['user_id'];
         $randNum = M('ex_privilege')
@@ -75,8 +70,6 @@ class QuestionController extends TemplateController
             $num = intval($randNum['randnum']);
         }
         $this->randnum = $num;
-        $this->zadd('randnum', $num);
-        self::$isOnExam = 1;
     }
 
     public function navigation() {
