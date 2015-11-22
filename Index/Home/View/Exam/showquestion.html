@@ -62,6 +62,12 @@
     body {
         padding-top: 0 !important;
     }
+
+    pre {
+        border:none;
+        margin: 0;
+        font-size: 15px;
+    }
 </style>
 <body>
 <div class="container">
@@ -97,7 +103,7 @@
         <h4>一.选择题</h4>
         <foreach name='choosesx' item='csx' key='numofchoose'>
             <div class="panel panel-default">
-                <div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}
+                <div class="panel-heading"><pre><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}</pre>
                 </div>
                 <div class="panel-body">
                     <p>
@@ -146,7 +152,7 @@
         <h4>二.判断题</h4>
         <foreach name='judgesx' item='jsx' key='numofjudge'>
             <div class="panel panel-default">
-                <div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$judgeans[$jsx]['question']|nl2br}
+                <div class="panel-heading"><pre><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$judgeans[$jsx]['question']|nl2br}</pre>
                 </div>
                 <div class="panel-body">
                     <p>
@@ -175,13 +181,12 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <if condition="$fillans[$fsx]['kind'] eq 1">
-                        <font color='red'>({$allscore['fillscore']*$fillans[$fsx]['answernum']} 分)</font>
+                        <pre><font color='red'>({$allscore['fillscore']*$fillans[$fsx]['answernum']} 分)</font>{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                         <elseif condition="$fillans[$fsx]['kind'] eq 2"/>
-                        <font color='red'>({$allscore['prgans']} 分)</font>
+                        <pre><font color='red'>({$allscore['prgans']} 分)</font>{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                         <else/>
-                        <font color='red'>({$allscore['prgfill']} 分)</font>
+                        <pre><font color='red'>({$allscore['prgfill']} 分)</font>{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                     </if>
-                    {$numoffill+1}.{$fillans[$fsx]['question']|nl2br}
                 </div>
                 <div class="panel-body">
                     <p>
