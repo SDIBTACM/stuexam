@@ -106,16 +106,18 @@ class InfoController extends TemplateController
             $userIds2Submit = array();
 
             foreach ($allHaveScore as $uid) {
-                $haveScoreUserIds[] = $uid['user_id'];
+                $haveScoreUserIds[] = strtolower($uid['user_id']);
             }
 
             foreach ($allTakeIn as $userId) {
-                if (!in_array($userId['user_id'], $haveScoreUserIds)) {
-                    $userIds2Submit[] = $userId['user_id'];
+                $_userId = strtolower($user_id['user_id']);
+                if (!in_array($_userId, $haveScoreUserIds)) {
+                    $userIds2Submit[] = $_userId;
                 }
             }
 
             if (!empty($userIds2Submit)) {
+                $userIds2Submit = array_unique($userIds2Submit);
                 $field = array('start_time', 'end_time');
                 $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
                 $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
