@@ -3,8 +3,8 @@ namespace Teacher\Model;
 
 class ProblemServiceModel
 {
-    const PROBLEMANS_TYPE_FILL    = 4;
-    const EXAMPROBLEM_TYPE_PROGRAM = 5;
+    const PROGRAM_PROBLEM_TYPE = 4;
+    const PROBLEMANS_TYPE_FILL = 100;
 
     private static $_instance = null;
 
@@ -31,10 +31,12 @@ class ProblemServiceModel
                 return false;
             } else {
                 $programid = intval($programid);
-                $arr['exam_id'] = $eid;
-                $arr['type'] = 4;
-                $arr['question_id'] = $programid;
-                M('exp_question')->data($arr)->add();
+                $data = array(
+                    'exam_id' => $eid,
+                    'type' => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
+                    'question_id' => $programid
+                );
+                M('exp_question')->data($data)->add();
                 M('problem')->where('problem_id=%d', $programid)
                     ->data(array("defunct" => "Y"))->save();
             }
@@ -42,8 +44,8 @@ class ProblemServiceModel
         return true;
     }
 
-    public function getProblemsAndAnswer4Exam($eid, $type) {
-        switch ($type) {
+    public function getProblemsAndAnswer4Exam($eid, $problemType) {
+        switch ($problemType) {
             case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
                 return ChooseBaseModel::instance()->getChooseProblems4Exam($eid);
                 break;
@@ -56,12 +58,12 @@ class ProblemServiceModel
                 return FillBaseModel::instance()->getFillProblems4Exam($eid);
                 break;
 
-            case self::PROBLEMANS_TYPE_FILL:
-                return FillBaseModel::instance()->getFillAnswerByFillId($eid);
+            case self::PROGRAM_PROBLEM_TYPE:
+                return $this->getProgramProblems4Exam($eid);
                 break;
 
-            case self::EXAMPROBLEM_TYPE_PROGRAM:
-                return $this->getProgramProblems4Exam($eid);
+            case self::PROBLEMANS_TYPE_FILL:
+                return FillBaseModel::instance()->getFillAnswerByFillId($eid);
                 break;
         }
     }
@@ -77,7 +79,7 @@ class ProblemServiceModel
         $where = array(
             'user_id' => $userId,
             'exam_id' => $eid,
-            'type'    => 4,
+            'type'    => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
             'question_id' => $pid,
             'answer_id' => 1
         );
@@ -87,7 +89,6 @@ class ProblemServiceModel
             $where['answer'] = $answer;
             $dao->add($where);
         } else {
-            // now do nothing
         }
     }
 }

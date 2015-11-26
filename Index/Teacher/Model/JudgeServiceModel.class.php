@@ -25,7 +25,7 @@ class JudgeServiceModel
         $tmp = JudgeBaseModel::instance()->getJudgeById($judgeid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             return -1;
-        } else if ($tmp['isprivate'] == 2 && !checkAdmin(1)) {
+        } else if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
             return -1;
         } else {
             $arr['question'] = test_input($_POST['judge_des']);

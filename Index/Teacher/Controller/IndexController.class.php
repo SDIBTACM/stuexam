@@ -32,13 +32,16 @@ class IndexController extends TemplateController
         $row = M('ex_choose')->field('choose_id,question,creator,point,easycount')
             ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
             ->select();
-        $this->zadd('row', $row);
-        $this->zadd('mypage', $mypage);
-        $this->zadd('numofchoose', $numofchoose);
-        $this->zadd('isadmin', $isadmin);
-        $this->zadd('mykey', $key);
-        $this->zadd('search', $sch['search']);
-        $this->zadd('problem', $sch['problem']);
+        $widgets = array(
+            'row' => $row,
+            'mykey' => $key,
+            'mypage' => $mypage,
+            'search' => $sch['search'],
+            'isadmin' => $isadmin,
+            'problem' => $sch['problem'],
+            'numofchoose' => $numofchoose
+        );
+        $this->ZaddWidgets($widgets);
         $this->auto_display();
     }
 
@@ -52,13 +55,16 @@ class IndexController extends TemplateController
         $row = M('ex_judge')->field('judge_id,question,creator,point,easycount')
             ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
             ->select();
-        $this->zadd('row', $row);
-        $this->zadd('numofjudge', $numofjudge);
-        $this->zadd('isadmin', $isadmin);
-        $this->zadd('mykey', $key);
-        $this->zadd('mypage', $mypage);
-        $this->zadd('search', $sch['search']);
-        $this->zadd('problem', $sch['problem']);
+        $widgets = array(
+            'row' => $row,
+            'mykey' => $key,
+            'mypage' => $mypage,
+            'search' => $sch['search'],
+            'isadmin' => $isadmin,
+            'problem' => $sch['problem'],
+            'numofjudge' => $numofjudge
+        );
+        $this->ZaddWidgets($widgets);
         $this->auto_display();
     }
 
@@ -71,13 +77,16 @@ class IndexController extends TemplateController
         $row = m('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
             ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
             ->select();
-        $this->zadd('row', $row);
-        $this->zadd('mypage', $mypage);
-        $this->zadd('numoffill', $numoffill);
-        $this->zadd('isadmin', $isadmin);
-        $this->zadd('mykey', $key);
-        $this->zadd('search', $sch['search']);
-        $this->zadd('problem', $sch['problem']);
+        $widgets = array(
+            'row' => $row,
+            'mykey' => $key,
+            'mypage' => $mypage,
+            'search' => $sch['search'],
+            'isadmin' => $isadmin,
+            'problem' => $sch['problem'],
+            'numoffill' => $numoffill
+        );
+        $this->ZaddWidgets($widgets);
         $this->auto_display();
     }
 

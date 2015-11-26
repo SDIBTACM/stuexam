@@ -1,7 +1,11 @@
 <?php
 namespace Teacher\Controller;
 
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\QuestionBaseModel;
 use Think\Controller;
 
 class ProblemController extends TemplateController
@@ -17,7 +21,7 @@ class ProblemController extends TemplateController
             $this->eid = I('get.eid', 0, 'intval');
             $problemType = I('get.type', 0, 'intval');
             $widgets = array(
-                'eid'  => $this->eid,
+                'eid' => $this->eid,
                 'type' => $problemType
             );
             if (!$this->isOwner4ExamByExamId($this->eid)) {
@@ -35,16 +39,16 @@ class ProblemController extends TemplateController
     public function add() {
         $problemType = I('get.type', 1, 'intval');
         switch ($problemType) {
-            case 1:
+            case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
                 $this->addChooseProblem();
                 break;
-            case 2:
+            case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
                 $this->addJudgeProblem();
                 break;
-            case 3:
+            case FillBaseModel::FILL_PROBLEM_TYPE:
                 $this->addFillProblem();
                 break;
-            case 4:
+            case ProblemServiceModel::PROGRAM_PROBLEM_TYPE:
                 $this->addProgramProblem();
                 break;
             default:
@@ -63,20 +67,22 @@ class ProblemController extends TemplateController
             ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
             ->select();
 
+        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $haveadded = array();
-        if ($row) {
-            foreach ($row as $value) {
-                $haveadded[$value['choose_id']] = $this->checkQuestionHasAdded($this->eid, 1, $value['choose_id']);
-            }
+        foreach ($questionAddedIds as $qid) {
+            $haveadded[$qid['question_id']] = 1;
         }
-        $this->zadd('row', $row);
-        $this->zadd('added', $haveadded);
-        $this->zadd('mypage', $mypage);
-        $this->zadd('numofchoose', $numofchoose);
-        $this->zadd('isadmin', $isadmin);
-        $this->zadd('search', $sch['search']);
-        $this->zadd('problem', $sch['problem']);
 
+        $widgets = array(
+            'row' => $row,
+            'added' => $haveadded,
+            'mypage' => $mypage,
+            'search' => $sch['search'],
+            'isadmin' => $isadmin,
+            'problem' => $sch['problem'],
+            'numofchoose' => $numofchoose
+        );
+        $this->ZaddWidgets($widgets);
         $this->auto_display('choose');
     }
 
@@ -88,19 +94,23 @@ class ProblemController extends TemplateController
         $row = m('ex_judge')->field('judge_id,question,creator,point,easycount')
             ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
             ->select();
+
+        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $haveadded = array();
-        if ($row) {
-            foreach ($row as $value) {
-                $haveadded[$value['judge_id']] = $this->checkQuestionHasAdded($this->eid, 2, $value['judge_id']);
-            }
+        foreach ($questionAddedIds as $qid) {
+            $haveadded[$qid['question_id']] = 1;
         }
-        $this->zadd('row', $row);
-        $this->zadd('added', $haveadded);
-        $this->zadd('numofjudge', $numofjudge);
-        $this->zadd('isadmin', $isadmin);
-        $this->zadd('mypage', $mypage);
-        $this->zadd('search', $sch['search']);
-        $this->zadd('problem', $sch['problem']);
+
+        $widgets = array(
+            'row' => $row,
+            'added' => $haveadded,
+            'mypage' => $mypage,
+            'search' => $sch['search'],
+            'isadmin' => $isadmin,
+            'problem' => $sch['problem'],
+            'numofjudge' => $numofjudge
+        );
+        $this->ZaddWidgets($widgets);
         $this->auto_display('judge');
     }
 
@@ -112,19 +122,23 @@ class ProblemController extends TemplateController
         $row = M('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
             ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
             ->select();
+
+        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
         $haveadded = array();
-        if ($row) {
-            foreach ($row as $value) {
-                $haveadded[$value['fill_id']] = $this->checkQuestionHasAdded($this->eid, 3, $value['fill_id']);
-            }
+        foreach ($questionAddedIds as $qid) {
+            $haveadded[$qid['question_id']] = 1;
         }
-        $this->zadd('added', $haveadded);
-        $this->zadd('mypage', $mypage);
-        $this->zadd('numoffill', $numoffill);
-        $this->zadd('isadmin', $isadmin);
-        $this->zadd('row', $row);
-        $this->zadd('search', $sch['search']);
-        $this->zadd('problem', $sch['problem']);
+
+        $widgets = array(
+            'row' => $row,
+            'added' => $haveadded,
+            'mypage' => $mypage,
+            'search' => $sch['search'],
+            'isadmin' => $isadmin,
+            'problem' => $sch['problem'],
+            'numoffill' => $numoffill
+        );
+        $this->ZaddWidgets($widgets);
         $this->auto_display('fill');
     }
 
@@ -138,20 +152,21 @@ class ProblemController extends TemplateController
                 $eid = I('post.eid', 0, 'intval');
                 $flag = ProblemServiceModel::instance()->addProgram2Exam($eid);
                 if ($flag === true) {
-                    $this->success('程序题添加成功', U('Teacher/Problem/addprogram', array('eid' => $eid, 'type' => 4)), 2);
+                    $this->success('程序题添加成功', U('Teacher/Problem/addProgramProblem', array('eid' => $eid, 'type' => 4)), 2);
                 } else {
                     $this->echoError('Invaild Path');
                 }
             }
         } else {
-            $ansrow = M('exp_question')->field('question_id')
-                ->where('exam_id=%d and type=4', $this->eid)->order('question_id')
-                ->select();
+            $ansrow = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
             $answernumC = count($ansrow);
             $key = set_post_key();
-            $this->zadd('mykey', $key);
-            $this->zadd('answernumC', $answernumC);
-            $this->zadd('ansrow', $ansrow);
+            $widgets = array(
+                'mykey' => $key,
+                'ansrow' => $ansrow,
+                'answernumC' => $answernumC
+            );
+            $this->ZaddWidgets($widgets);
             $this->auto_display('program');
         }
     }
@@ -161,11 +176,16 @@ class ProblemController extends TemplateController
             $eid = intval($_POST['eid']);
             $quesid = intval($_POST['id']);
             $typeid = intval($_POST['type']);
-            if ($this->isOwner4ExamByExamId($eid) && $eid > 0 && $quesid > 0 && $typeid >= 1 && $typeid <= 3) {
-                $arr['type'] = $typeid;
-                $arr['exam_id'] = $eid;
-                $arr['question_id'] = $quesid;
-                if (M('exp_question')->add($arr)) {
+            if ($this->isOwner4ExamByExamId($eid) &&
+                $eid > 0 && $quesid > 0 &&
+                in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
+            ) {
+                $data = array(
+                    'exam_id' => $eid,
+                    'question_id' => $quesid,
+                    'type' => $typeid
+                );
+                if (M('exp_question')->add($data)) {
                     echo "已添加";
                 } else {
                     echo "添加失败";
@@ -183,11 +203,16 @@ class ProblemController extends TemplateController
             $eid = intval($_POST['eid']);
             $quesid = intval($_POST['id']);
             $typeid = intval($_POST['type']);
-            if ($this->isOwner4ExamByExamId($eid) && $eid > 0 && $quesid > 0 && $typeid >= 1 && $typeid <= 3) {
-                $arr['type'] = $typeid;
-                $arr['exam_id'] = $eid;
-                $arr['question_id'] = $quesid;
-                if (M('exp_question')->where($arr)->delete()) {
+            if ($this->isOwner4ExamByExamId($eid) &&
+                $eid > 0 && $quesid > 0 &&
+                in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
+            ) {
+                $data = array(
+                    'exam_id' => $eid,
+                    'question_id' => $quesid,
+                    'type' => $typeid
+                );
+                if (M('exp_question')->where($data)->delete()) {
                     echo "ok";
                 } else {
                     echo "删除错误";

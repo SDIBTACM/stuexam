@@ -35,7 +35,7 @@ class ExamController extends TemplateController
         $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
-        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ProblemServiceModel::EXAMPROBLEM_TYPE_PROGRAM);
+        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
         $fillans2 = array();
         if ($fillans) {

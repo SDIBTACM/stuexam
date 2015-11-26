@@ -37,4 +37,15 @@ class QuestionBaseModel extends GeneralModel
         }
         return self::$_instance;
     }
+
+    public function getQuestionIds4ExamByType($eid, $type) {
+        $questionDao = $this->getDao();
+        $where = array(
+            'exam_id' => $eid,
+            'type' => $type
+        );
+        $field = array('question_id');
+        $res = $questionDao->field($field)->where($where)->select();
+        return $res;
+    }
 }
