@@ -7,7 +7,7 @@
 <div class="container exam_content papershow" style='text-align:left'>
 <h2>试卷一览</h2>
 <include file='Public:sideheader' />
-
+	<input type="hidden" id="examid" value="{$eid}">
 <h4>一.选择题</h4>
 <foreach name='chooseans' item='cans' key='numofchoose'>
 <div class="panel panel-default">
@@ -16,7 +16,7 @@
 		<p>(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
 		<p><strong>正确答案:{$cans['answer']}</strong></p>
 	</div>
-	<div class="panel-footer"><a href="javascript:void(0);" onclick="deltoexam(this,{$eid},{$cans['choose_id']},1)">[去除该题]</a></div>
+	<div class="panel-footer"><a href="javascript:void(0);" class="deltoexam" data-pid="{$cans['choose_id']}" data-type="1">[去除该题]</a></div>
 </div>
 </foreach>
 
@@ -25,7 +25,7 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><pre><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</pre></div>
 		<div class="panel-body"><strong>正确答案:{$jans['answer']}</strong></div>
-		<div class="panel-footer"><a href="javascript:void(0);" onclick="deltoexam(this,{$eid},{$jans['judge_id']},2)">[去除该题]</a></div>
+		<div class="panel-footer"><a href="javascript:void(0);" class="deltoexam" data-pid="{$jans['judge_id']}" data-type="2">[去除该题]</a></div>
 	</div>
 </foreach>
 
@@ -52,7 +52,7 @@
 				<strong>答案({$tmprow['answer_id']}) {$tmprow['answer']|default=''}    </strong>
 			</foreach>
 		</div>
-		<div class="panel-footer"><a href="javascript:void(0);" onclick="deltoexam(this,{$eid},{$fans['fill_id']},3)">[去除该题]</a></div>
+		<div class="panel-footer"><a href="javascript:void(0);" class="deltoexam" data-pid="{$fans['fill_id']}" data-type="3">[去除该题]</a></div>
 	</div>
 </foreach>
 
@@ -120,8 +120,15 @@
 
 </div>
 <script type="text/javascript">
-$(function(){
-	$("#exam_index").addClass('active');
-});
-var deltoexamurl = "{:U('Teacher/Problem/delpte')}";
+	var deltoexamurl = "{:U('Teacher/Problem/delpte')}";
+
+	$(function(){
+		$("#exam_index").addClass('active');
+		$(".deltoexam").click(function() {
+			var eid = $("#examid").val();
+			var pid = $(this).data("pid");
+			var type = $(this).data("type");
+			deltoexam(this, eid, pid, type);
+		});
+	});
 </script>
