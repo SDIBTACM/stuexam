@@ -78,4 +78,11 @@ class DbConfigModel
         'randnum' => 'int',
         'extrainfo' => 'int'
     );
+
+    const TABLE_EXP_QUESTION = 'exp_question';
+    public static $TABLE_EXP_QUESTION_FILEDS = array(
+        'exam_id' => 'int',
+        'question_id' => 'int',
+        'type' => 'tinyint'
+    );
 }

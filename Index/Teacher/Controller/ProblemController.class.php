@@ -10,36 +10,42 @@ class ProblemController extends TemplateController
     private $eid = null;
 
     public function _initialize() {
+
         parent::_initialize();
+
         if (isset($_GET['eid']) && isset($_GET['type'])) {
-            $this->eid = intval($_GET['eid']);
-            $type = intval($_GET['type']);
-            $this->zadd('eid', $this->eid);
-            $this->zadd('type', $type);
+            $this->eid = I('get.eid', 0, 'intval');
+            $problemType = I('get.type', 0, 'intval');
+            $widgets = array(
+                'eid'  => $this->eid,
+                'type' => $problemType
+            );
             if (!$this->isOwner4ExamByExamId($this->eid)) {
                 $this->echoError('You have no privilege of this exam~');
+            } else {
+                $this->ZaddWidgets($widgets);
             }
         } else if (isset($_POST['eid'])) {
-            $this->eid = intval($_POST['eid']);
+            $this->eid = I('post.eid', 0, 'intval');
         } else {
             $this->echoError('No Such Exam!');
         }
     }
 
     public function add() {
-        $type = I('get.type', 1, 'intval');
-        switch ($type) {
+        $problemType = I('get.type', 1, 'intval');
+        switch ($problemType) {
             case 1:
-                $this->addchoose();
+                $this->addChooseProblem();
                 break;
             case 2:
-                $this->addjudge();
+                $this->addJudgeProblem();
                 break;
             case 3:
-                $this->addfill();
+                $this->addFillProblem();
                 break;
             case 4:
-                $this->addprogram();
+                $this->addProgramProblem();
                 break;
             default:
                 $this->echoError('Invaild Path');
@@ -47,7 +53,7 @@ class ProblemController extends TemplateController
         }
     }
 
-    private function addchoose() {
+    private function addChooseProblem() {
 
         $sch = getproblemsearch();
         $isadmin = $this->isSuperAdmin();
@@ -74,7 +80,7 @@ class ProblemController extends TemplateController
         $this->auto_display('choose');
     }
 
-    private function addjudge() {
+    private function addJudgeProblem() {
         $sch = getproblemsearch();
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
@@ -98,7 +104,7 @@ class ProblemController extends TemplateController
         $this->auto_display('judge');
     }
 
-    private function addfill() {
+    private function addFillProblem() {
         $sch = getproblemsearch();
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
@@ -122,7 +128,7 @@ class ProblemController extends TemplateController
         $this->auto_display('fill');
     }
 
-    public function addprogram() {
+    public function addProgramProblem() {
         if (IS_POST && I('post.eid')) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');

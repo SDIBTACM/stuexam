@@ -74,6 +74,11 @@ class JudgeBaseModel extends GeneralModel
         return $res;
     }
 
+    /**
+     * 获取某场考试下的判断题的题目和答案
+     * @param $eid
+     * @return mixed
+     */
     public function getJudgeProblems4Exam($eid) {
         $type = self::JUDGE_PROBLEM_TYPE;
         $sql = "SELECT `ex_judge`.`judge_id`,`question`,`answer` FROM `ex_judge`,`exp_question`

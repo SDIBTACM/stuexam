@@ -76,6 +76,11 @@ class PrivilegeBaseModel extends GeneralModel
         return $dao->where($where)->data($data)->save();
     }
 
+    /**
+     * 获取某场考试下所有参与考试的考试,缺考的除外
+     * @param $eid
+     * @return mixed
+     */
     public function getTakeInExamUsersByExamId($eid) {
         $dao = $this->getDao();
         $where = array(

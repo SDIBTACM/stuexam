@@ -74,6 +74,11 @@ class ChooseBaseModel extends GeneralModel
         return $res;
     }
 
+    /**
+     * 获取某场考试下的选择题的所有题目和答案
+     * @param $eid
+     * @return mixed
+     */
     public function getChooseProblems4Exam($eid) {
         $type = self::CHOOSE_PROBLEM_TYPE;
         $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer` FROM `ex_choose`,`exp_question`

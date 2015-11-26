@@ -86,6 +86,12 @@ class TemplateController extends Controller
         $this->assign($name, $data);
     }
 
+    protected function ZaddWidgets($widgets) {
+        foreach ($widgets as $name => $data) {
+            $this->zadd($name, $data);
+        }
+    }
+
     protected function isSuperAdmin() {
         $isadmin = session('administrator');
         return !empty($isadmin);
