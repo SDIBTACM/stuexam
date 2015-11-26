@@ -9,6 +9,7 @@ use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
+use Think\Exception;
 
 class ExamController extends QuestionController
 {
@@ -18,45 +19,34 @@ class ExamController extends QuestionController
 
     public function showquestion() {
         $this->getStudentRandom();
+        $widgets = array();
         $userId = $this->userInfo['user_id'];
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        try {
+            $widgets['allscore'] = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
 
-        $choosearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $judgearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $fillarr = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
+            $widgets['choosearr'] = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $widgets['judgearr'] = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $widgets['fillarr'] = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
 
-        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::EXAMPROBLEM_TYPE_PROGRAM);
+            $widgets['chooseans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $widgets['judgeans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $widgets['fillans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+            $widgets['programans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
-        $choosesx = ExamadminModel::instance()->getproblemsx($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
-        $judgesx = ExamadminModel::instance()->getproblemsx($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
-        $fillsx = ExamadminModel::instance()->getproblemsx($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+            $widgets['choosesx'] = ExamadminModel::instance()->getproblemsx($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
+            $widgets['judgesx'] = ExamadminModel::instance()->getproblemsx($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
+            $widgets['fillsx'] = ExamadminModel::instance()->getproblemsx($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
-        $data = array(
-            'extrainfo' => $this->leftTime + 1
-        );
-        PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId($userId, $this->examId, $data);
-
-        $this->zadd('row', $this->examBase);
-        $this->zadd('lefttime', $this->leftTime);
-        $this->zadd('randnum', $this->randnum);
-        $this->zadd('allscore', $allscore);
-
-        $this->zadd('choosearr', $choosearr);
-        $this->zadd('judgearr', $judgearr);
-        $this->zadd('fillarr', $fillarr);
-
-        $this->zadd('choosesx', $choosesx);
-        $this->zadd('judgesx', $judgesx);
-        $this->zadd('fillsx', $fillsx);
-
-        $this->zadd('chooseans', $chooseans);
-        $this->zadd('judgeans', $judgeans);
-        $this->zadd('fillans', $fillans);
-        $this->zadd('programans', $programans);
-
+            $data = array(
+                'extrainfo' => $this->leftTime + 1
+            );
+            PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId($userId, $this->examId, $data);
+            $widgets['row'] = $this->examBase;
+            $widgets['lefttime'] = $this->leftTime;
+            $widgets['randnum'] = $this->randnum;
+        } catch (Exception $e) {
+        }
+        $this->ZaddWidgets($widgets);
         $this->auto_display(null, false);
     }
 
@@ -101,7 +91,7 @@ class ExamController extends QuestionController
             $where = array(
                 'user_id' => $userId,
                 'exam_id' => $this->examId,
-                'type' => 4,
+                'type' => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
                 'question_id' => $id,
                 'answer_id' => 1,
                 'answer' => 4

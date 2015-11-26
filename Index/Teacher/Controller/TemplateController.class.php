@@ -2,6 +2,7 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ExamBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Think\Controller;
 
 class TemplateController extends \Home\Controller\TemplateController
@@ -54,12 +55,12 @@ class TemplateController extends \Home\Controller\TemplateController
         $field = array('creator','isprivate', 'end_time');
         $res = ExamBaseModel::instance()->getExamInfoById(intval($eid), $field);
 
-        $hasPrivilege = 0;
-        if ($res['isprivate'] == 0 && $this->isCreator()) {
-            $hasPrivilege = 1;
+        $hasPrivilege = false;
+        if ($res['isprivate'] == PrivilegeBaseModel::PROBLEM_PUBLIC && $this->isCreator()) {
+            $hasPrivilege = true;
         }
 
-        if (!($this->isSuperAdmin() || $this->isOwner4ExamByUserId($res['creator']) || $hasPrivilege !=0 )) {
+        if (!($this->isSuperAdmin() || $this->isOwner4ExamByUserId($res['creator']) || $hasPrivilege)) {
             $this->echoError('You have no privilege of this exam');
         }
         if ($isReturn) {
@@ -77,7 +78,7 @@ class TemplateController extends \Home\Controller\TemplateController
         if ($this->isSuperAdmin()) {
             return true;
         } else {
-            if ($private != 2) {
+            if ($private != PrivilegeBaseModel::PROBLEM_SYSTEM) {
                 return $this->isOwner4ExamByUserId($creator);
             } else {
                 return false;
@@ -86,21 +87,14 @@ class TemplateController extends \Home\Controller\TemplateController
     }
 
     protected function checkProblemPrivate($private, $creator) {
-        if ($private == 2 && !$this->isSuperAdmin()) {
+        if ($private == PrivilegeBaseModel::PROBLEM_SYSTEM && !$this->isSuperAdmin()) {
             return -1;
         }
         if (!$this->isSuperAdmin()) {
-            if ($private == 1 && $creator != $this->userInfo['user_id']) {
+            if ($private == PrivilegeBaseModel::PROBLEM_PRIVATE && $creator != $this->userInfo['user_id']) {
                 return -1;
             }
         }
         return 1;
-    }
-
-    protected function checkQuestionHasAdded($eid, $type, $id) {
-        $cnt = M('exp_question')
-            ->where('exam_id=%d and type=%d and question_id=%d', $eid, $type, $id)
-            ->count();
-        return $cnt;
     }
 }

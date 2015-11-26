@@ -19,7 +19,7 @@ class ProgramController extends QuestionController
     public function index() {
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::EXAMPROBLEM_TYPE_PROGRAM);
+        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
         $this->zadd('allscore', $allscore);
         $this->zadd('programans', $programans);

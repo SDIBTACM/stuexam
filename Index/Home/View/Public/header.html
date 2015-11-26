@@ -46,7 +46,7 @@
 <script>
 $(function(){
 	var url = window.location.href;
-	if(url.indexOf('score')!=-1){
+	if(url.indexOf('score') != -1){
 		$("#indexnavscore").addClass('active');
 	}
 	else{
@@ -54,5 +54,5 @@ $(function(){
 	}
 	clock();
 });
-var diff=new Date("<?=date("Y/m/d H:i:s")?>").getTime()-new Date().getTime();
+var diff=new Date("<?=date('Y/m/d H:i:s')?>").getTime()-new Date().getTime();
 </script>

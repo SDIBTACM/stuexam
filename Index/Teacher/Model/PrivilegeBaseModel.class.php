@@ -11,6 +11,11 @@ namespace Teacher\Model;
 
 class PrivilegeBaseModel extends GeneralModel
 {
+
+    const PROBLEM_PUBLIC = 0;  // 公共题库
+    const PROBLEM_PRIVATE = 1; // 私有题库
+    const PROBLEM_SYSTEM = 2;  // 隐藏题库
+
     private static $_instance = null;
 
     private function __construct() {
