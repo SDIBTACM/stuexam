@@ -110,7 +110,7 @@ class InfoController extends TemplateController
             }
 
             foreach ($allTakeIn as $userId) {
-                $_userId = strtolower($user_id['user_id']);
+                $_userId = strtolower($userId['user_id']);
                 if (!in_array($_userId, $haveScoreUserIds)) {
                     $userIds2Submit[] = $_userId;
                 }
