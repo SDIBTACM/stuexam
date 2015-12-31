@@ -9,6 +9,7 @@ use Teacher\Model\FillServiceModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\JudgeServiceModel;
 use Teacher\Model\ExamBaseModel;
+use Teacher\Model\QuestionBaseModel;
 
 class AddController extends TemplateController
 {
@@ -226,13 +227,13 @@ class AddController extends TemplateController
                 $row['creator'] = $this->userInfo['user_id'];
                 $examId = ExamBaseModel::instance()->addExamBaseInfo($row);
                 // copy exam's problem
-                $exQDao = M('exp_question');
-                $res = $exQDao->field('exam_id,question_id,type')->where('exam_id=%d', $eid)->select();
+                $field = array('exam_id', 'question_id', 'type');
+                $res = QuestionBaseModel::instance()->getQuestionByExamId($eid, $field);
                 foreach ($res as &$r) {
                     $r['exam_id'] = $examId;
                 }
                 unset($r);
-                $exQDao->addAll($res);
+                QuestionBaseModel::instance()->insertQuestions($res);
                 $this->success('考试复制成功!', U('/Teacher'), 1);
             }
         }

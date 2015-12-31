@@ -38,6 +38,25 @@ class QuestionBaseModel extends GeneralModel
         return self::$_instance;
     }
 
+    public function insertQuestion($data) {
+        $questionDao = $this->getDao();
+        return $questionDao->add($data);
+    }
+
+    public function insertQuestions($data) {
+        $questionDao = $this->getDao();
+        return $questionDao->addAll($data);
+    }
+
+    public function getQuestionByExamId($eid, $field = array()) {
+        $questionDao = $this->getDao();
+        $where = array(
+            'exam_id' => $eid
+        );
+        $res = $questionDao->field($field)->where($where)->select();
+        return $res;
+    }
+
     public function getQuestionIds4ExamByType($eid, $type) {
         $questionDao = $this->getDao();
         $where = array(
