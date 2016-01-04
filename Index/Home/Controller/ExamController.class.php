@@ -18,7 +18,7 @@ class ExamController extends QuestionController
     }
 
     public function showquestion() {
-        $this->getStudentRandom();
+        $this->addExamBaseInfo();
         $widgets = array();
         $userId = $this->userInfo['user_id'];
         try {
@@ -41,9 +41,6 @@ class ExamController extends QuestionController
                 'extrainfo' => $this->leftTime + 1
             );
             PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId($userId, $this->examId, $data);
-            $widgets['row'] = $this->examBase;
-            $widgets['lefttime'] = $this->leftTime;
-            $widgets['randnum'] = $this->randnum;
         } catch (Exception $e) {
         }
         $this->ZaddWidgets($widgets);

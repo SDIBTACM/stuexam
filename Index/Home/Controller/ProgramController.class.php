@@ -24,7 +24,7 @@ class ProgramController extends QuestionController
         $this->zadd('allscore', $allscore);
         $this->zadd('programans', $programans);
 
-        $this->auto_display('Exam:program', false);
+        $this->auto_display('Exam:program', 'exlayout');
     }
 
     public function submitPaper() {
@@ -132,6 +132,22 @@ class ProgramController extends QuestionController
                 $result = $resultarr[$ans];
                 echo "<font color=$color size='5px'>$result</font>";
             }
+        }
+    }
+
+    public function programSave() {
+        $pid = I('post.pid', 0, 'intval');
+        $userId = $this->userInfo['user_id'];
+        $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
+        $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
+        $row_cnt = M('solution')
+            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
+            ->count();
+        if ($row_cnt) {
+            ProblemServiceModel::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
+            $this->echoError(4);
+        } else {
+            $this->echoError(-1);
         }
     }
 }

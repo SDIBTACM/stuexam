@@ -1,20 +1,21 @@
 /**
  * Created by jiaying on 15/11/14.
  */
-function submitChoosePaper() {
-    $("#chooseExam").submit();
-}
 
-function submitJudgePaper() {
-    $("#judgeExam").submit();
-}
+function formSubmit() {
+    var problemType = $("#problemType").val();
 
-function submitFillPaper() {
-    $("#fillExam").submit();
-}
-
-function submitProgramPaper() {
-
+    if (problemType == 1) {
+        submitChoosePaper();
+    } else if (problemType == 2) {
+        submitJudgePaper();
+    } else if (problemType == 3) {
+        submitFillPaper();
+    } else if (problemType == 4) {
+        submitProgramPaper();
+    } else {
+        alert("page error, please refresh~");
+    }
 }
 
 function savePaper(saveUrl) {
@@ -32,6 +33,23 @@ function savePaper(saveUrl) {
             alert("something error when you save")
         }
     })
+}
+
+
+function submitChoosePaper() {
+    $("#chooseExam").submit();
+}
+
+function submitJudgePaper() {
+    $("#judgeExam").submit();
+}
+
+function submitFillPaper() {
+    $("#fillExam").submit();
+}
+
+function submitProgramPaper() {
+    $("#programExam").submit();
 }
 
 function saveChoosePaper() {
@@ -118,8 +136,6 @@ function GetRTime() {
                     saveFillPaper();
                     break;
             }
-            //saveanswer();
-            //setTimeout('history.go(0)', 5000);
         }
         runtimes++;
         setTimeout("GetRTime()", 1000);

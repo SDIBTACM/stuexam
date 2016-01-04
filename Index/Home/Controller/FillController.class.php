@@ -20,6 +20,7 @@ class FillController extends QuestionController
 
     public function _initialize() {
         parent::_initialize();
+        $this->addExamBaseInfo();
     }
 
     public function index() {
@@ -34,7 +35,7 @@ class FillController extends QuestionController
         $this->zadd('fillsx', $fillsx);
         $this->zadd('fillans', $fillans);
 
-        $this->auto_display('Exam:fill', false);
+        $this->auto_display('Exam:fill', 'exlayout');
     }
 
     public function saveAnswer() {

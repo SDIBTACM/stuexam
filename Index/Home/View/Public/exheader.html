@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="程序设计考试 山东工商学院">
+    <meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
+    <!-- yours css -->
+    <css file="__PUBLIC__/Css/examsys.min.css"/>
+    <!-- Bootstrap -->
+    <css file="__PUBLIC__/Css/bootstrap.min.css"/>
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__/Js/html5shiv.min.js"></script>
+    <script src="__PUBLIC__/Js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<style>
+    .nocopy {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    body {
+        padding-top: 0 !important;
+    }
+
+    pre {
+        border: none;
+        margin: 0;
+        font-size: 15px;
+    }
+</style>
+
+<body>
+<div class="container">
+    <div style="text-align:center">
+        <h1>程序设计考试系统<br>
+            <small>考试名称:{$row['title']}</small>
+        </h1>
+    </div>
+    <table class='mytxtable'>
+        <tr>
+            <td class='tixinga'><h4>距考试结束还有:</h4></td>
+        </tr>
+        <tr>
+            <td class='tixingb'><h4><strong id="RemainH">XX</strong>:<strong id="RemainM">XX</strong>:<strong
+                    id="RemainS">XX</strong></h4></td>
+        </tr>
+        <tr>
+            <td class='tixing'>
+                <button type='button' id='saveanswer' class='btn btn-info'>保存答案
+                    <span id="saveover"></span></button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">
+                    交卷
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>

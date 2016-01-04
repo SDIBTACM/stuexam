@@ -122,7 +122,7 @@ class ExamController extends TemplateController
         $hasSubmit = 0;
         $hasTakeIn = 0;
         foreach ($row as $r) {
-            if (!is_null($r['score'])) {
+            if (!is_null($r['score']) && $r['score'] >= 0) {
                 $hasSubmit++;
             }
             if ($r['extrainfo'] != 0) {
@@ -151,9 +151,9 @@ class ExamController extends TemplateController
     public function analysis() {
         $this->isCanWatchInfo($this->eid);
         $student = I('get.student', '', 'htmlspecialchars');
-        $sqladd = '';
+        $sqladd = ' AND `score` >= 0';
         if (!empty($student)) {
-            $sqladd = " AND `user_id` like '%$student%'";
+            $sqladd = " AND `user_id` like '$student%'";
         }
 
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")
@@ -166,7 +166,7 @@ class ExamController extends TemplateController
 				AVG(`score`) as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd";
         $row = M()->query($query);
 
-        $fd[] = M('ex_student')->where("score<60 and exam_id=$this->eid $sqladd")->count();
+        $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=60 and score<70 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=70 and score<80 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=80 and score<90 and exam_id=$this->eid $sqladd")->count();

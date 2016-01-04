@@ -63,7 +63,7 @@ class ExamadminModel
                 ->field('score')
                 ->where("user_id='%s' and exam_id=%d", $user_id, $eid)
                 ->find();
-            if (!is_null($score['score'])) {
+            if (!is_null($score['score']) && $score['score'] >= 0) {
                 return -3;
             }
         }

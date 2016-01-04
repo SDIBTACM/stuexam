@@ -58,6 +58,15 @@ class QuestionController extends TemplateController
         }
     }
 
+    protected function addExamBaseInfo() {
+        $this->getStudentRandom();
+        $widgets = array();
+        $widgets['row'] = $this->examBase;
+        $widgets['lefttime'] = $this->leftTime;
+        $widgets['randnum'] = $this->randnum;
+        $this->ZaddWidgets($widgets);
+    }
+
     protected function getStudentRandom() {
         $eid = $this->examId;
         $userId = $this->userInfo['user_id'];
@@ -79,6 +88,8 @@ class QuestionController extends TemplateController
         $this->zadd('name', $name['nick']);
         $this->zadd('eid', $this->examId);
         $this->zadd('isruning', $this->isRunning);
+        $this->zadd('row', $this->examBase);
+        // $this->auto_display('Index:navigation');
         $this->auto_display('Index:about');
     }
 }

@@ -1,75 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="程序设计考试 山东工商学院">
-    <meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
-    <!-- yours css -->
-    <css file="__PUBLIC__/Css/examsys.min.css"/>
-    <!-- Bootstrap -->
-    <css file="__PUBLIC__/Css/bootstrap.min.css"/>
-    <!--[if lt IE 9]>
-    <script src="__PUBLIC__/Js/html5shiv.min.js"></script>
-    <script src="__PUBLIC__/Js/respond.min.js"></script>
-    <![endif]-->
-    <script src="__PUBLIC__/Js/exambase.js"></script>
-</head>
-
-<style>
-    .nocopy {
-        -moz-user-select: none;
-    }
-
-    body {
-        padding-top: 0 !important;
-    }
-</style>
-
 <body oncontextmenu="return false" onselectstart="return false" class="nocopy">
 <div class="container">
-    <div style="text-align:center">
-        <h1>程序设计考试系统<br>
-            <small>考试名称:{$row['title']}</small>
-            <br/>
-        </h1>
-    </div>
-    <table class='mytxtable'>
-        <tr>
-            <td class='tixinga'><h4>距考试结束还有:</h4></td>
-        </tr>
-        <tr>
-            <td class='tixingb'>
-                <h4>
-                    <strong id="RemainH">XX</strong>:<strong id="RemainM">XX</strong>:<strong
-                    id="RemainS">XX</strong>
-                </h4>
-            </td>
-        </tr>
-        <tr>
-            <td class='tixing'>
-                <button type='button' id='saveanswer' onclick='saveanswer()' class='btn btn-info'>保存答案
-                    <span id="saveover"></span>
-                </button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button type="button" id="examsubmit" class='btn btn-danger' data-toggle="modal" data-target="#myModal">
-                    交卷
-                </button>
-            </td>
-        </tr>
-    </table>
-
     <form name="chooseForm" id="chooseExam" action="{:U('Home/Choose/submitPaper')}" method="post">
         <input type="hidden" name="eid" value="{$Think.get.eid}">
+        <input type="hidden" id="problemType" name="problemType" value="1">
 
         <h3>选择题</h3>
         <foreach name='choosesx' item='csx' key='numofchoose'>
             <div class="panel panel-default">
-                <div class="panel-heading"><span color='red'>({$allscore['choosescore']} 分)</span>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}
+                <div class="panel-heading">
+                    <pre><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}</pre>
                 </div>
                 <div class="panel-body">
                     <p>
@@ -116,38 +55,4 @@
         </foreach>
     </form>
 </div>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="myModalLabel">操作确认</h4>
-            </div>
-            <div class="modal-body">确定要提交试卷吗？提交后无法撤销!</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" onclick="submitChoosePaper()">确定</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<js file="__PUBLIC__/Js/jquery-1.11.2.min.js"/>
-<js file="__PUBLIC__/Js/bootstrap.min.js"/>
-<js file="__PUBLIC__/Js/Home.min.js"/>
 </body>
-
-<script type="text/javascript">
-    var chooseSaveUrl = "{:U('Home/Choose/saveAnswer')}";
-    var left = {$lefttime} * 1000;
-    var savetime = (300 + {$randnum} % 420) * 1000;
-    var questionType = 1;
-    $(function () {
-        antiCheat();
-        GetRTime();
-    });
-</script>
-
-</html>

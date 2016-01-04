@@ -20,6 +20,7 @@ class JudgeController extends QuestionController
 
     public function _initialize() {
         parent::_initialize();
+        $this->addExamBaseInfo();
     }
 
     public function index() {
@@ -34,7 +35,7 @@ class JudgeController extends QuestionController
         $this->zadd('judgesx', $judgesx);
         $this->zadd('judgeans', $judgeans);
 
-        $this->auto_display('Exam:judge', false);
+        $this->auto_display('Exam:judge', 'exlayout');
     }
 
     public function saveAnswer() {

@@ -20,6 +20,7 @@ class ChooseController extends QuestionController
 
     public function _initialize() {
         parent::_initialize();
+        $this->addExamBaseInfo();
     }
 
     public function index() {
@@ -34,7 +35,7 @@ class ChooseController extends QuestionController
         $this->zadd('choosesx', $choosesx);
         $this->zadd('chooseans', $chooseans);
 
-        $this->auto_display('Exam:choose', false);
+        $this->auto_display('Exam:choose', 'exlayout');
     }
 
     public function saveAnswer() {
