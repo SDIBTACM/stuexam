@@ -14,9 +14,12 @@ class IndexController extends TemplateController
         $sql = getexamsearch($this->userInfo['user_id']);
         $key = set_get_key();
         $mypage = splitpage('exam', $sql);
-        $row = M('exam')->field('exam_id,title,start_time,end_time,creator')
-            ->where($sql)->order('exam_id desc')
-            ->limit($mypage['sqladd'])->select();
+        $row = M('exam')
+            ->field('exam_id,title,start_time,end_time,creator')
+            ->where($sql)
+            ->order('exam_id desc')
+            ->limit($mypage['sqladd'])
+            ->select();
         $this->zadd('row', $row);
         $this->zadd('mypage', $mypage);
         $this->zadd('mykey', $key);
@@ -29,8 +32,11 @@ class IndexController extends TemplateController
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = M('ex_choose')->field('choose_id,question,creator,point,easycount')
-            ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
+        $row = M('ex_choose')
+            ->field('choose_id,question,creator,point,easycount')
+            ->where($sch['sql'])
+            ->order('choose_id asc')
+            ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
             'row' => $row,
@@ -52,8 +58,11 @@ class IndexController extends TemplateController
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = M('ex_judge')->field('judge_id,question,creator,point,easycount')
-            ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
+        $row = M('ex_judge')
+            ->field('judge_id,question,creator,point,easycount')
+            ->where($sch['sql'])
+            ->order('judge_id asc')
+            ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
             'row' => $row,
@@ -74,8 +83,11 @@ class IndexController extends TemplateController
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = m('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
-            ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
+        $row = m('ex_fill')
+            ->field('fill_id,question,creator,point,easycount,kind')
+            ->where($sch['sql'])
+            ->order('fill_id asc')
+            ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
             'row' => $row,
@@ -94,8 +106,8 @@ class IndexController extends TemplateController
         if (!$this->isSuperAdmin()) {
             $this->echoError('Sorry,Only admin can do');
         }
-        $pnt = M('ex_point')->order('point_pos')->select();
-        $this->zadd('pnt', $pnt);
+        $points = M('ex_point')->order('point_pos')->select();
+        $this->zadd('pnt', $points);
         $this->auto_display();
     }
 
@@ -104,9 +116,9 @@ class IndexController extends TemplateController
             $arr['point_id'] = intval($_GET['id']);
             $arr['point_pos'] = intval($_GET['pos']);
             M('ex_point')->data($arr)->save();
-            echo "success";
+            $this->echoError("success");
         } else {
-            echo "wrong method";
+            $this->echoError("wrong method");
         }
     }
 }

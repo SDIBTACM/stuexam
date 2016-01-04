@@ -76,4 +76,35 @@ class FillServiceModel
             return false;
         }
     }
+
+    public function doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore) {
+        $fillSum = 0;
+        $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $query = "SELECT `fill_answer`.`fill_id`,`answer_id`,`answer`,`answernum`,`kind` FROM `fill_answer`,`ex_fill` WHERE
+		`fill_answer`.`fill_id`=`ex_fill`.`fill_id` AND `fill_answer`.`fill_id` IN ( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')";
+        $row = M()->query($query);
+        if ($row) {
+            foreach ($row as $key => $value) {
+                if (isset($fillarr[$value['fill_id']][$value['answer_id']])
+                    && (!empty($fillarr[$value['fill_id']][$value['answer_id']])
+                        || $fillarr[$value['fill_id']][$value['answer_id']] == "0")
+                ) {
+
+                    $myanswer = trim($fillarr[$value['fill_id']][$value['answer_id']]);
+                    $rightans = trim($value['answer']);
+                    if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
+                        if ($value['kind'] == 1) {
+                            $fillSum += $allscore['fillscore'];
+                        } else if ($value['kind'] == 2) {
+                            $fillSum = $fillSum + $allscore['prgans'] / $value['answernum'];
+                        } else if ($value['kind'] == 3) {
+                            $fillSum = $fillSum + $allscore['prgfill'] / $value['answernum'];
+                        }
+                    }
+                }
+            }
+        }
+        //fillover
+        return $fillSum;
+    }
 }

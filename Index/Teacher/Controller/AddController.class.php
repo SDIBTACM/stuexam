@@ -41,17 +41,16 @@ class AddController extends TemplateController
             $page = I('get.page', 1, 'intval');
             $key = set_post_key();
             $row = ExamBaseModel::instance()->getExamInfoById($eid);
-            if ($row) {
-                if (!$this->isOwner4ExamByUserId($row['creator'])) {
-                    $this->echoError('You have no privilege!');
-                }
-                $this->zadd('page', $page);
-                $this->zadd('row', $row);
-                $this->zadd('mykey', $key);
-                $this->auto_display();
-            } else {
+            if (empty($row)) {
                 $this->echoError('No Such Exam!');
             }
+            if (!$this->isOwner4ExamByUserId($row['creator'])) {
+                $this->echoError('You have no privilege!');
+            }
+            $this->zadd('page', $page);
+            $this->zadd('row', $row);
+            $this->zadd('mykey', $key);
+            $this->auto_display();
         } else {
             $page = I('get.page', 1, 'intval');
             $key = set_post_key();
@@ -63,8 +62,9 @@ class AddController extends TemplateController
 
     public function choose() {
         if (IS_POST) {
-            if (!check_post_key())
+            if (!check_post_key()) {
                 $this->echoError('发生错误！');
+            }
             if (isset($_POST['chooseid'])) {
                 $flag = ChooseServiceModel::instance()->updateChooseInfo();
                 $this->flagChecked($flag, 0);
@@ -79,19 +79,18 @@ class AddController extends TemplateController
             $pnt = M('ex_point')->select();
             $key = set_post_key();
             $row = ChooseBaseModel::instance()->getChooseById($id);
-            if ($row) {
-                if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
-                    $this->echoError('You have no privilege!');
-                }
-                $this->zadd('page', $page);
-                $this->zadd('row', $row);
-                $this->zadd('mykey', $key);
-                $this->zadd('problemType', $problemType);
-                $this->zadd('pnt', $pnt);
-                $this->auto_display();
-            } else {
+            if (empty($row)) {
                 $this->error('No Such Problem!');
             }
+            if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
+                $this->echoError('You have no privilege!');
+            }
+            $this->zadd('page', $page);
+            $this->zadd('row', $row);
+            $this->zadd('mykey', $key);
+            $this->zadd('problemType', $problemType);
+            $this->zadd('pnt', $pnt);
+            $this->auto_display();
         } else {
             $pnt = M('ex_point')->select();
             $page = I('get.page', 1, 'intval');
@@ -126,12 +125,11 @@ class AddController extends TemplateController
             $pnt = M('ex_point')->select();
             $key = set_post_key();
             $row = JudgeBaseModel::instance()->getJudgeById($id);
-            if ($row) {
-                if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
-                    $this->echoError('You have no privilege!');
-                }
-            } else {
+            if (empty($row)) {
                 $this->echoError('No Such Problem!');
+            }
+            if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
+                $this->echoError('You have no privilege!');
             }
             $this->zadd('page', $page);
             $this->zadd('row', $row);
@@ -172,23 +170,22 @@ class AddController extends TemplateController
             $pnt = M('ex_point')->select();
             $key = set_post_key();
             $row = FillBaseModel::instance()->getFillById($id);
-            if ($row) {
-                if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
-                    $this->echoError('You have no privilege!');
-                }
-                if ($row['answernum'] != 0) {
-                    $ansrow = FillBaseModel::instance()->getFillAnswerByFillId($id);
-                    $this->zadd('ansrow', $ansrow);
-                }
-                $this->zadd('page', $page);
-                $this->zadd('row', $row);
-                $this->zadd('mykey', $key);
-                $this->zadd('pnt', $pnt);
-                $this->zadd('problemType', $problemType);
-                $this->auto_display();
-            } else {
+            if (empty($row)) {
                 $this->echoError('No Such Problem!');
             }
+            if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
+                $this->echoError('You have no privilege!');
+            }
+            if ($row['answernum'] != 0) {
+                $ansrow = FillBaseModel::instance()->getFillAnswerByFillId($id);
+                $this->zadd('ansrow', $ansrow);
+            }
+            $this->zadd('page', $page);
+            $this->zadd('row', $row);
+            $this->zadd('mykey', $key);
+            $this->zadd('pnt', $pnt);
+            $this->zadd('problemType', $problemType);
+            $this->auto_display();
         } else {
             $page = I('get.page', 1, 'intval');
             $pnt = M('ex_point')->select();
@@ -219,24 +216,25 @@ class AddController extends TemplateController
     public function copyOneExam() {
         $eid = I('get.eid', 0, 'intval');
         $row = ExamBaseModel::instance()->getExamInfoById($eid);
-        if (!empty($row)) {
-            if (!$this->isOwner4ExamByUserId($row['creator'])) {
-                $this->echoError('You have no privilege!');
-            } else {
-                // copy exam's base info
-                unset($row['exam_id']);
-                $row['creator'] = $this->userInfo['user_id'];
-                $examId = ExamBaseModel::instance()->addExamBaseInfo($row);
-                // copy exam's problem
-                $field = array('exam_id', 'question_id', 'type');
-                $res = QuestionBaseModel::instance()->getQuestionByExamId($eid, $field);
-                foreach ($res as &$r) {
-                    $r['exam_id'] = $examId;
-                }
-                unset($r);
-                QuestionBaseModel::instance()->insertQuestions($res);
-                $this->success('考试复制成功!', U('/Teacher'), 1);
+        if (empty($row)) {
+            $this->echoError("No Such Exam!");
+        }
+        if (!$this->isOwner4ExamByUserId($row['creator'])) {
+            $this->echoError('You have no privilege!');
+        } else {
+            // copy exam's base info
+            unset($row['exam_id']);
+            $row['creator'] = $this->userInfo['user_id'];
+            $examId = ExamBaseModel::instance()->addExamBaseInfo($row);
+            // copy exam's problem
+            $field = array('exam_id', 'question_id', 'type');
+            $res = QuestionBaseModel::instance()->getQuestionByExamId($eid, $field);
+            foreach ($res as &$r) {
+                $r['exam_id'] = $examId;
             }
+            unset($r);
+            QuestionBaseModel::instance()->insertQuestions($res);
+            $this->success('考试复制成功!', U('/Teacher'), 1);
         }
     }
 
@@ -246,8 +244,8 @@ class AddController extends TemplateController
         if (is_bool($flag)) {
             if ($flag === true) {
                 $page = I('post.page', 1, 'intval');
-                $problem = I('post.problem',0,'intval');
-                $this->success("$typech 添加成功!", U("Teacher/Index/$typeen", array('page' => $page,'problem' => $problem)), $second);
+                $problem = I('post.problem', 0, 'intval');
+                $this->success("$typech 添加成功!", U("Teacher/Index/$typeen", array('page' => $page, 'problem' => $problem)), $second);
             } else {
                 $this->echoError("$typech 添加失败！");
             }
@@ -258,8 +256,8 @@ class AddController extends TemplateController
                 $this->echoError("$typech 修改失败！");
             } else if ($flag === 1) {
                 $page = I('post.page', 1, 'intval');
-                $problem = I('post.problem',0,'intval');
-                $this->success("$typech 修改成功!", U("Teacher/Index/$typeen", array('page' => $page,'problem'=> $problem)), $second);
+                $problem = I('post.problem', 0, 'intval');
+                $this->success("$typech 修改成功!", U("Teacher/Index/$typeen", array('page' => $page, 'problem' => $problem)), $second);
             }
         }
     }

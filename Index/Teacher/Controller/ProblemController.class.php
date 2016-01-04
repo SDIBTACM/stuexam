@@ -186,15 +186,15 @@ class ProblemController extends TemplateController
                     'type' => $typeid
                 );
                 if (M('exp_question')->add($data)) {
-                    echo "已添加";
+                    $this->echoError("已添加");
                 } else {
-                    echo "添加失败";
+                    $this->echoError("添加失败");
                 }
             } else {
-                echo "No Privilege";
+                $this->echoError("No Privilege!");
             }
         } else {
-            echo "Invaild path";
+            $this->echoError("Invaild path");
         }
     }
 
@@ -213,15 +213,15 @@ class ProblemController extends TemplateController
                     'type' => $typeid
                 );
                 if (M('exp_question')->where($data)->delete()) {
-                    echo "ok";
+                    $this->echoError("ok");
                 } else {
-                    echo "删除错误";
+                    $this->echoError("删除错误");
                 }
             } else {
-                echo "No Privilege";
+                $this->echoError("No Privilege!");
             }
         } else {
-            echo "Invaild path";
+            $this->echoError("Invaild path");
         }
     }
 }

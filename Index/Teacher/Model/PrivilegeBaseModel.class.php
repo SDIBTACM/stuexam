@@ -82,7 +82,7 @@ class PrivilegeBaseModel extends GeneralModel
     }
 
     /**
-     * 获取某场考试下所有参与考试的考试,缺考的除外
+     * 获取某场考试下所有参与考试的学生,缺考的除外
      * @param $eid
      * @return mixed
      */

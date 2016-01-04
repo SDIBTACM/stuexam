@@ -2,9 +2,12 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\ChooseServiceModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\FillBaseModel;
+use Teacher\Model\FillServiceModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\JudgeServiceModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\ExamBaseModel;
@@ -165,13 +168,13 @@ class InfoController extends TemplateController
     public function submitpaper() {
         if (isset($_GET['eid']) && isset($_GET['users'])) {
             $eid = intval(trim($_GET['eid']));
-            $users = trim($_GET['users']);
+            $userId = trim($_GET['users']);
             $sortanum = I('get.sortanum', 0, 'intval');
             $sortdnum = I('get.sortdnum', 0, 'intval');
             if (!$this->isOwner4ExamByExamId($eid)) {
                 $this->echoError('You have no privilege to do it!');
             }
-            $flag = $this->dojudgeone($eid, $users);
+            $flag = $this->dojudgeone($eid, $userId);
             if ($flag) {
                 $this->redirect("Exam/userscore", array(
                     'eid' => $eid,
@@ -192,7 +195,7 @@ class InfoController extends TemplateController
         if (!$this->isOwner4ExamByExamId($eid)) {
             $this->echoError('You have no privilege to do it!');
         }
-        if (empty($eid) && empty($userId)) {
+        if (empty($eid) || empty($userId)) {
         } else {
             $this->dojudgeone($eid, $userId);
         }
@@ -225,8 +228,9 @@ class InfoController extends TemplateController
             } else if (I('post.rjone')) {
                 $rjuserid = test_input($_POST['rjuserid']);
                 $flag = $this->dojudgeone($eid, $rjuserid);
-                if ($flag)
+                if ($flag) {
                     $this->success('重判成功！', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
+                }
             } else
                 $this->echoError('Invaild Path');
         } else {
@@ -234,7 +238,7 @@ class InfoController extends TemplateController
         }
     }
 
-    private function dojudgeone($eid, $users) {
+    private function dojudgeone($eid, $userId) {
         $field = array('start_time', 'end_time');
         $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
@@ -242,7 +246,7 @@ class InfoController extends TemplateController
 
         $rightstr = "e$eid";
         $cnt1 = M('ex_privilege')
-            ->where("user_id='%s' and rightstr='%s'", $users, $rightstr)
+            ->where("user_id='%s' and rightstr='%s'", $userId, $rightstr)
             ->count();
         if ($cnt1 == 0) {
             $this->echoError('Student ID is Wrong!');
@@ -251,100 +255,30 @@ class InfoController extends TemplateController
                 $this->echoError('Exam Not Start');
             }
             $mark = M('ex_student')
-                ->where("exam_id=%d and user_id='%s'", $eid, $users)
+                ->where("exam_id=%d and user_id='%s'", $eid, $userId)
                 ->count();
-            $this->rejudgepaper($users, $eid, $start_timeC, $end_timeC, $mark);
+            $this->rejudgepaper($userId, $eid, $start_timeC, $end_timeC, $mark);
             return true;
         }
         return false;
     }
 
-    public function rejudgepaper($users, $eid, $start_timeC, $end_timeC, $mark) {
+    public function rejudgepaper($userId, $eid, $start_timeC, $end_timeC, $mark) {
 
-        $choosesum = 0;
-        $judgesum = 0;
-        $fillsum = 0;
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
 
-        $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 1);
-        $query = "SELECT `choose_id`,`answer` FROM `ex_choose` WHERE `choose_id` IN
-		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1')";
-        $row = M()->query($query);
-        if ($row) {
-            foreach ($row as $key => $value) {
-                if (isset($choosearr[$value['choose_id']])) {
-                    $myanswer = $choosearr[$value['choose_id']];
-                    if ($myanswer == $value['answer'])
-                        $choosesum += $allscore['choosescore'];
-                }
-            }
-            unset($row);
-            unset($choosearr);
-        }
-        //choose over
-
-        $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 2);;
-        $query = "SELECT `judge_id`,`answer` FROM `ex_judge` WHERE `judge_id` IN
-		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='2')";
-        $row = M()->query($query);
-        if ($row) {
-            foreach ($row as $key => $value) {
-                if (isset($judgearr[$value['judge_id']])) {
-                    $myanswer = $judgearr[$value['judge_id']];
-                    if ($myanswer == $value['answer'])
-                        $judgesum += $allscore['judgescore'];
-                }
-            }
-            unset($row);
-            unset($judgearr);
-        }
-        //judge over
-
-        $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $users, 3);
-        $query = "SELECT `fill_answer`.`fill_id`,`answer_id`,`answer`,`answernum`,`kind` FROM `fill_answer`,`ex_fill` WHERE
-		`fill_answer`.`fill_id`=`ex_fill`.`fill_id` AND `fill_answer`.`fill_id` IN ( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')";
-        $row = M()->query($query);
-        if ($row) {
-            foreach ($row as $key => $value) {
-                if (isset($fillarr[$value['fill_id']][$value['answer_id']])
-                    && (!empty($fillarr[$value['fill_id']][$value['answer_id']])
-                        || $fillarr[$value['fill_id']][$value['answer_id']] == "0")
-                ) {
-
-                    $myanswer = trim($fillarr[$value['fill_id']][$value['answer_id']]);
-
-                    $rightans = trim($value['answer']);
-
-                    if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
-                        if ($value['kind'] == 1) {
-                            $fillsum += $allscore['fillscore'];
-                        } else if ($value['kind'] == 2) {
-                            $fillsum = $fillsum + $allscore['prgans'] / $value['answernum'];
-                        } else if ($value['kind'] == 3) {
-                            $fillsum = $fillsum + $allscore['prgfill'] / $value['answernum'];
-                        }
-                    }
-                }
-            }
-            unset($row);
-            unset($fillarr);
-        }
-        //fillover
-
-        $query = "SELECT distinct `question_id`,`result` FROM `exp_question`,`solution` WHERE `exam_id`='$eid' AND `type`='4' AND `result`='4'
-		AND `in_date`>'$start_timeC' AND `in_date`<'$end_timeC' AND `user_id`='" . $users . "' AND `exp_question`.`question_id`=`solution`.`problem_id`";
-        $row = M()->query($query);
-        $row_cnt = count($row);
-        $programsum = $row_cnt * $allscore['programscore'];
-        //$program over
+        $choosesum = ChooseServiceModel::instance()->doRejudgeChooseByExamIdAndUserId($eid, $userId, $allscore['choosescore']);
+        $judgesum = JudgeServiceModel::instance()->doRejudgeJudgeByExamIdAndUserId($eid, $userId, $allscore['judgescore']);
+        $fillsum = FillServiceModel::instance()->doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore);
+        $programsum = ProblemServiceModel::instance()->doRejudgeProgramByExamIdAndUserId($eid, $userId, $allscore['programscore'], $start_timeC, $end_timeC);
 
         $sum = $choosesum + $judgesum + $fillsum + $programsum;
         if ($mark == 0) { // if the student has not submitted the paper
-            $sql = "INSERT INTO `ex_student` VALUES('" . $users . "','$eid','$sum','$choosesum','$judgesum','$fillsum','$programsum')";
+            $sql = "INSERT INTO `ex_student` VALUES('" . $userId . "','$eid','$sum','$choosesum','$judgesum','$fillsum','$programsum')";
             M()->execute($sql);
         } else {
             $sql = "UPDATE `ex_student` SET `score`='$sum',`choosesum`='$choosesum',`judgesum`='$judgesum',`fillsum`='$fillsum',`programsum`='$programsum'
-			WHERE `user_id`='" . $users . "' AND `exam_id`='$eid'";
+			WHERE `user_id`='" . $userId . "' AND `exam_id`='$eid'";
             M()->execute($sql);
         }
     }

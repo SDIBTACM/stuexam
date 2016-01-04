@@ -61,4 +61,23 @@ class ChooseServiceModel
         $lastId = ChooseBaseModel::instance()->insertChooseInfo($arr);
         return $lastId ? true : false;
     }
+
+    public function doRejudgeChooseByExamIdAndUserId($eid, $userId, $chooseScore) {
+        $chooseSum = 0;
+        $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $query = "SELECT `choose_id`,`answer` FROM `ex_choose` WHERE `choose_id` IN
+		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1')";
+        $row = M()->query($query);
+        if ($row) {
+            foreach ($row as $key => $value) {
+                if (isset($choosearr[$value['choose_id']])) {
+                    $myanswer = $choosearr[$value['choose_id']];
+                    if ($myanswer == $value['answer'])
+                        $chooseSum += $chooseScore;
+                }
+            }
+        }
+        return $chooseSum;
+        //choose over
+    }
 }

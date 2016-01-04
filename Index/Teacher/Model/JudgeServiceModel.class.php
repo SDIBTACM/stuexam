@@ -53,4 +53,22 @@ class JudgeServiceModel
         $lastId = JudgeBaseModel::instance()->insertJudgeInfo($arr);
         return $lastId ? true : false;
     }
+
+    public function doRejudgeJudgeByExamIdAndUserId($eid, $userId, $judgeScore) {
+        $judgeSum = 0;
+        $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);;
+        $query = "SELECT `judge_id`,`answer` FROM `ex_judge` WHERE `judge_id` IN
+		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='2')";
+        $row = M()->query($query);
+        if ($row) {
+            foreach ($row as $key => $value) {
+                if (isset($judgearr[$value['judge_id']])) {
+                    $myanswer = $judgearr[$value['judge_id']];
+                    if ($myanswer == $value['answer'])
+                        $judgeSum += $judgeScore;
+                }
+            }
+        }
+        return $judgeSum;
+    }
 }
