@@ -19,7 +19,7 @@
                     <div class="cbp_tmicon"></div>
                     <time class="cbp_tmtime" datetime="{$r['start_time']}"><span>{$r['start_time']|strtotime|date='Y/m/d',###}</span> <span>{$r['start_time']|strtotime|date='H:i',###}</span></time>
                     <if condition="time() gt strtotime($r['start_time']) and time() lt strtotime($r['end_time'])">
-                        <div class="cbp_tmlabel" onclick="window.location.href='{:U('Home/Index/about', array('eid'=>$r['exam_id']))}'">
+                        <div class="cbp_tmlabel" onclick="window.location.href='{:U('Home/Question/navigation', array('eid'=>$r['exam_id']))}'">
                     <else />
                         <div class="cbp_tmlabel" style="background-color:#9AA5AB;">
                     </if>
