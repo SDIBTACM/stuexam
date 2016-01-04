@@ -23,8 +23,9 @@ class AddController extends TemplateController
 
     public function exam() {
         if (IS_POST) {
-            if (!check_post_key())
+            if (!check_post_key()) {
                 $this->echoError('发生错误！');
+            }
             if (!$this->isCreator()) {
                 $this->echoError('You have no privilege!');
             }

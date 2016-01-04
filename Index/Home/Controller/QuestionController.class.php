@@ -10,6 +10,7 @@ namespace Home\Controller;
 
 use Home\Model\ExamadminModel;
 use Teacher\Model\ExamBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 
 class QuestionController extends TemplateController
 {
@@ -60,10 +61,7 @@ class QuestionController extends TemplateController
     protected function getStudentRandom() {
         $eid = $this->examId;
         $userId = $this->userInfo['user_id'];
-        $randNum = M('ex_privilege')
-            ->field('randnum')
-            ->where("user_id='$userId' and rightstr='e$eid'")
-            ->find();
+        $randNum = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($userId, $eid, array('randnum'));
         if ($this->isCreator()) {
             $num = 0;
         } else {

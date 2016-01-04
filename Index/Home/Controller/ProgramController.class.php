@@ -97,29 +97,40 @@ class ProgramController extends QuestionController
 
     public function updresult() {
         $id = intval($_GET['id']);
-        $user_id = $this->userInfo['user_id'];
-
+        $userId = $this->userInfo['user_id'];
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
-        $row_cnt = M('solution')
-            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
-            ->count();
-        if ($row_cnt) {
-            echo "<span color='blue' size='3px'>此题已正确,请不要重复提交</span>";
+
+        $where = array(
+            'user_id' => $userId,
+            'exam_id' => $this->examId,
+            'type' => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
+            'question_id' => $id,
+            'answer_id' => 1,
+            'answer' => 4
+        );
+        $row_cnt = M('ex_stuanswer')->where($where)->find();
+        //->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
+        if (!empty($row_cnt)) {
+            echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
-            $trow = M('solution')->field('result')
-                ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
+            $trow = M('solution')
+                ->field('result')
+                ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
                 ->order('solution_id desc')
                 ->find();
-            if (!$trow) {
-                echo "<span color='green' size='5px'>未提交</span>";
+            if (empty($trow)) {
+                echo "<font color='green' size='5px'>未提交</font>";
             } else {
                 $ans = $trow['result'];
+                if ($ans == 4) {
+                    ProblemServiceModel::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
+                }
                 $colorarr = C('judge_color');
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
                 $result = $resultarr[$ans];
-                echo "<span color=$color size='5px'>$result</span>";
+                echo "<font color=$color size='5px'>$result</font>";
             }
         }
     }

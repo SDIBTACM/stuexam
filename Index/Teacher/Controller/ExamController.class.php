@@ -24,6 +24,7 @@ class ExamController extends TemplateController
             $this->echoError('No Such Exam!');
         }
     }
+
     //owner can do
     public function index() {
 
@@ -76,10 +77,11 @@ class ExamController extends TemplateController
             } else {
                 $eid = I('post.eid', 0, 'intval');
                 $flag = ExamServiceModel::instance()->addUsers2Exam($eid);
-                if ($flag === true)
+                if ($flag === true) {
                     $this->success('考生添加成功', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
-                else
+                } else {
                     $this->echoError('Invaild Path');
+                }
             }
         } else {
             if (!$this->isOwner4ExamByExamId($this->eid)) {
@@ -133,7 +135,7 @@ class ExamController extends TemplateController
             $isShowDel = true;
         }
         $xsid = I('get.xsid', '');
-        $xsname = I('get.xsname','');
+        $xsname = I('get.xsname', '');
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         $this->zadd('row', $row);
@@ -208,7 +210,7 @@ class ExamController extends TemplateController
             $field = array('user_id', 'nick');
             $_unames = M('users')->field($field)->where($where)->select();
             foreach ($_unames as $_uname) {
-                $unames[ $_uname['user_id'] ] = $_uname['nick'];
+                $unames[$_uname['user_id']] = $_uname['nick'];
             }
             usleep(10000);
         }

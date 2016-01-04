@@ -76,11 +76,8 @@ function cutstring($str, $length = 0) {
 }
 
 function SortStuScore($table) {
-    $sqladd = "";
     $where = array();
-    $whereflag = false;
     $order = array();
-    $orderflag = false;
     if (isset($_GET['xsid'])) {
         $xsid = $_GET['xsid'];
         $xsid = addslashes($xsid);
@@ -115,8 +112,9 @@ function SortStuScore($table) {
     if (!empty($order[0])) {
         $order = join(',', $order);
         $order = "ORDER BY " . $order;
-    } else
+    } else {
         $order = join('', $order);
+    }
     $sqladd = $where . " " . $order;
     return $sqladd;
 }
