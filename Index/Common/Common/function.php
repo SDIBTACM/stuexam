@@ -120,6 +120,16 @@ function resultReturn($code, $msg = '') {
     exit;
 }
 
+function checkScore($score) {
+    if (is_null($score)) {
+        return '';
+    } else if ($score == -1) {
+        return "<span class='label label-default'>还未提交</span>";
+    } else {
+        return $score;
+    }
+}
+
 function dbg($vars) {
     if (C('ISDEBUG')) {
         dump($vars);

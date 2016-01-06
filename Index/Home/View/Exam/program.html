@@ -1,6 +1,7 @@
 <body>
 <div class="container">
     <h3>程序设计题</h3>
+    <input type="hidden" id="problemType" name="problemType" value="{$problemType}">
     <foreach name='programans' item='pans' key='numofprogram'>
         <div class="panel panel-default" id="programpanel{$pans['program_id']}">
             <div class="panel-heading"><font color='red'>({$allscore['programscore']} 分)</font>

@@ -3,7 +3,10 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <h2>考试名称:{$row['title']}</h2>
-            <p><small>Start Time:{$row['start_time']} End Time:{$row['end_time']}</small></p>
+
+            <p>
+                <small>Start Time:{$row['start_time']} End Time:{$row['end_time']}</small>
+            </p>
         </div>
         <div class="panel-body row">
             <if condition="$isruning eq 1">
@@ -11,37 +14,74 @@
                     <div class="list-group">
                         <a href="##" class="list-group-item list-group-item-default disabled">题型列表</a>
 
-                        <a href="{:U('Home/Choose/index', array('eid' => $eid))}" class="list-group-item list-group-item-success">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true">选择题</span>
+                        <a href="{:U('Home/Choose/index', array('eid' => $eid))}"
+                           class="list-group-item list-group-item-success">
+                            <if condition="$allNum['choosenum'] eq 0">
+                                <span class="glyphicon glyphicon-off" aria-hidden="true">选择题</span>
+                                <elseif condition="$userScore['choosesum'] neq -1"/>
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true">选择题(得分:{$userScore['choosesum']})</span>
+                                <else/>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true">选择题</span>
+                            </if>
                         </a>
 
-                        <a href="{:U('Home/Judge/index', array('eid' => $eid))}" class="list-group-item list-group-item-info">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true">判断题</span>
+                        <a href="{:U('Home/Judge/index', array('eid' => $eid))}"
+                           class="list-group-item list-group-item-info">
+                            <if condition="$allNum['judgenum'] eq 0">
+                                <span class="glyphicon glyphicon-off" aria-hidden="true">判断题</span>
+                                <elseif condition="$userScore['judgesum'] neq -1"/>
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true"/>判断题(得分:{$userScore['judgesum']})</span>
+                                <else/>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true">判断题</span>
+                            </if>
                         </a>
 
-                        <a href="{:U('Home/Fill/index', array('eid' => $eid))}" class="list-group-item list-group-item-warning">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true">填空题</span>
+                        <a href="{:U('Home/Fill/index', array('eid' => $eid))}"
+                           class="list-group-item list-group-item-warning">
+                            <if condition="$allNum['fillnum'] eq 0">
+                                <span class="glyphicon glyphicon-off" aria-hidden="true">填空题</span>
+                                <elseif condition="$userScore['fillsum'] neq -1"/>
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true">填空题(得分:{$userScore['fillsum']})</span>
+                                <else/>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true">填空题</span>
+                            </if>
                         </a>
 
 
-                        <a href="{:U('Home/Program/index', array('eid' => $eid))}" class="list-group-item list-group-item-danger">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true">编程题</span>
+                        <a href="{:U('Home/Program/index', array('eid' => $eid))}"
+                           class="list-group-item list-group-item-danger">
+                            <if condition="$allNum['programnum'] eq 0">
+                                <span class="glyphicon glyphicon-off" aria-hidden="true">编程题</span>
+                                <elseif condition="$userScore['programsum'] neq -1"/>
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true">编程题(得分:{$userScore['programsum']})</span>
+                                <else/>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true">编程题</span>
+                            </if>
                         </a>
                     </div>
+                    符号含义:
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true">尚未完成</span>
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true">已经完成</span>
+                    <span class="glyphicon glyphicon-off" aria-hidden="true">本场考试没有该题型</span>
                 </div>
             </if>
             <div class="col-md-6">
                 <h3>考生信息:</h3>
+
                 <p>姓名: {$name}
+
                 <p>账号: {$Think.session.user_id}</p>
+
                 <h3>考生须知:</h3>
                 <ol>
                     <li>请认真检查左侧个人真实信息,关系最后考试成绩,姓名为个人真实姓名,
-                        <br>账号格式为专业缩写+学号后八位,如jk11171101.</li>
+                        <br>账号格式为专业缩写+学号后八位,如jk11171101.
+                    </li>
                     <li>请各位将手机关闭，考试期间手机响按作弊处理.</li>
                     <li>考场内凡交头接耳、抄袭、打手势或大声喧哗的按作弊处理.</li>
                     <li>考试过程中，一旦提交试卷，将显示得分，并且考试结束，请谨慎选择.<br>
-                        考试时间到，未提交试卷的，考试系统将自动提交试卷.</li>
+                        考试时间到，未提交试卷的，考试系统将自动提交试卷.
+                    </li>
                     <li>采取各种方式抄录试题的按照严重作弊取理.</li>
                     <li>请及时保存答案,防止特殊情况发生答案丢失.刷新界面前,请先保存答案</li>
                 </ol>
@@ -50,7 +90,7 @@
         <div class="panel-footer pull-right">
             <if condition="$isruning eq 0">
                 <button class='btn btn-success' disabled>考试已结束</button>
-                <elseif condition="$isruning eq 1" />
+                <elseif condition="$isruning eq 1"/>
                 <button class='btn btn-danger' disabled>正在考试中...</button>
                 <else/>
                 <button class='btn btn-info' disabled>考试未进行</button>

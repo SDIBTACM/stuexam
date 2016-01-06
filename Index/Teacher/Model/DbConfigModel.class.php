@@ -85,4 +85,15 @@ class DbConfigModel
         'question_id' => 'int',
         'type' => 'tinyint'
     );
+
+    const TABLE_EX_STUDENT = 'ex_student';
+    public static $TABLE_EX_STUDENT_FILEDS = array(
+        'user_id' => 'varchar',
+        'exam_id' => 'int',
+        'score' => 'int',
+        'choosesum' => 'int',
+        'judgesum' => 'int',
+        'fillsum' => 'int',
+        'programsum' => 'int'
+    );
 }

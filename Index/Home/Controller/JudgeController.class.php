@@ -13,6 +13,7 @@ use Home\Model\ExamadminModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\StudentBaseModel;
 
 // TODO 暂时未开放此类,主要为了将各题目模型分隔
 class JudgeController extends QuestionController
@@ -21,6 +22,9 @@ class JudgeController extends QuestionController
     public function _initialize() {
         parent::_initialize();
         $this->addExamBaseInfo();
+        if ($this->checkHasScore('judgesum')) {
+            $this->alertError('该题型你已经交卷,不能再查看', $this->navigationUrl);
+        }
     }
 
     public function index() {
@@ -34,18 +38,22 @@ class JudgeController extends QuestionController
         $this->zadd('judgearr', $judgearr);
         $this->zadd('judgesx', $judgesx);
         $this->zadd('judgeans', $judgeans);
+        $this->zadd('problemType', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
 
         $this->auto_display('Exam:judge', 'exlayout');
     }
 
     public function saveAnswer() {
         AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        echo 'ok';
     }
 
     public function submitPaper() {
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $jright = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $jright = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
         $inarr['judgesum'] = $jright * $allscore['judgescore'];
-        // TODO update judge score
+        StudentBaseModel::instance()->submitExamPaper(
+            $this->userInfo['user_id'], $this->examId, $inarr);
+        redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }

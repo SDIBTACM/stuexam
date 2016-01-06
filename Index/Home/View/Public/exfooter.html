@@ -9,79 +9,28 @@
             <div class="modal-body">确定要提交试卷吗？提交后无法撤销!</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" onclick="formSubmit()">确定</button>
+                <button type="button" class="btn btn-primary" onclick="examFormSubmit()">确定</button>
             </div>
         </div>
     </div>
 </div>
+
 <script type="text/javascript" src="__PUBLIC__/Js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/Js/bootstrap.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/Js/Home.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/Js/exambase.js"></script>
 <script type="text/javascript">
-    var answersaveurl = "";
-    var saveprogram = "";
-    var left = {$lefttime} * 1000;
-    var savetime = (300 + {$randnum} % 420) * 1000;
+    var chooseSaveUrl = "{:U('Home/Choose/saveAnswer')}";
+    var judgeSaveUrl = "{:U('Home/Judge/saveAnswer')}";
+    var fillSaveUrl = "{:U('Home/Fill/saveAnswer')}";
+    var saveprogram = "{:U('Home/Program/programSave')}";
     var codesubmiturl = "{:U('Home/Program/prgsubmit')}";
     var updresulturl = "{:U('Home/Program/updresult')}";
+
+    var left = $("#examLeftTime").val();
+    left = left * 1000;
+    var randnum = $("#examRandom").val();
+    var savetime = (300 + randnum % 420) * 1000;
     var questionType = $("#problemType").val();
-    $(function () {
-        $(".upd-stuprogram").click(function(){
-            var eid = $("#examid").val();
-            var pid = $(this).data('pid');
-            var panel = "collapseExample" + pid;
-            var accepted = $("#" + panel).data('accepted');
-            if (accepted != 1) {
-                $.ajax({
-                    url: saveprogram,
-                    type: "POST",
-                    dataType: "html",
-                    data: 'eid=' + eid + '&pid=' + pid,
-                    success: function (data) {
-                        if (data == 4) {
-                            $("#" + panel).data('accepted', 1).html("此题你已正确!");//slideUp("slow", function(){$(this).remove();});
-                        }
-                    },
-                    error: function () {
-                        console.log('error update program');
-                    }
-                });
-            }
-        });
-        $("#saveanswer").click(function(){
-            saveanswer();
-        });
-        $(".submitcode").click(function(){
-            var pid = $(this).data('programid');
-            var eid = $("#examid").val();
-            var span = "span" + pid;
-            var code = "code" + pid;
-            var language = "language" + pid;
-            submitcode(span, code, language, pid, eid);
-        });
-        $(".updateresult").click(function(){
-            var pid = $(this).data('proid');
-            var eid = $("#examid").val();
-            var span = "span" + pid;
-            updateresult(this, span, pid, eid);
-        });
-        $("body").keydown(function (event) {
-            if (event.keyCode == 116) {
-                event.returnValue = false;
-                alert("当前设置不允许使用F5刷新键");
-                return false;
-            }
-            if( (event.ctrlKey) && (event.keyCode == 83) ) {
-                event.returnValue = false;
-                return false;
-            }
-            if (event.keyCode == 123) {
-                event.returnValue = false;
-                alert("当前设置不允许使用F12键");
-                return false;
-            }
-        });
-        GetRTime();
-    });
+
 </script>

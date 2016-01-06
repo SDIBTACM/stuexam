@@ -1,40 +1,55 @@
 /**
  * Created by jiaying on 15/11/14.
  */
-
-function formSubmit() {
-    var problemType = $("#problemType").val();
-
-    if (problemType == 1) {
-        submitChoosePaper();
-    } else if (problemType == 2) {
-        submitJudgePaper();
-    } else if (problemType == 3) {
-        submitFillPaper();
-    } else if (problemType == 4) {
-        submitProgramPaper();
-    } else {
-        alert("page error, please refresh~");
-    }
-}
-
-function savePaper(saveUrl) {
-    $.ajax({
-        url: saveUrl,
-        type: "POST",
-        dataType: "html",
-        data: $("#exam").serialize(),
-        success: function(e) {
-            "ok" == e ? ($("#saveover").html("[已保存]"), setTimeout(function() {
-                $("#saveover").html("")
-            }, 6e3)) : $("#saveover").html(e)
-        },
-        error: function() {
-            alert("something error when you save")
+$(function () {
+    $(".upd-stuprogram").click(function(){
+        var eid = $("#examid").val();
+        var pid = $(this).data('pid');
+        var panel = "collapseExample" + pid;
+        var accepted = $("#" + panel).data('accepted');
+        if (accepted != 1) {
+            $.ajax({
+                url: saveprogram,
+                type: "POST",
+                dataType: "html",
+                data: 'eid=' + eid + '&pid=' + pid,
+                success: function (data) {
+                    if (data == 4) {
+                        $("#" + panel).data('accepted', 1).html("此题你已正确!");//slideUp("slow", function(){$(this).remove();});
+                    }
+                },
+                error: function () {
+                    console.log('error update program');
+                }
+            });
         }
-    })
-}
-
+    });
+    $("#savePaper").click(function(){
+        if (questionType == 1) {
+            savePaper(chooseSaveUrl, "chooseExam");
+        }  else if (questionType == 2) {
+            savePaper(judgeSaveUrl, "judgeExam");
+        } else if (questionType == 3) {
+            savePaper(fillSaveUrl, "fillExam");
+        }
+    });
+    $(".submitcode").click(function(){
+        var pid = $(this).data('programid');
+        var eid = $("#examid").val();
+        var span = "span" + pid;
+        var code = "code" + pid;
+        var language = "language" + pid;
+        submitcode(span, code, language, pid, eid);
+    });
+    $(".updateresult").click(function(){
+        var pid = $(this).data('proid');
+        var eid = $("#examid").val();
+        var span = "span" + pid;
+        updateresult(this, span, pid, eid);
+    });
+    antiCheat();
+    GetRTime();
+});
 
 function submitChoosePaper() {
     $("#chooseExam").submit();
@@ -52,21 +67,44 @@ function submitProgramPaper() {
     $("#programExam").submit();
 }
 
-function saveChoosePaper() {
-    savePaper(chooseSaveUrl);
+function examFormSubmit() {
+    var problemType = $("#problemType").val();
+    if (problemType == 1) {
+        submitChoosePaper();
+    } else if (problemType == 2) {
+        submitJudgePaper();
+    } else if (problemType == 3) {
+        submitFillPaper();
+    } else {
+        alert("page error, please refresh~");
+    }
 }
 
-function saveJudgePaper() {
-    savePaper(judgeSaveUrl);
-}
-
-function saveFillPaper() {
-    savePaper(fillSaveUrl);
+function savePaper(saveUrl, formId) {
+    $.ajax({
+        url: saveUrl,
+        type: "POST",
+        dataType: "html",
+        data: $("#" + formId).serialize(),
+        success: function(e) {
+            "ok" == e ? ($("#saveover").html("[已保存]"), setTimeout(function() {
+                $("#saveover").html("")
+            }, 6e3)) : $("#saveover").html(e)
+        },
+        error: function() {
+            alert("something error when you save")
+        }
+    });
 }
 
 function antiCheat() {
     $("body").keydown(function (event) {
         if (event.keyCode == 116) {
+            event.returnValue = false;
+            alert("当前设置不允许使用F5刷新键");
+            return false;
+        }
+        if( (event.ctrlKey) && (event.keyCode == 83) ) {
             event.returnValue = false;
             return false;
         }
@@ -80,6 +118,7 @@ function antiCheat() {
         //}
         if (event.keyCode == 123) {
             event.returnValue = false;
+            alert("当前设置不允许使用F12键");
             return false;
         }
     });
@@ -118,22 +157,21 @@ function GetRTime() {
                 case 3 :
                     submitFillPaper();
                     break;
-                default :
+                case 4 :
                     submitProgramPaper();
-                    break;
             }
         }
 
         if (nMS % savetime == 0 && nMS > savetime) {
             switch (questionType) {
                 case 1 :
-                    saveChoosePaper();
+                    savePaper(chooseSaveUrl, "chooseExam");
                     break;
                 case 2 :
-                    saveJudgePaper();
+                    savePaper(judgeSaveUrl, "judgeExam");
                     break;
                 case 3 :
-                    saveFillPaper();
+                    savePaper(fillSaveUrl, "fillExam");
                     break;
             }
         }

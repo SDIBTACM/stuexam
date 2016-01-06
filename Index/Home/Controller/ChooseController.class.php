@@ -13,6 +13,7 @@ use Home\Model\ExamadminModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\StudentBaseModel;
 
 // TODO 暂时未开放此类,主要为了将各题目模型分隔
 class ChooseController extends QuestionController
@@ -21,6 +22,9 @@ class ChooseController extends QuestionController
     public function _initialize() {
         parent::_initialize();
         $this->addExamBaseInfo();
+        if ($this->checkHasScore('choosesum')) {
+            $this->alertError('该题型你已经交卷,不能再查看', $this->navigationUrl);
+        }
     }
 
     public function index() {
@@ -34,20 +38,22 @@ class ChooseController extends QuestionController
         $this->zadd('choosearr', $choosearr);
         $this->zadd('choosesx', $choosesx);
         $this->zadd('chooseans', $chooseans);
+        $this->zadd('problemType', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
 
         $this->auto_display('Exam:choose', 'exlayout');
     }
 
     public function saveAnswer() {
         AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        echo "ok";
     }
 
     public function submitPaper() {
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $cright = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
-        $inarr['user_id'] = $this->userInfo['user_id'];
-        $inarr['exam_id'] = $this->examId;
         $inarr['choosesum'] = $cright * $allscore['choosescore'];
-        M('ex_student')->add($inarr);
+        StudentBaseModel::instance()->submitExamPaper(
+            $this->userInfo['user_id'], $this->examId, $inarr);
+        redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }

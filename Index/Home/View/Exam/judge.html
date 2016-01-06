@@ -2,7 +2,7 @@
 <div class="container">
     <form name="judgeForm" id="judgeExam" action="{:U('Home/Judge/submitPaper')}" method="post">
         <input type="hidden" name="eid" value="{$Think.get.eid}">
-        <input type="hidden" id="problemType" name="problemType" value="2">
+        <input type="hidden" id="problemType" name="problemType" value="{$problemType}">
 
         <h3>判断题</h3>
         <foreach name='judgesx' item='jsx' key='numofjudge'>

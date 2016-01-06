@@ -11,10 +11,36 @@ namespace Home\Controller;
 use Home\Model\AnswerModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\StudentBaseModel;
 
 // TODO 暂时未开放此类,主要为了将各题目模型分隔
 class ProgramController extends QuestionController
 {
+
+    public function _initialize() {
+        parent::_initialize();
+        $this->addExamBaseInfo();
+        if ($this->checkHasScore('programsum')) {
+            $this->alertError('该题型你已经交卷,不能再查看', $this->navigationUrl);
+        }
+
+        if (!$this->checkOtherProblemHasSubmit()) {
+            $this->alertError("只有其他题型全部完成之后才能做编程题!", $this->navigationUrl);
+        }
+    }
+
+    private function checkOtherProblemHasSubmit() {
+        $scores = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
+
+        if (empty($scores)) {
+            return false;
+        }
+
+        if ($scores['choosesum'] == -1 || $scores['judgesum'] == -1 || $scores['fillsum'] == -1) {
+            return false;
+        }
+        return true;
+    }
 
     public function index() {
 
@@ -23,6 +49,7 @@ class ProgramController extends QuestionController
 
         $this->zadd('allscore', $allscore);
         $this->zadd('programans', $programans);
+        $this->zadd('problemType', ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
         $this->auto_display('Exam:program', 'exlayout');
     }
@@ -34,7 +61,9 @@ class ProgramController extends QuestionController
         $pright = AnswerModel::instance()->getrightprogram($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
         $inarr['programsum'] = $pright * $allscore['programscore'];
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
-        // TODO update program score and total score
+        StudentBaseModel::instance()->submitExamPaper(
+            $this->userInfo['user_id'], $this->examId, $inarr);
+        redirect(U('Home/Index/Score'));
     }
 
     public function prgsubmit() {

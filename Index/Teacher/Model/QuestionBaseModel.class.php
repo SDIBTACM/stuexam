@@ -67,4 +67,15 @@ class QuestionBaseModel extends GeneralModel
         $res = $questionDao->field($field)->where($where)->select();
         return $res;
     }
+
+    public function getQuestionCntByType($eid, $type) {
+        $questionDao = $this->getDao();
+        $where = array(
+            'exam_id' => $eid,
+            'type' => $type
+        );
+        $field = array('question_id');
+        $res = $questionDao->field($field)->where($where)->count();
+        return $res;
+    }
 }

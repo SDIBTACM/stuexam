@@ -93,11 +93,11 @@
                     <td>{$k+1}</td>
                     <td>{$r['user_id']}</td>
                     <td>{$r['nick']|cutstring=###,12}</td>
-                    <td>{$r['choosesum']}</td>
-                    <td>{$r['judgesum']}</td>
-                    <td>{$r['fillsum']}</td>
-                    <td>{$r['programsum']}</td>
-                    <td>{$r['score']}</td>
+                    <td>{$r['choosesum']|checkScore}</td>
+                    <td>{$r['judgesum']|checkScore}</td>
+                    <td>{$r['fillsum']|checkScore}</td>
+                    <td>{$r['programsum']|checkScore}</td>
+                    <td>{$r['score']|checkScore}</td>
                     <if condition="is_null($r['score'])">
                         <if condition="$r['extrainfo'] neq 0">
                             <if condition="$isEnd eq true">

@@ -2,7 +2,7 @@
 <div class="container">
     <form name="fillForm" id="fillExam" action="{:U('Home/Fill/submitPaper')}" method="post">
         <input type="hidden" name="eid" value="{$Think.get.eid}">
-        <input type="hidden" id="problemType" name="problemType" value="3">
+        <input type="hidden" id="problemType" name="problemType" value="{$problemType}">
 
         <h3>填空题</h3>
         <foreach name='fillsx' item='fsx' key='numoffill'>

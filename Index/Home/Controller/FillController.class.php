@@ -13,6 +13,7 @@ use Home\Model\ExamadminModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\StudentBaseModel;
 
 // TODO 暂时未开放此类,主要为了将各题目模型分隔
 class FillController extends QuestionController
@@ -21,6 +22,9 @@ class FillController extends QuestionController
     public function _initialize() {
         parent::_initialize();
         $this->addExamBaseInfo();
+        if ($this->checkHasScore('fillsum')) {
+            $this->alertError('该题型你已经交卷,不能再查看', $this->navigationUrl);
+        }
     }
 
     public function index() {
@@ -34,17 +38,21 @@ class FillController extends QuestionController
         $this->zadd('fillarr', $fillarr);
         $this->zadd('fillsx', $fillsx);
         $this->zadd('fillans', $fillans);
+        $this->zadd('problemType', FillBaseModel::FILL_PROBLEM_TYPE);
 
         $this->auto_display('Exam:fill', 'exlayout');
     }
 
     public function saveAnswer() {
         AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        echo 'ok';
     }
 
     public function submitPaper() {
         $fscore = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
         $inarr['fillsum'] = $fscore;
-        // TODO update fill score
+        StudentBaseModel::instance()->submitExamPaper(
+            $this->userInfo['user_id'], $this->examId, $inarr);
+        redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }
