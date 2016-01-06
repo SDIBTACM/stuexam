@@ -151,7 +151,7 @@ class ExamController extends TemplateController
     public function analysis() {
         $this->isCanWatchInfo($this->eid);
         $student = I('get.student', '', 'htmlspecialchars');
-        $sqladd = ' AND `score` >= 0';
+        $sqladd = '';
         if (!empty($student)) {
             $sqladd = " AND `user_id` like '$student%'";
         }
@@ -163,7 +163,7 @@ class ExamController extends TemplateController
 				MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,
 				MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`,AVG(`choosesum`) as `chooseavg`,
 				AVG(`judgesum`) as `judgeavg`,AVG(`fillsum`) as `fillavg`,AVG(`programsum`) as `programavg`,
-				AVG(`score`) as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd";
+				AVG(`score`) as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
         $row = M()->query($query);
 
         $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
