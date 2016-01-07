@@ -11,6 +11,7 @@ namespace Home\Controller;
 use Home\Model\AnswerModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\QuestionBaseModel;
 use Teacher\Model\StudentBaseModel;
 
 // TODO 暂时未开放此类,主要为了将各题目模型分隔
@@ -36,7 +37,13 @@ class ProgramController extends QuestionController
             return false;
         }
 
-        if ($scores['choosesum'] == -1 || $scores['judgesum'] == -1 || $scores['fillsum'] == -1) {
+        $choosenum = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $judgenum =  QuestionBaseModel::instance()->getQuestionCntByType($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $fillnum = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+
+        if (($scores['choosesum'] == -1 && $choosenum != 0) ||
+            ($scores['judgesum'] == -1 && $judgenum != 0) ||
+            ($scores['fillsum'] == -1 && $fillnum != 0)) {
             return false;
         }
         return true;
@@ -58,6 +65,22 @@ class ProgramController extends QuestionController
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $inarr = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
+        if (empty($inarr)) {
+            $inarr['choosesum'] = 0;
+            $inarr['judgesum'] = 0;
+            $inarr['fillsum'] = 0;
+        } else {
+            if ($inarr['choosesum'] == -1) {
+                $inarr['choosesum'] = 0;
+            }
+            if ($inarr['judgesum'] == -1) {
+                $inarr['judgesum'] = 0;
+            }
+            if ($inarr['fillsum'] == -1) {
+                $inarr['fillsum'] = 0;
+            }
+        }
         $pright = AnswerModel::instance()->getrightprogram($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
         $inarr['programsum'] = $pright * $allscore['programscore'];
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
