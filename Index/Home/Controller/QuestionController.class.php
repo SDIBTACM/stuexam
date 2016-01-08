@@ -172,16 +172,16 @@ class QuestionController extends TemplateController
         $this->zadd('userScore', $allScore);
         $this->zadd('allNum', $allProblemNum);
 
-//        $exam_version = C('EXAM_VERSION');
-//        if ($exam_version == '1.0.1') {
-//            $this->auto_display('Index:navigation');
-//        } else {
-//            $this->auto_display('Index:about');
-//        }
-        if (!empty($this->userInfo) && $this->userInfo['user_id'] == 'jk11171228')
+        $exam_version = C('EXAM_VERSION');
+        if ($exam_version == '1.0.1') {
             $this->auto_display('Index:navigation');
-        else
+        } else {
             $this->auto_display('Index:about');
+        }
+//        if (!empty($this->userInfo) && $this->userInfo['user_id'] == 'jk11171228')
+//            $this->auto_display('Index:navigation');
+//        else
+//            $this->auto_display('Index:about');
     }
 
     public function getLeftTime() {
