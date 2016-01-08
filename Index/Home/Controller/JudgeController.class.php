@@ -15,26 +15,29 @@ use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\StudentBaseModel;
 
-// TODO 暂时未开放此类,主要为了将各题目模型分隔
 class JudgeController extends QuestionController
 {
 
     public function _initialize() {
         parent::_initialize();
         $this->addExamBaseInfo();
-        if ($this->checkHasScore('judgesum')) {
-            $this->alertError('该题型你已经交卷,不能再查看', $this->navigationUrl);
+        if ($this->judgeSumScore != -1) {
+            $this->success('该题型你已经交卷,不能再查看了哦', $this->navigationUrl, 1);
+            exit;
+        }
+        if ($this->judgeCount == 0) {
+            redirect($this->navigationUrl);
         }
     }
 
     public function index() {
 
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $judgearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $judgesx = ExamadminModel::instance()->getproblemsx($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
 
-        $this->zadd('allscore', $allscore);
+        $this->zadd('allscore', $allBaseScore);
         $this->zadd('judgearr', $judgearr);
         $this->zadd('judgesx', $judgesx);
         $this->zadd('judgeans', $judgeans);
@@ -54,6 +57,7 @@ class JudgeController extends QuestionController
         $inarr['judgesum'] = $jright * $allscore['judgescore'];
         StudentBaseModel::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
+        $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }

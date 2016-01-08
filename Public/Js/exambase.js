@@ -31,6 +31,8 @@ $(function () {
             savePaper(judgeSaveUrl, "judgeExam");
         } else if (questionType == 3) {
             savePaper(fillSaveUrl, "fillExam");
+        } else if (questionType == 4) {
+            $("#saveover").html("编程题无需保存");
         }
     });
     $(".submitcode").click(function(){
@@ -75,6 +77,8 @@ function examFormSubmit() {
         submitJudgePaper();
     } else if (problemType == 3) {
         submitFillPaper();
+    } else if (problemType == 4) {
+        submitProgramPaper();
     } else {
         alert("page error, please refresh~");
     }
@@ -98,33 +102,36 @@ function savePaper(saveUrl, formId) {
 }
 
 function antiCheat() {
-    $("body").keydown(function (event) {
-        if (event.keyCode == 116) {
-            event.returnValue = false;
-            alert("当前设置不允许使用F5刷新键");
-            return false;
-        }
-        if( (event.ctrlKey) && (event.keyCode == 83) ) {
-            event.returnValue = false;
-            return false;
-        }
-        //if (event.ctrlKey) {
-        //    event.returnValue = false;
-        //    return false;
-        //}
-        //if (event.altKey) {
-        //    event.returnValue = false;
-        //    return false;
-        //}
-        if (event.keyCode == 123) {
-            event.returnValue = false;
-            alert("当前设置不允许使用F12键");
-            return false;
-        }
-    });
-    //}).mouseleave(function () {
-    //    alert('xxx');
-    //});
+    var problemType = $("#problemType").val();
+    if (problemType != 4) {
+        $("body").keydown(function (event) {
+            if (event.keyCode == 116) {
+                event.returnValue = false;
+                alert("当前设置不允许使用F5刷新键");
+                return false;
+            }
+            if( (event.ctrlKey) && (event.keyCode == 83) ) {
+                event.returnValue = false;
+                return false;
+            }
+            if (event.ctrlKey) {
+                event.returnValue = false;
+                return false;
+            }
+            if (event.altKey) {
+                event.returnValue = false;
+                return false;
+            }
+            if (event.keyCode == 123) {
+                event.returnValue = false;
+                alert("当前设置不允许使用F12键");
+                return false;
+            }
+        });
+        $("html").mouseleave(function () {
+            alert('鼠标请不要离开当前考试页面!多次尝试可能会被强制交卷哦!');
+        });
+    }
 }
 
 var isalert = false;

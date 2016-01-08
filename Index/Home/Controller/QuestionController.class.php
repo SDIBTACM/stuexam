@@ -27,11 +27,23 @@ class QuestionController extends TemplateController
     public $leftTime = 0;
     public $randnum = null;
 
+    public $chooseCount;
+    public $judgeCount;
+    public $fillCount;
+    public $programCount;
+
+    public $chooseSumScore;
+    public $judgeSumScore;
+    public $fillSumScore;
+    public $programSumScore;
+
     protected $navigationUrl;
 
     public function _initialize() {
         parent::_initialize();
         $this->preExamQuestion();
+        $this->initExamQuestionCount();
+        $this->initExamUserScore();
     }
 
     protected function preExamQuestion() {
@@ -88,15 +100,48 @@ class QuestionController extends TemplateController
         $this->randnum = $num;
     }
 
-    protected function checkHasScore($scoreName) {
-        $scores = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
-        if (empty($scores)) {
-            return false;
+    protected function initExamQuestionCount() {
+        $this->chooseCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $this->judgeCount =  QuestionBaseModel::instance()->getQuestionCntByType($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $this->fillCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $this->programCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+    }
+
+    protected function initExamUserScore() {
+        $allScore = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
+        if (empty($allScore)) {
+            $this->chooseSumScore = -1;
+            $this->judgeSumScore = -1;
+            $this->fillSumScore = -1;
+            $this->programSumScore = -1;
+        } else {
+            $this->chooseSumScore = $allScore['choosesum'];
+            $this->judgeSumScore = $allScore['judgesum'];
+            $this->fillSumScore = $allScore['fillsum'];
+            $this->programSumScore = $allScore['programsum'];
         }
-        if ($scores[$scoreName] == -1) {
-            return false;
+    }
+
+    protected function checkActionAfterSubmit() {
+        $this->initExamUserScore();
+
+        $chooseOk = !($this->chooseCount > 0 && $this->chooseSumScore == -1);
+        $judgeOk  = !($this->judgeCount > 0 && $this->judgeSumScore == -1);
+        $fillOk   = !($this->fillCount > 0 && $this->fillSumScore == -1);
+        $programOk = !($this->programCount > 0 && $this->programSumScore == -1);
+
+        $needFix = ($chooseOk && $judgeOk && $fillOk && $programOk);
+        if ($needFix) {
+            $inarr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
+            $inarr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
+            $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
+            $inarr['programsum'] = ($this->programSumScore == -1 ? 0 : $this->programSumScore);
+            $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
+            StudentBaseModel::instance()->submitExamPaper(
+                $this->userInfo['user_id'], $this->examId, $inarr);
+            $this->success('恭喜你所有题型已提交完成~', U('Home/Index/score'), 2);
+            exit(0);
         }
-        return true;
     }
 
     public function navigation() {
@@ -105,27 +150,34 @@ class QuestionController extends TemplateController
             'user_id' => $this->userInfo['user_id']
         );
         $name = M('users')->field($field)->where($where)->find();
-        $allScore = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
-        if (empty($allScore)) {
-            $allScore = array(
-                'choosesum' => -1,
-                'judgesum' => -1,
-                'fillsum' => -1,
-                'programsum' => -1
-            );
-        }
 
-        $allProblemNum = array();
-        $allProblemNum['choosenum'] = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $allProblemNum['judgenum'] =  QuestionBaseModel::instance()->getQuestionCntByType($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $allProblemNum['fillnum'] = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $allProblemNum['programnum'] = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+        $allScore = array(
+            'choosesum' => $this->chooseSumScore,
+            'judgesum'  => $this->judgeSumScore,
+            'fillsum'   => $this->fillSumScore,
+            'programsum'=> $this->programSumScore
+        );
+
+        $allProblemNum = array(
+            'choosenum' => $this->chooseCount,
+            'judgenum'  => $this->judgeCount,
+            'fillnum'   => $this->fillCount,
+            'programnum'=> $this->programCount
+        );
+
         $this->zadd('name', $name['nick']);
         $this->zadd('eid', $this->examId);
         $this->zadd('isruning', $this->isRunning);
         $this->zadd('row', $this->examBase);
         $this->zadd('userScore', $allScore);
         $this->zadd('allNum', $allProblemNum);
+
+//        $exam_version = C('EXAM_VERSION');
+//        if ($exam_version == '1.0.1') {
+//            $this->auto_display('Index:navigation');
+//        } else {
+//            $this->auto_display('Index:about');
+//        }
         if (!empty($this->userInfo) && $this->userInfo['user_id'] == 'jk11171228')
             $this->auto_display('Index:navigation');
         else

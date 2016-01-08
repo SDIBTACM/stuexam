@@ -11,18 +11,21 @@ namespace Home\Controller;
 use Home\Model\AnswerModel;
 use Teacher\Model\ExamServiceModel;
 use Teacher\Model\ProblemServiceModel;
-use Teacher\Model\QuestionBaseModel;
 use Teacher\Model\StudentBaseModel;
 
-// TODO 暂时未开放此类,主要为了将各题目模型分隔
 class ProgramController extends QuestionController
 {
 
     public function _initialize() {
         parent::_initialize();
         $this->addExamBaseInfo();
-        if ($this->checkHasScore('programsum')) {
-            $this->alertError('该题型你已经交卷,不能再查看', $this->navigationUrl);
+        if ($this->programSumScore != -1) {
+            $this->success('该题型你已经交卷,不能再查看了哦', $this->navigationUrl, 1);
+            exit;
+        }
+
+        if ($this->programCount == 0) {
+            redirect($this->navigationUrl);
         }
 
         if (!$this->checkOtherProblemHasSubmit()) {
@@ -31,19 +34,9 @@ class ProgramController extends QuestionController
     }
 
     private function checkOtherProblemHasSubmit() {
-        $scores = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
-
-        if (empty($scores)) {
-            return false;
-        }
-
-        $choosenum = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $judgenum =  QuestionBaseModel::instance()->getQuestionCntByType($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $fillnum = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-
-        if (($scores['choosesum'] == -1 && $choosenum != 0) ||
-            ($scores['judgesum'] == -1 && $judgenum != 0) ||
-            ($scores['fillsum'] == -1 && $fillnum != 0)) {
+        if (($this->chooseCount && $this->chooseSumScore == -1) ||
+            ($this->judgeCount  && $this->judgeSumScore == -1)  ||
+            ($this->fillCount   && $this->fillSumScore == -1)) {
             return false;
         }
         return true;
@@ -51,10 +44,10 @@ class ProgramController extends QuestionController
 
     public function index() {
 
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
-        $this->zadd('allscore', $allscore);
+        $this->zadd('allscore', $allBaseScore);
         $this->zadd('programans', $programans);
         $this->zadd('problemType', ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
@@ -65,28 +58,16 @@ class ProgramController extends QuestionController
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $inarr = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
-        if (empty($inarr)) {
-            $inarr['choosesum'] = 0;
-            $inarr['judgesum'] = 0;
-            $inarr['fillsum'] = 0;
-        } else {
-            if ($inarr['choosesum'] == -1) {
-                $inarr['choosesum'] = 0;
-            }
-            if ($inarr['judgesum'] == -1) {
-                $inarr['judgesum'] = 0;
-            }
-            if ($inarr['fillsum'] == -1) {
-                $inarr['fillsum'] = 0;
-            }
-        }
+        $inarr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
+        $inarr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
+        $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
         $pright = AnswerModel::instance()->getrightprogram($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
         $inarr['programsum'] = $pright * $allscore['programscore'];
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
         StudentBaseModel::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
-        redirect(U('Home/Index/Score'));
+        $this->checkActionAfterSubmit();
+        redirect(U('Home/Index/score'));
     }
 
     public function prgsubmit() {

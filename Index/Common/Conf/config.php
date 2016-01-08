@@ -20,5 +20,6 @@ return array(
 	//'SHOW_PAGE_TRACE' => true,
 	'URL_CASE_INSENSITIVE'  =>  false,
 
-    'ISDEBUG' => true
+    'ISDEBUG' => true,
+	'EXAM_VERSION' => '1.0.1'
 );

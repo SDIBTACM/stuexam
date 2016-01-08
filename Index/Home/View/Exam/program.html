@@ -64,6 +64,7 @@
         </div>
     </foreach>
     <form name="programForm" id="programExam" action="{:U('Home/Program/submitPaper')}" method="post">
+        <input type="hidden" name="eid" value="{$Think.get.eid}">
     </form>
 </div>
 </body>
