@@ -41,6 +41,7 @@ class FillController extends QuestionController
         $this->zadd('fillarr', $fillarr);
         $this->zadd('fillsx', $fillsx);
         $this->zadd('fillans', $fillans);
+        $this->zadd('questionName', '填空题');
         $this->zadd('problemType', FillBaseModel::FILL_PROBLEM_TYPE);
 
         $this->auto_display('Exam:fill', 'exlayout');

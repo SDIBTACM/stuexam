@@ -41,6 +41,7 @@ class ChooseController extends QuestionController
         $this->zadd('choosearr', $choosearr);
         $this->zadd('choosesx', $choosesx);
         $this->zadd('chooseans', $chooseans);
+        $this->zadd('questionName', '选择题');
         $this->zadd('problemType', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
 
         $this->auto_display('Exam:choose', 'exlayout');

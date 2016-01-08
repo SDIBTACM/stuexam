@@ -129,7 +129,7 @@ function antiCheat() {
             }
         });
         $("html").mouseleave(function () {
-            alert('鼠标请不要离开当前考试页面!多次尝试可能会被强制交卷哦!');
+            //alert('鼠标请不要离开当前考试页面!多次尝试可能会被强制交卷哦!');
         });
     }
 }
