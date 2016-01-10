@@ -178,10 +178,6 @@ class QuestionController extends TemplateController
         } else {
             $this->auto_display('Index:about');
         }
-//        if (!empty($this->userInfo) && $this->userInfo['user_id'] == 'jk11171228')
-//            $this->auto_display('Index:navigation');
-//        else
-//            $this->auto_display('Index:about');
     }
 
     public function getLeftTime() {

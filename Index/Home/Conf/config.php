@@ -8,4 +8,6 @@ return array(
 	'language_ext'		=>	array( "c", "cc", "pas", "java" ),
 	'OJ_APPENDCODE'		=>	true,
 	'OJ_DATA'			=>	"/home/judge/data",
+	'EXTEND_PREFIX'		=>  "exam_",
+	'EXTEND_LIMIT'		=>  10
 );

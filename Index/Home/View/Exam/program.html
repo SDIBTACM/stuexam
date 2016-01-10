@@ -6,62 +6,71 @@
     <foreach name='programans' item='pans' key='numofprogram'>
         <div class="panel panel-default" id="programpanel{$pans['program_id']}">
             <div class="panel-heading"><font color='red'>({$allscore['programscore']} 分)</font>
-                第{$numofprogram+1}题.{$pans['title']|nl2br}<a class="btn-sm btn btn-success upd-stuprogram" data-toggle="collapse"
-                                                             href="#collapseExample{$pans['program_id']}" data-pid="{$pans['program_id']}"
+                第{$numofprogram+1}题.{$pans['title']|nl2br}<a class="btn-sm btn btn-success upd-stuprogram"
+                                                             data-toggle="collapse"
+                                                             href="#collapseExample{$pans['program_id']}"
+                                                             data-pid="{$pans['program_id']}"
                                                              aria-expanded="false" aria-controls="collapseExample">点击开闭
                 </a></div>
+            <form id="codeForm{$pans['program_id']}">
+                <div class="collapse" id="collapseExample{$pans['program_id']}" data-accepted="0">
+                    <div class="panel-body">
+                        <h4><strong>Description</strong></h4>
 
-            <div class="collapse" id="collapseExample{$pans['program_id']}" data-accepted="0">
-                <div class="panel-body">
-                    <h4><strong>Description</strong></h4>
+                        <p>{$pans['description']}</p>
+                        <h4><strong>Input</strong></h4>
 
-                    <p>{$pans['description']}</p>
-                    <h4><strong>Input</strong></h4>
+                        <p>{$pans['input']}</p>
+                        <h4><strong>Output</strong></h4>
 
-                    <p>{$pans['input']}</p>
-                    <h4><strong>Output</strong></h4>
+                        <p>{$pans['output']}</p>
+                        <h4><strong>Sample Input</strong></h4>
 
-                    <p>{$pans['output']}</p>
-                    <h4><strong>Sample Input</strong></h4>
+                        <p>{$pans['sample_input']|nl2br}</p>
+                        <h4><strong>Sample Output</strong></h4>
 
-                    <p>{$pans['sample_input']|nl2br}</p>
-                    <h4><strong>Sample Output</strong></h4>
+                        <p>{$pans['sample_output']|nl2br}</p>
 
-                    <p>{$pans['sample_output']|nl2br}</p>
-
-                    <p>
-                        <label for="code{$pans['program_id']}">Code here:</label>
-						<textarea class='form-control' id="code{$pans['program_id']}" name="code{$pans['program_id']}"
-                                  rows="30">
-						</textarea>
-                    </p>
+                        <p>
+                            <for start="1" end="$pans['pFillNum'] + 1">
+                                <label for="code{$pans['program_id']}_{$i}">Code {$i} here:</label>
+						    <textarea class='form-control' id="code{$pans['program_id']}_{$i}"
+                                      name="code{$pans['program_id']}_{$i}"
+                                      rows="10" cols="20">
+						    </textarea>
+                            </for>
+                        </p>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <select id="language{$pans['program_id']}" name="language{$pans['program_id']}"
+                                        class='form-control'>
+                                    <option value="0">C</option>
+                                    <option value="1" selected>C++</option>
+                                    <option value="2">Pascal</option>
+                                    <option value="3">Java</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-success submitcode"
+                                        data-programid="{$pans['program_id']}">
+                                    提交
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info updateresult"
+                                        data-proid="{$pans['program_id']}">
+                                    点击刷新结果
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <span id="span{$pans['program_id']}"><font color='green' size='3px'>未提交</font></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-footer row">
-                    <div class="col-md-2">
-                        <select id="language{$pans['program_id']}" class='form-control'>
-                            <option value="0">C</option>
-                            <option value="1" selected>C++</option>
-                            <option value="2">Pascal</option>
-                            <option value="3">Java</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-success submitcode"
-                                data-programid="{$pans['program_id']}">
-                            提交
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-info updateresult"
-                                data-proid="{$pans['program_id']}">
-                            点击刷新结果
-                        </button>
-                    </div>
-                    <div class="col-md-4">
-                        <span id="span{$pans['program_id']}"><font color='green' size='3px'>未提交</font></span>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </foreach>
     <form name="programForm" id="programExam" action="{:U('Home/Program/submitPaper')}" method="post">

@@ -47,6 +47,11 @@ class ProgramController extends QuestionController
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
+        foreach ($programans as &$pans) {
+            $pans['pFillNum'] = $this->getProgramFillNum($pans['program_id']);
+        }
+        unset($pans);
+
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('programans', $programans);
         $this->zadd('questionName', '编程题');
@@ -73,21 +78,50 @@ class ProgramController extends QuestionController
 
     public function prgsubmit() {
         $id = I('post.id', 0, 'intval');
-        $user_id = $this->userInfo['user_id'];
+        if ($id <= 0) {
+            $this->echoError("No Such Problem");
+        }
         $language = intval($_POST['language']);
         if ($language > 9 || $language < 0) $language = 0;
         $language = strval($language);
 
-        $source = $_POST['source'];
-        if (get_magic_quotes_gpc()) {
-            $source = stripslashes($source);
-        }
-        $source = addslashes($source);
-        $len = strlen($source);
         $OJ_DATA = C('OJ_DATA');
-        $OJ_APPENDCODE = C('OJ_APPENDCODE');
         $extarr = C('language_ext');
         $ext = $extarr[$language];
+        $extendsPrefix = C('EXTEND_PREFIX');
+        $extendsLimit = C('EXTEND_LIMIT');
+        $filePrefix = $OJ_DATA . '/' . $id . '/' . $extendsPrefix;
+
+        // for medium extends
+        $source = "";
+        for ($extendsIndex = 1; $extendsIndex <= $extendsLimit; $extendsIndex++) {
+            $fileName = $filePrefix . $extendsIndex .'.' . $ext;
+            $postName = 'code' . $id . '_' . $extendsIndex;
+            if (file_exists($fileName)) {
+                $source = addslashes(file_get_contents($fileName) . "\n") . $source;
+                if (isset($_POST[$postName])) {
+                    $_source = $_POST[$postName];
+                    if (get_magic_quotes_gpc()) {
+                        $_source = stripslashes($_source);
+                    }
+                    $_source = addslashes($_source);
+                    $source = $source . "\n" . $_source;
+                }
+            } else {
+                if (isset($_POST[$postName])) {
+                    $_source = $_POST[$postName];
+                    if (get_magic_quotes_gpc()) {
+                        $_source = stripslashes($_source);
+                    }
+                    $_source = addslashes($_source);
+                    $source = $source . "\n" . $_source;
+                }
+                break;
+            }
+        }
+
+        // for prefix and last append
+        $OJ_APPENDCODE = C('OJ_APPENDCODE');
         $prefix_file = "$OJ_DATA/$id/prefix.$ext";
         $append_file = "$OJ_DATA/$id/append.$ext";
         if ($OJ_APPENDCODE && file_exists($prefix_file)) {
@@ -96,7 +130,9 @@ class ProgramController extends QuestionController
         if ($OJ_APPENDCODE && file_exists($append_file)) {
             $source .= addslashes("\n" . file_get_contents($append_file));
         }
-        $ip = $_SERVER['REMOTE_ADDR'];
+
+        $len = strlen($source);
+
         if ($len <= 2) {
             echo 'Source Code Too Short!';
             exit(0);
@@ -105,28 +141,10 @@ class ProgramController extends QuestionController
             echo 'Source Code Too Long!';
             exit(0);
         }
-        $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
-        $row = M()->query($sql);
-        if ($row) {
-            echo "You should not submit more than twice in 10 seconds.....<br>";
-            exit(0);
-        }
-        $arr['problem_id'] = $id;
-        $arr['user_id'] = $user_id;
-        $arr['in_date'] = date('Y-m-d H:i:s');
-        $arr['language'] = $language;
-        $arr['ip'] = $ip;
-        $arr['code_length'] = $len;
-        $insert_id = M('solution')->add($arr);
-        $sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
-        M()->execute($sql);
-        $sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$id";
-        M()->execute($sql);
-        $colorarr = C('judge_color');
-        $resultarr = C('judge_result');
-        $color = $colorarr[0];
-        $result = $resultarr[0];
-        echo "<span color=$color size='5px'>$result</span>";
+
+        $this->echoError($source);
+
+        // $this->_submitCode($id, $language, $len, $source);
     }
 
     public function updresult() {
@@ -183,5 +201,56 @@ class ProgramController extends QuestionController
         } else {
             $this->echoError(-1);
         }
+    }
+
+    private function _submitCode($pid, $language, $codeLength, $source) {
+
+        $user_id = $this->userInfo['user_id'];
+
+        $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
+        $row = M()->query($sql);
+        if ($row) {
+            echo "You should not submit more than twice in 10 seconds.....<br>";
+            exit(0);
+        }
+
+        $sourceCode = array(
+            'problem_id' => $pid,
+            'user_id' => $user_id,
+            'in_date' => date('Y-m-d H:i:s'),
+            'language' => $language,
+            'ip' => $_SERVER['REMOTE_ADDR'],
+            'code_length' => $codeLength
+        );
+        $insert_id = M('solution')->add($sourceCode);
+
+        $sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
+        M()->execute($sql);
+        $sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$pid";
+        M()->execute($sql);
+        $colorarr = C('judge_color');
+        $resultarr = C('judge_result');
+        $color = $colorarr[0];
+        $result = $resultarr[0];
+        echo "<span color=$color size='5px'>$result</span>";
+    }
+
+    private function getProgramFillNum($id) {
+        $programFillNum = 0;
+        $OJ_DATA = C('OJ_DATA');
+        $extendsPrefix = C('EXTEND_PREFIX');
+        $extendsLimit = C('EXTEND_LIMIT');
+        $filePrefix = $OJ_DATA . '/' . $id . '/' . $extendsPrefix;
+        for ($extendsIndex = 1; $extendsIndex <= $extendsLimit; $extendsIndex++) {
+            $fileName = $filePrefix . $extendsIndex . '.c';
+            if (!file_exists($fileName)) {
+                break;
+            }
+            $programFillNum++;
+        }
+        if (0 == $programFillNum) {
+            $programFillNum = 1;
+        }
+        return $programFillNum;
     }
 }

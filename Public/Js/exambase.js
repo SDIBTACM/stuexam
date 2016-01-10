@@ -35,13 +35,23 @@ $(function () {
             $("#saveover").html("编程题无需保存");
         }
     });
-    $(".submitcode").click(function(){
+    $(".submitcode").click(function() {
         var pid = $(this).data('programid');
-        var eid = $("#examid").val();
-        var span = "span" + pid;
-        var code = "code" + pid;
-        var language = "language" + pid;
-        submitcode(span, code, language, pid, eid);
+        var data = $("#codeForm" + pid).serialize();
+        data = data + "&id=" + pid + "&eid=" + $("#examid").val();
+        console.log(data);
+        $.ajax({
+            url: codesubmiturl,
+            data: data,
+            type: "POST",
+            dataType: "html",
+            success: function (data) {
+                $("#span" + pid).html(data);
+            },
+            error: function () {
+                alert("something error when you submit")
+            }
+        });
     });
     $(".updateresult").click(function(){
         var pid = $(this).data('proid');
@@ -52,6 +62,24 @@ $(function () {
     antiCheat();
     GetRTime();
 });
+
+function _submitCodeNew(spanId, codeId, languageId, pid, eid) {
+    var source = $("#" + codeId).val();
+    var language = $("#" + languageId).val();
+    var r = mychecksource(source, language);
+    r && $.ajax({
+        url: codesubmiturl,
+        data: "language=" + language + "&id=" + pid + "&eid=" + eid + "&source=" + encodeURIComponent(source),
+        type: "POST",
+        dataType: "html",
+        success: function (data) {
+            $("#" + spanId).html(data);
+        },
+        error: function () {
+            alert("something error when you submit")
+        }
+    });
+}
 
 function submitChoosePaper() {
     $("#chooseExam").submit();
