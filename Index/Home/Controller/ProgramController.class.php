@@ -98,15 +98,15 @@ class ProgramController extends QuestionController
             $fileName = $filePrefix . $extendsIndex .'.' . $ext;
             $postName = 'code' . $id . '_' . $extendsIndex;
             if (file_exists($fileName)) {
-                $source = addslashes(file_get_contents($fileName) . "\n") . $source;
                 if (isset($_POST[$postName])) {
                     $_source = $_POST[$postName];
                     if (get_magic_quotes_gpc()) {
                         $_source = stripslashes($_source);
                     }
                     $_source = addslashes($_source);
-                    $source = $_source . "\n" . $source;
+                    $source = $source . "\n" . $_source;
                 }
+                $source = $source . addslashes(file_get_contents($fileName) . "\n");
             } else {
                 if (isset($_POST[$postName])) {
                     $_source = $_POST[$postName];
@@ -114,7 +114,7 @@ class ProgramController extends QuestionController
                         $_source = stripslashes($_source);
                     }
                     $_source = addslashes($_source);
-                    $source = $_source . "\n" . $source;
+                    $source = $source . "\n" . $_source;
                 }
                 break;
             }
