@@ -105,7 +105,7 @@ class ProgramController extends QuestionController
                         $_source = stripslashes($_source);
                     }
                     $_source = addslashes($_source);
-                    $source = $source . "\n" . $_source;
+                    $source = $_source . "\n" . $source;
                 }
             } else {
                 if (isset($_POST[$postName])) {
@@ -114,7 +114,7 @@ class ProgramController extends QuestionController
                         $_source = stripslashes($_source);
                     }
                     $_source = addslashes($_source);
-                    $source = $source . "\n" . $_source;
+                    $source = $_source . "\n" . $source;
                 }
                 break;
             }
