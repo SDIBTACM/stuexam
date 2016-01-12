@@ -44,6 +44,8 @@ class ProgramController extends QuestionController
 
     public function index() {
 
+        $this->start2Exam();
+
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 

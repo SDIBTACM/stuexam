@@ -32,6 +32,8 @@ class ChooseController extends QuestionController
 
     public function index() {
 
+        $this->start2Exam();
+
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $choosearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);

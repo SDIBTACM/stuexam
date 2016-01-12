@@ -85,16 +85,8 @@ class ExamController extends QuestionController
             $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
             $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
 
-            $where = array(
-                'user_id' => $userId,
-                'exam_id' => $this->examId,
-                'type' => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
-                'question_id' => $id,
-                'answer_id' => 1,
-                'answer' => 4
-            );
-            $row_cnt = M('ex_stuanswer')->where($where)->find();
-            //->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $user_id)
+            $row_cnt = M('solution')//->where($where)->find();
+            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)->find();
             if (!empty($row_cnt)) {
                 echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
             } else {

@@ -32,6 +32,8 @@ class JudgeController extends QuestionController
 
     public function index() {
 
+        $this->start2Exam();
+
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $judgearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);

@@ -32,6 +32,8 @@ class FillController extends QuestionController
 
     public function index() {
 
+        $this->start2Exam();
+
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $fillarr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
         $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);

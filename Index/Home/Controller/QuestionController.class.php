@@ -144,6 +144,13 @@ class QuestionController extends TemplateController
         }
     }
 
+    protected function start2Exam() {
+        $data = array(
+            'extrainfo' => $this->leftTime + 1
+        );
+        PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId($this->userInfo['user_id'], $this->examId, $data);
+    }
+
     public function navigation() {
         $field = array('nick');
         $where = array(

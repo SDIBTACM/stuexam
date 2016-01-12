@@ -113,7 +113,7 @@ class InfoController extends TemplateController
                 if ($uid['score'] >= 0) {
                     $haveScoreUserIds[] = strtolower($uid['user_id']);
                 } else {
-                    $negScoreUserId[$uid['user_id']] = 1;
+                    $negScoreUserId[strtolower($uid['user_id'])] = 1;
                 }
             }
 
@@ -269,7 +269,7 @@ class InfoController extends TemplateController
         return false;
     }
 
-    public function rejudgepaper($userId, $eid, $start_timeC, $end_timeC, $mark) {
+    private function rejudgepaper($userId, $eid, $start_timeC, $end_timeC, $mark) {
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
 
