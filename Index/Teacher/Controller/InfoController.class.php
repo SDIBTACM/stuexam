@@ -101,15 +101,20 @@ class InfoController extends TemplateController
 
             $allTakeIn = PrivilegeBaseModel::instance()->getTakeInExamUsersByExamId($eid);
 
-            $allHaveScore = M('ex_student')->distinct('user_id')->field('user_id')
+            $allHaveScore = M('ex_student')->distinct('user_id')->field('user_id,score')
                 ->where('exam_id=%d', $eid)->select();
 
 
             $haveScoreUserIds = array();
             $userIds2Submit = array();
+            $negScoreUserId = array();
 
             foreach ($allHaveScore as $uid) {
-                $haveScoreUserIds[] = strtolower($uid['user_id']);
+                if ($uid['score'] >= 0) {
+                    $haveScoreUserIds[] = strtolower($uid['user_id']);
+                } else {
+                    $negScoreUserId[$uid['user_id']] = 1;
+                }
             }
 
             foreach ($allTakeIn as $userId) {
@@ -127,7 +132,8 @@ class InfoController extends TemplateController
                 $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
 
                 foreach ($userIds2Submit as $_uid) {
-                    $this->rejudgepaper($_uid, $eid, $start_timeC, $end_timeC, 0);
+                    $mark = isset($negScoreUserId[$_uid]) ? 1 : 0;
+                    $this->rejudgepaper($_uid, $eid, $start_timeC, $end_timeC, $mark);
                     usleep(10000);
                 }
             }
