@@ -181,8 +181,9 @@ function GetRTime() {
             $('.tixingb').css("color", "red");
             isalert = true;
         }
+        var _qType = parseInt(questionType);
         if (nMS > 0 && nMS <= 1000) {
-            switch (questionType) {
+            switch (_qType) {
                 case 1 :
                     submitChoosePaper();
                     break;
@@ -198,7 +199,7 @@ function GetRTime() {
         }
 
         if (nMS % savetime == 0 && nMS > savetime) {
-            switch (questionType) {
+            switch (_qType) {
                 case 1 :
                     savePaper(chooseSaveUrl, "chooseExam");
                     break;
