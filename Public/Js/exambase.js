@@ -39,7 +39,6 @@ $(function () {
         var pid = $(this).data('programid');
         var data = $("#codeForm" + pid).serialize();
         data = data + "&id=" + pid + "&eid=" + $("#examid").val();
-        console.log(data);
         $.ajax({
             url: codesubmiturl,
             data: data,

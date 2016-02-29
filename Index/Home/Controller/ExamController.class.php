@@ -11,6 +11,7 @@ use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
 use Think\Exception;
 
+// This Controller is for Version 1.0.0
 class ExamController extends QuestionController
 {
     public function _initialize() {
