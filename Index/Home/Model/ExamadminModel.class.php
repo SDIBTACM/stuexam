@@ -3,6 +3,7 @@ namespace Home\Model;
 
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
+use Teacher\Model\StudentBaseModel;
 
 class ExamadminModel
 {
@@ -33,8 +34,8 @@ class ExamadminModel
      * @param  boolean $havetaken 是否判断已经参加考试过
      * @return number|array        返回数字表示没有权限，否则有
      */
-    public function chkexamprivilege($eid, $user_id, $havetaken = false) {
-        $hasPrivilege = $this->chkprivilege($user_id, $eid);
+    public function checkExamPrivilege($eid, $user_id, $havetaken = false) {
+        $hasPrivilege = $this->getPrivilege($user_id, $eid);
         if (!(checkAdmin(2) || $hasPrivilege)) {
             return 0;
         }
@@ -59,10 +60,12 @@ class ExamadminModel
         }
 
         if ($havetaken) {
-            $score = M('ex_student')
-                ->field('score')
-                ->where("user_id='%s' and exam_id=%d", $user_id, $eid)
-                ->find();
+            $where = array(
+                'user_id' => $user_id,
+                'exam_id' => $eid
+            );
+            $field = array('score');
+            $score = StudentBaseModel::instance()->queryOne($where, $field);
             if (!is_null($score['score']) && $score['score'] >= 0) {
                 return -3;
             }
@@ -77,7 +80,7 @@ class ExamadminModel
      * @param  date $endtime 比赛结束时间
      * @return number          -1=>已经结束 0=>未开始 1=>正在进行
      */
-    public function chkruning($starttime, $endtime) {
+    public function getExamRunningStatus($starttime, $endtime) {
         $start_timeC = strtotime($starttime);
         $end_timeC = strtotime($endtime);
         $now = time();
@@ -97,7 +100,7 @@ class ExamadminModel
      * @param  number $randnum 学生的随机码
      * @return array           打乱的顺序数组
      */
-    public function getproblemsx($eid, $type, $randnum) {
+    public function getProblemSequence($eid, $type, $randnum) {
         $arr = array();
         $numproblem = M('exp_question')
             ->where('exam_id=%d and type=%d', $eid, $type)
@@ -120,7 +123,7 @@ class ExamadminModel
      * @param  number $eid 比赛编号
      * @return number        是否存在
      */
-    private function chkprivilege($userId, $eid) {
+    private function getPrivilege($userId, $eid) {
         $res = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($userId, $eid);
         return !empty($res);
     }

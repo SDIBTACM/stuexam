@@ -18,14 +18,14 @@ abstract class GeneralModel
 
     abstract protected function getTableFields();
 
-    protected function queryOne($where, $field = array()) {
+    public function queryOne($where, $field = array()) {
         if (empty($where)) {
             return null;
         }
         return $this->getDao()->field($field)->where($where)->find();
     }
 
-    protected function queryAll($where, $field = array()) {
+    public function queryAll($where, $field = array()) {
         if (empty($where)) {
             return array();
         }
@@ -48,7 +48,7 @@ abstract class GeneralModel
             $dao->group($query['group']);
         }
 
-        if (!empty($query['order']) && is_array($query['order'])) {
+        if (!empty($query['order'])) {
             $dao->order($query['order']);
         }
 

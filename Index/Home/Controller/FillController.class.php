@@ -37,7 +37,7 @@ class FillController extends QuestionController
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $fillarr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
         $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillsx = ExamadminModel::instance()->getproblemsx($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+        $fillsx = ExamadminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('fillarr', $fillarr);
@@ -50,12 +50,12 @@ class FillController extends QuestionController
     }
 
     public function saveAnswer() {
-        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
         echo 'ok';
     }
 
     public function submitPaper() {
-        $fscore = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
+        $fscore = AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
         $inarr['fillsum'] = $fscore;
         StudentBaseModel::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);

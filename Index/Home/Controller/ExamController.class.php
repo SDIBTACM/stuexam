@@ -34,9 +34,9 @@ class ExamController extends QuestionController
             $widgets['fillans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
             $widgets['programans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
 
-            $widgets['choosesx'] = ExamadminModel::instance()->getproblemsx($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
-            $widgets['judgesx'] = ExamadminModel::instance()->getproblemsx($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
-            $widgets['fillsx'] = ExamadminModel::instance()->getproblemsx($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+            $widgets['choosesx'] = ExamadminModel::instance()->getProblemSequence($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
+            $widgets['judgesx'] = ExamadminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
+            $widgets['fillsx'] = ExamadminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
             $data = array(
                 'extrainfo' => $this->leftTime + 1
@@ -49,11 +49,11 @@ class ExamController extends QuestionController
     }
 
     public function saveanswer() {
-        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
+        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
         usleep(1000);
-        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
+        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
         usleep(1000);
-        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
+        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
         usleep(30000);
         echo "ok";
     }
@@ -64,10 +64,10 @@ class ExamController extends QuestionController
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
 
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $cright = AnswerModel::instance()->answersave($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
-        $jright = AnswerModel::instance()->answersave($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
-        $fscore = AnswerModel::instance()->answersave($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
-        $pright = AnswerModel::instance()->getrightprogram($userId, $this->examId, $start_timeC, $end_timeC);
+        $cright = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
+        $jright = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
+        $fscore = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
+        $pright = AnswerModel::instance()->getRightProgramCount($userId, $this->examId, $start_timeC, $end_timeC);
         $inarr['user_id'] = $userId;
         $inarr['exam_id'] = $this->examId;
         $inarr['choosesum'] = $cright * $allscore['choosescore'];

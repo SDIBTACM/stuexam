@@ -53,11 +53,11 @@ class QuestionController extends TemplateController
         } else {
             $this->examId = $eid;
             $userId = $this->userInfo['user_id'];
-            $this->examBase = ExamadminModel::instance()->chkexamprivilege($eid, $userId, true);
+            $this->examBase = ExamadminModel::instance()->checkExamPrivilege($eid, $userId, true);
             $this->navigationUrl = U('Home/Question/navigation', array('eid' => $this->examId));
 
             if (is_array($this->examBase)) {
-                $isruning = ExamadminModel::instance()->chkruning($this->examBase['start_time'], $this->examBase['end_time']);
+                $isruning = ExamadminModel::instance()->getExamRunningStatus($this->examBase['start_time'], $this->examBase['end_time']);
                 if ($isruning != ExamBaseModel::EXAM_RUNNING) {
                     $this->alertError('exam is not running!', U('Home/Index/index'));
                 }

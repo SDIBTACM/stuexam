@@ -37,7 +37,7 @@ class ChooseController extends QuestionController
         $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
         $choosearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $choosesx = ExamadminModel::instance()->getproblemsx($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
+        $choosesx = ExamadminModel::instance()->getProblemSequence($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('choosearr', $choosearr);
@@ -50,13 +50,13 @@ class ChooseController extends QuestionController
     }
 
     public function saveAnswer() {
-        AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         echo "ok";
     }
 
     public function submitPaper() {
         $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $cright = AnswerModel::instance()->answersave($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
+        $cright = AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
         $inarr['choosesum'] = $cright * $allscore['choosescore'];
         StudentBaseModel::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);

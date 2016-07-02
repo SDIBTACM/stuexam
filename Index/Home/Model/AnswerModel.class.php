@@ -25,7 +25,7 @@ class AnswerModel
         return self::$_instance;
     }
 
-    public function answersave($user_id, $eid, $type, $issave = true) {
+    public function saveProblemAnswer($user_id, $eid, $type, $issave = true) {
         switch ($type) {
             case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
                 return $this->saveChooseAnswer($user_id, $eid, $issave);
@@ -162,7 +162,7 @@ class AnswerModel
         return $arr;
     }
 
-    public function getrightprogram($user_id, $eid, $start_timeC, $end_timeC) {
+    public function getRightProgramCount($user_id, $eid, $start_timeC, $end_timeC) {
         $query = "SELECT distinct `question_id`,`result` FROM `exp_question`,`solution` WHERE `exam_id`='$eid' AND `type`='4' AND `result`='4'
 		AND `in_date`>'$start_timeC' AND `in_date`<'$end_timeC' AND `user_id`='" . $user_id . "' AND `exp_question`.`question_id`=`solution`.`problem_id`";
         $row = M()->query($query);

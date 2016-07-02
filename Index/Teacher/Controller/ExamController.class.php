@@ -7,6 +7,7 @@ use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\QuestionBaseModel;
 
 class ExamController extends TemplateController
 {
@@ -215,9 +216,12 @@ class ExamController extends TemplateController
             usleep(10000);
         }
 
-        $programs = M('exp_question')->field('question_id')
-            ->where('exam_id=%d and type=4', $this->eid)->order('question_id')
-            ->select();
+        $query = array(
+            'exam_id' => $this->eid,
+            'type' => 4,
+            'order' => 'question_id'
+        );
+        $programs = QuestionBaseModel::instance()->queryData($query, array('question_id'));
 
         $this->zadd('unames', $unames);
         $this->zadd('userIds', $users);
