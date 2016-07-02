@@ -9,6 +9,8 @@
 namespace Teacher\Model;
 
 
+use Teacher\DbConfig\FillDbConfig;
+
 class FillBaseModel extends GeneralModel
 {
 
@@ -27,11 +29,11 @@ class FillBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return DbConfigModel::TABLE_FILL;
+        return FillDbConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return DbConfigModel::$TABLE_FILL_FILEDS;
+        return FillDbConfig::$TABLE_FIELD;
     }
 
     public static function instance() {

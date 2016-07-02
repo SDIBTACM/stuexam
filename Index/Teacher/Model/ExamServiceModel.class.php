@@ -99,6 +99,8 @@ class ExamServiceModel
                 }
                 M()->execute($query);
                 return true;
+            } else {
+                return false;
             }
         } else {
             return false;

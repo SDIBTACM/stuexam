@@ -9,6 +9,8 @@
 namespace Teacher\Model;
 
 
+use Teacher\DbConfig\ExamDbConfig;
+
 class ExamBaseModel extends GeneralModel
 {
 
@@ -29,11 +31,11 @@ class ExamBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return DbConfigModel::TABLE_EXAM;
+        return ExamDbConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return DbConfigModel::$TABLE_EXAM_FILEDS;
+        return ExamDbConfig::$TABLE_FIELD;
     }
 
     public static function instance() {

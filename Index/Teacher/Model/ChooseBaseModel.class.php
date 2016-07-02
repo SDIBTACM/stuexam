@@ -9,6 +9,8 @@
 namespace Teacher\Model;
 
 
+use Teacher\DbConfig\ChooseDbConfig;
+
 class ChooseBaseModel extends GeneralModel
 {
 
@@ -27,11 +29,11 @@ class ChooseBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return DbConfigModel::TABLE_CHOOSE;
+        return ChooseDbConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return DbConfigModel::$TABLE_CHOOSE_FILEDS;
+        return ChooseDbConfig::$TABLE_FIELD;
     }
 
     public static function instance() {

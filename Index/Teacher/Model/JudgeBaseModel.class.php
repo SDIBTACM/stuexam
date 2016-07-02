@@ -9,6 +9,8 @@
 namespace Teacher\Model;
 
 
+use Teacher\DbConfig\JudgeDbConfig;
+
 class JudgeBaseModel extends GeneralModel
 {
 
@@ -27,11 +29,11 @@ class JudgeBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return DbConfigModel::TABLE_JUDGE;
+        return JudgeDbConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return DbConfigModel::$TABLE_JUDGE_FILEDS;
+        return JudgeDbConfig::$TABLE_FIELD;
     }
 
     public static function instance() {

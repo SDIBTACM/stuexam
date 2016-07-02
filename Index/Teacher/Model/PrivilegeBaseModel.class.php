@@ -9,6 +9,8 @@
 namespace Teacher\Model;
 
 
+use Teacher\DbConfig\PrivilegeDbConfig;
+
 class PrivilegeBaseModel extends GeneralModel
 {
 
@@ -29,11 +31,11 @@ class PrivilegeBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return DbConfigModel::TABLE_EX_PRIVILEGE;
+        return PrivilegeDbConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return DbConfigModel::$TABLE_EX_PRIVILEGE_FILEDS;
+        return PrivilegeDbConfig::$TABLE_FIELD;
     }
 
     public static function instance() {

@@ -9,6 +9,8 @@
 namespace Teacher\Model;
 
 
+use Teacher\DbConfig\QuestionDbConfig;
+
 class QuestionBaseModel extends GeneralModel
 {
     private static $_instance = null;
@@ -24,11 +26,11 @@ class QuestionBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return DbConfigModel::TABLE_EXP_QUESTION;
+        return QuestionDbConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return DbConfigModel::$TABLE_EXP_QUESTION_FILEDS;
+        return QuestionDbConfig::$TABLE_FIELD;
     }
 
     public static function instance() {
