@@ -77,28 +77,4 @@ class ExamBaseModel extends GeneralModel
         $res = $dao->where($where)->delete();
         return $res;
     }
-
-    public function getExamInfoByQuery($query, $field = array()) {
-        $where = array();
-        $dao = $this->getDao();
-        $tableFields = $this->getTableFields();
-        foreach ($tableFields as $k => $v) {
-            if (!empty($query[$k])) {
-                $where[$k] = $query[$k];
-            }
-        }
-
-        $dao = $dao->field($field)->where($where);
-
-        if (!empty($query['order']) && is_array($query['order'])) {
-            $dao->order($query['order']);
-        }
-
-        if (!empty($query['limit'])) {
-            $dao->limit($query['limit']);
-        }
-
-        $res = $dao->select();
-        return $res;
-    }
 }

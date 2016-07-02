@@ -44,12 +44,10 @@ class ChooseBaseModel extends GeneralModel
     }
 
     public function getChooseById($chooseId, $field = array()) {
-        $dao = $this->getDao();
         $where = array(
             'choose_id' => $chooseId
         );
-        $res = $dao->field($field)->where($where)->find();
-        return $res;
+        return $this->queryOne($where, $field);
     }
 
     public function updateChooseById($chooseId, $data) {

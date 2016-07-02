@@ -18,4 +18,45 @@ abstract class GeneralModel
 
     abstract protected function getTableFields();
 
+    protected function queryOne($where, $field = array()) {
+        if (empty($where)) {
+            return null;
+        }
+        return $this->getDao()->field($field)->where($where)->find();
+    }
+
+    protected function queryAll($where, $field = array()) {
+        if (empty($where)) {
+            return array();
+        }
+        return $this->getDao()->field($field)->where($where)->select();
+    }
+
+    public function queryData($query, $field = array()) {
+        $where = array();
+        $dao = $this->getDao();
+        $tableFields = $this->getTableFields();
+        foreach ($tableFields as $k => $v) {
+            if (!empty($query[$k])) {
+                $where[$k] = $query[$k];
+            }
+        }
+
+        $dao = $dao->field($field)->where($where);
+
+        if (!empty($query['group'])) {
+            $dao->group($query['group']);
+        }
+
+        if (!empty($query['order']) && is_array($query['order'])) {
+            $dao->order($query['order']);
+        }
+
+        if (!empty($query['limit'])) {
+            $dao->limit(intval($query['limit']));
+        }
+        $res = $dao->select();
+        return $res;
+    }
+
 }

@@ -41,7 +41,7 @@ class IndexController extends TemplateController
         $where['order'] = array('exam_id desc');
         $where['limit'] = $mypage['sqladd'];
         $field = array('exam_id', 'title', 'start_time', 'end_time');
-        $row = ExamBaseModel::instance()->getExamInfoByQuery($where, $field);
+        $row = ExamBaseModel::instance()->queryData($where, $field);
 
         $this->zadd('row', $row);
         $this->zadd('mypage', $mypage);

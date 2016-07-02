@@ -51,23 +51,19 @@ class QuestionBaseModel extends GeneralModel
     }
 
     public function getQuestionByExamId($eid, $field = array()) {
-        $questionDao = $this->getDao();
         $where = array(
             'exam_id' => $eid
         );
-        $res = $questionDao->field($field)->where($where)->select();
-        return $res;
+        return $this->queryAll($where, $field);
     }
 
     public function getQuestionIds4ExamByType($eid, $type) {
-        $questionDao = $this->getDao();
         $where = array(
             'exam_id' => $eid,
             'type' => $type
         );
         $field = array('question_id');
-        $res = $questionDao->field($field)->where($where)->select();
-        return $res;
+        return $this->queryAll($where, $field);
     }
 
     public function getQuestionCntByType($eid, $type) {

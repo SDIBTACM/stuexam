@@ -56,22 +56,18 @@ class PrivilegeBaseModel extends GeneralModel
     }
 
     public function getUsersByExamId($eid, $field = array()) {
-        $dao = $this->getDao();
         $where = array(
             'rightstr' => "e$eid"
         );
-        $users = $dao->field($field)->where($where)->select();
-        return $users;
+        return $this->queryAll($where, $field);
     }
 
     public function getPrivilegeByUserIdAndExamId($userId, $eid, $field = array()) {
-        $dao = $this->getDao();
         $where = array(
             'user_id' => $userId,
             'rightstr' => "e$eid"
         );
-        $privilege = $dao->field($field)->where($where)->find();
-        return $privilege;
+        return $this->queryOne($where, $field);
     }
 
     public function updatePrivilegeByUserIdAndExamId($userId, $eid, $data) {
@@ -89,12 +85,11 @@ class PrivilegeBaseModel extends GeneralModel
      * @return mixed
      */
     public function getTakeInExamUsersByExamId($eid) {
-        $dao = $this->getDao();
         $where = array(
             'rightstr' => "e$eid",
             'extrainfo' => array('neq', 0)
         );
         $field = array('user_id');
-        return $dao->field($field)->where($where)->select();
+        return $this->queryAll($where, $field);
     }
 }

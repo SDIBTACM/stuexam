@@ -60,9 +60,7 @@ class StudentBaseModel extends GeneralModel
             'exam_id' => $examId,
             'user_id' => $userId
         );
-        $dao = $this->getDao();
-        $res = $dao->where($where)->find();
-        return $res;
+        return $this->queryOne($where);
     }
 
     public function submitExamPaper($userId, $examId, $scores) {

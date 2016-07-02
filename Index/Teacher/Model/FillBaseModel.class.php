@@ -44,12 +44,10 @@ class FillBaseModel extends GeneralModel
     }
 
     public function getFillById($fillId, $field = array()) {
-        $dao = $this->getDao();
         $where = array(
             'fill_id' => $fillId
         );
-        $res = $dao->field($field)->where($where)->find();
-        return $res;
+        return $this->queryOne($where, $field);
     }
 
     public function updateFillById($fillId, $data) {

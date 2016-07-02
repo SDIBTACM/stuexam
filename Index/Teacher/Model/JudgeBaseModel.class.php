@@ -44,12 +44,10 @@ class JudgeBaseModel extends GeneralModel
     }
 
     public function getJudgeById($judgeId, $field = array()) {
-        $dao = $this->getDao();
         $where = array(
             'judge_id' => $judgeId
         );
-        $res = $dao->field($field)->where($where)->find();
-        return $res;
+        return $this->queryOne($where, $field);
     }
 
     public function updateJudgeById($judgeId, $data) {
