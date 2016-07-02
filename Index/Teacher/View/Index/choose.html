@@ -60,7 +60,7 @@
 					</td>
 					<div class="clearfix"></div>
 					<td>{$r['creator']}</td>
-					<td>{$r['point']}</td>
+					<td>{$pointMap[$r['point']]}</td>
 					<td>{$r['easycount']}</td>
 					<td><a href="javascript:suredo('{:U('Teacher/Del/choose',array('id'=>$r['choose_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">删除</a></td>
 					<td><a href="{:U('Teacher/Add/choose',array('id'=>$r['choose_id'],'page'=>$mypage['page'], 'problem'=>$problem))}">编辑</a></td>

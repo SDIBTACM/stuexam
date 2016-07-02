@@ -6,7 +6,14 @@ use Think\Controller;
 class IndexController extends TemplateController
 {
 
+    private $pointMap = array();
+
     public function _initialize() {
+        $points = M("ex_point")->select();
+        foreach ($points as $point) {
+            $this->pointMap[$point['point_id']] = $point['point'];
+        }
+
         parent::_initialize();
     }
 
@@ -45,7 +52,8 @@ class IndexController extends TemplateController
             'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
-            'numofchoose' => $numofchoose
+            'numofchoose' => $numofchoose,
+            'pointMap' => $this->pointMap
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();
@@ -71,7 +79,8 @@ class IndexController extends TemplateController
             'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
-            'numofjudge' => $numofjudge
+            'numofjudge' => $numofjudge,
+            'pointMap' => $this->pointMap
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();
@@ -96,7 +105,8 @@ class IndexController extends TemplateController
             'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
-            'numoffill' => $numoffill
+            'numoffill' => $numoffill,
+            'pointMap' => $this->pointMap
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();
