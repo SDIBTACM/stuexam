@@ -24,10 +24,10 @@
 			<div class="col-md-3">
 			<select class='form-control' name="point" id="point">
 				<foreach name='pnt' item='p'>
-					<if condition="isset($row['point']) and $row['point'] eq $p['point']">
-					<option value="{$p['point']}" selected>{$p['point']}</option>
+					<if condition="isset($row['point']) and $row['point'] eq $p['point_id']">
+					<option value="{$p['point_id']}" selected>{$p['point']}</option>
 					<else/>
-					<option value="{$p['point']}">{$p['point']}</option>
+					<option value="{$p['point_id']}">{$p['point']}</option>
 					</if>
 				</foreach>
 			</select>
