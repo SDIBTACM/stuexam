@@ -29,7 +29,10 @@ class FillServiceModel
             return -1;
         } else {
             $arr['question'] = test_input($_POST['fill_des']);
-            $arr['point'] = test_input($_POST['point']);
+            $arr['point'] = implode(",", $_POST['point']);
+            if (empty($arr['point'])) {
+                return -2;
+            }
             $arr['easycount'] = intval($_POST['easycount']);
             $arr['answernum'] = intval($_POST['numanswer']);
             $arr['kind'] = intval($_POST['kind']);
@@ -55,7 +58,10 @@ class FillServiceModel
 
     public function addFillInfo() {
         $arr['question'] = test_input($_POST['fill_des']);
-        $arr['point'] = test_input($_POST['point']);
+        $arr['point'] = implode(",", $_POST['point']);
+        if (empty($arr['point'])) {
+            return false;
+        }
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['answernum'] = intval($_POST['numanswer']);
         $arr['kind'] = intval($_POST['kind']);

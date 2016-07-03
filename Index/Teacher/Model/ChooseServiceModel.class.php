@@ -33,7 +33,10 @@ class ChooseServiceModel
             $arr['bms'] = test_input($_POST['bms']);
             $arr['cms'] = test_input($_POST['cms']);
             $arr['dms'] = test_input($_POST['dms']);
-            $arr['point'] = test_input($_POST['point']);
+            $arr['point'] = implode(",", $_POST['point']);
+            if (empty($arr['point'])) {
+                return -2;
+            }
             $arr['answer'] = $_POST['answer'];
             $arr['easycount'] = intval($_POST['easycount']);
             $arr['isprivate'] = intval($_POST['isprivate']);
@@ -54,7 +57,10 @@ class ChooseServiceModel
         $arr['dms'] = test_input($_POST['dms']);
         $arr['answer'] = $_POST['answer'];
         $arr['creator'] = $_SESSION['user_id'];
-        $arr['point'] = test_input($_POST['point']);
+        $arr['point'] = implode(",", $_POST['point']);
+        if (empty($arr['point'])) {
+            return false;
+        }
         $arr['addtime'] = date('Y-m-d H:i:s');
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);

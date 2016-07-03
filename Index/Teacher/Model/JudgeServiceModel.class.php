@@ -30,7 +30,10 @@ class JudgeServiceModel
         } else {
             $arr['question'] = test_input($_POST['judge_des']);
             $arr['answer'] = $_POST['answer'];
-            $arr['point'] = test_input($_POST['point']);
+            $arr['point'] = implode(",", $_POST['point']);
+            if (empty($arr['point'])) {
+                return -2;
+            }
             $arr['easycount'] = intval($_POST['easycount']);
             $arr['isprivate'] = intval($_POST['isprivate']);
             $result = JudgeBaseModel::instance()->updateJudgeById($judgeid, $arr);
@@ -44,7 +47,10 @@ class JudgeServiceModel
 
     public function addJudgeInfo() {
         $arr['question'] = test_input($_POST['judge_des']);
-        $arr['point'] = test_input($_POST['point']);
+        $arr['point'] = implode(",", $_POST['point']);
+        if (empty($arr['point'])) {
+            return false;
+        }
         $arr['answer'] = $_POST['answer'];
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);

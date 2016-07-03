@@ -44,7 +44,7 @@
 			<th width=4%>ID</th>
 			<th width=30%>题目描述</th>
 			<th width=8%>创建者</th>
-			<th width=8%>知识点</th>
+			<!--<th width=8%>知识点</th>-->
 			<th width=4%>难度</th>
 			<th width=8% colspan="2">操作</th>
 		</thread>
@@ -61,7 +61,7 @@
 					</td>
 					<div class="clearfix"></div>
 					<td>{$r['creator']}</td>
-					<td>{$pointMap[$r['point']]}</td>
+					<!--<td>{$pointMap[$r['point']]}</td>-->
 					<td>{$r['easycount']}</td>
 					<td><a href="javascript:suredo('{:U('Teacher/Del/judge',array('id'=>$r['judge_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">删除</a></td>
 					<td><a href="{:U('Teacher/Add/judge',array('id'=>$r['judge_id'],'page'=>$mypage['page'],'problem' => $problem))}">编辑</a></td>

@@ -1,3 +1,6 @@
+<css file="__PUBLIC__/Css/select2.min.css" />
+<script src="__PUBLIC__/Js/select2.min.js"></script>
+
 <div class="exam_content container">
 	<if condition="isset($row['fill_id'])">
 		<h1>编辑填空题</h1>
@@ -21,10 +24,10 @@
 		</div>
 		<div class="form-group">
 			<label for="point" class='col-md-2 control-label'>知识点:</label>
-			<div class="col-md-3">
-			<select class='form-control' name="point" id="point">
+			<div class="col-md-8">
+			<select class='form-control js-example-basic-multiple' name="point[]" id="point" multiple="multiple">
 				<foreach name='pnt' item='p'>
-					<if condition="isset($row['point']) and $row['point'] eq $p['point_id']">
+					<if condition="isset($row['point']) and in_array($p['point_id'], $row['point'])">
 					<option value="{$p['point_id']}" selected>{$p['point']}</option>
 					<else/>
 					<option value="{$p['point_id']}">{$p['point']}</option>
@@ -32,62 +35,61 @@
 				</foreach>
 			</select>
 			</div>
-			<label class='col-md-2 control-label' for="easycount">难度系数:</label>
-			<div class="col-md-3">
-			<select class='form-control' name="easycount" id="easycount">
-				<for start='0' end='11'>
-					<if condition="isset($row['easycount']) and $row['easycount'] eq $i">
-						<option value="{$i}" selected>{$i}</option>
-					<else/>
-						<option value="{$i}">{$i}</option>					
-					</if>
-				</for>
-			</select>
-			</div>
 		</div>
-		<div class="form-group">
-			<label class='col-md-2 control-label' for="isprivate">题库类型:</label>
-			<div class="col-md-3">
-			<select class='form-control' name="isprivate" id="isprivate" onchange="showmsg()">
-				<if condition="isset($row['isprivate']) and $row['isprivate'] eq 0">
-					<option value="0" selected>公共题库</option>
-				<else/>
-					<option value="0">公共题库</option>
-				</if>
-				<if condition="isset($row['isprivate']) and $row['isprivate'] eq 1">
-					<option value="1" selected>私人题库</option>
-				<else/>
-					<option value="1">私人题库</option>
-				</if>
-				<if condition="isset($row['isprivate']) and $row['isprivate'] eq 2">
-					<option value="2" selected>系统隐藏</option>
-				<else/>
-					<option value="2">系统隐藏</option>
-				</if>
-			</select>
-			</div>
-
-			<label for="kind" class="col-md-2 control-label">填空题类型:</label>
-			<div class="col-md-3">
-				<select class='form-control' name="kind" id="kind"  onchange="showspan()">
-					<if condition="isset($row['kind']) and $row['kind'] eq 1">
-						<option value="1" selected>基础填空题</option>
-					<else/>
-						<option value="1">基础填空题</option>
-					</if>
-					<if condition="isset($row['kind']) and $row['kind'] eq 2">
-						<option value="2" selected>写运行结果</option>
-					<else/>
-						<option value="2">写运行结果</option>
-					</if>
-					<if condition="isset($row['kind']) and $row['kind'] eq 2">
-						<option value="3" selected>程序填空</option>
-					<else/>
-						<option value="3">程序填空</option>
-					</if>
-				</select>
-			</div>
-		</div>
+        <div class="form-group">
+            <label class='col-md-2 control-label' for="easycount">难度系数:</label>
+            <div class="col-md-1">
+                <select class='form-control' name="easycount" id="easycount">
+                    <for start='0' end='11'>
+                        <if condition="isset($row['easycount']) and $row['easycount'] eq $i">
+                            <option value="{$i}" selected>{$i}</option>
+                            <else/>
+                            <option value="{$i}">{$i}</option>
+                        </if>
+                    </for>
+                </select>
+            </div>
+            <label class='col-md-1 control-label' for="isprivate">题库类型:</label>
+            <div class="col-md-2">
+                <select class='form-control' name="isprivate" id="isprivate" onchange="showmsg()">
+                    <if condition="isset($row['isprivate']) and $row['isprivate'] eq 0">
+                        <option value="0" selected>公共题库</option>
+                        <else/>
+                        <option value="0">公共题库</option>
+                    </if>
+                    <if condition="isset($row['isprivate']) and $row['isprivate'] eq 1">
+                        <option value="1" selected>私人题库</option>
+                        <else/>
+                        <option value="1">私人题库</option>
+                    </if>
+                    <if condition="isset($row['isprivate']) and $row['isprivate'] eq 2">
+                        <option value="2" selected>系统隐藏</option>
+                        <else/>
+                        <option value="2">系统隐藏</option>
+                    </if>
+                </select>
+            </div>
+            <label for="kind" class="col-md-1 control-label">题目类型:</label>
+            <div class="col-md-2">
+                <select class='form-control' name="kind" id="kind"  onchange="showspan()">
+                    <if condition="isset($row['kind']) and $row['kind'] eq 1">
+                        <option value="1" selected>基础填空题</option>
+                        <else/>
+                        <option value="1">基础填空题</option>
+                    </if>
+                    <if condition="isset($row['kind']) and $row['kind'] eq 2">
+                        <option value="2" selected>写运行结果</option>
+                        <else/>
+                        <option value="2">写运行结果</option>
+                    </if>
+                    <if condition="isset($row['kind']) and $row['kind'] eq 2">
+                        <option value="3" selected>程序填空</option>
+                        <else/>
+                        <option value="3">程序填空</option>
+                    </if>
+                </select>
+            </div>
+        </div>
 
 		<div class="form-group">
 			<label class='col-md-5 control-label'>答案：
@@ -137,5 +139,6 @@
 <script type="text/javascript">
 $(function(){
 	showspan();
+    $(".js-example-basic-multiple").select2();
 });
 </script>

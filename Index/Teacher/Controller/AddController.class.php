@@ -85,6 +85,7 @@ class AddController extends TemplateController
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 $this->echoError('You have no privilege!');
             }
+            $row['point'] = explode(",", $row['point']);
             $this->zadd('page', $page);
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
@@ -131,6 +132,7 @@ class AddController extends TemplateController
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 $this->echoError('You have no privilege!');
             }
+            $row['point'] = explode(",", $row['point']);
             $this->zadd('page', $page);
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
@@ -180,6 +182,7 @@ class AddController extends TemplateController
                 $ansrow = FillBaseModel::instance()->getFillAnswerByFillId($id);
                 $this->zadd('ansrow', $ansrow);
             }
+            $row['point'] = explode(",", $row['point']);
             $this->zadd('page', $page);
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
