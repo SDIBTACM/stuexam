@@ -9,7 +9,7 @@ class IndexController extends TemplateController
     private $pointMap = array();
 
     public function _initialize() {
-        $points = M("ex_point")->select();
+        $points = M("ex_point")->where(array("type" => 0))->select();
         foreach ($points as $point) {
             $this->pointMap[$point['point_id']] = $point['point'];
         }
@@ -116,7 +116,7 @@ class IndexController extends TemplateController
         if (!$this->isSuperAdmin()) {
             $this->echoError('Sorry,Only admin can do');
         }
-        $points = M('ex_point')->order('point_pos')->select();
+        $points = M('ex_point')->where(array("type" => 0))->order('point_pos')->select();
         $this->zadd('pnt', $points);
         $this->auto_display();
     }
