@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\QuestionDbConfig;
+use Constant\DbConfig\QuestionDbConfig;
 
 class QuestionBaseModel extends GeneralModel
 {
@@ -41,13 +41,11 @@ class QuestionBaseModel extends GeneralModel
     }
 
     public function insertQuestion($data) {
-        $questionDao = $this->getDao();
-        return $questionDao->add($data);
+        return $this->getDao()->add($data);
     }
 
     public function insertQuestions($data) {
-        $questionDao = $this->getDao();
-        return $questionDao->addAll($data);
+        return $this->getDao()->addAll($data);
     }
 
     public function getQuestionByExamId($eid, $field = array()) {
@@ -67,13 +65,11 @@ class QuestionBaseModel extends GeneralModel
     }
 
     public function getQuestionCntByType($eid, $type) {
-        $questionDao = $this->getDao();
         $where = array(
             'exam_id' => $eid,
             'type' => $type
         );
         $field = array('question_id');
-        $res = $questionDao->field($field)->where($where)->count();
-        return $res;
+        return $this->getDao()->field($field)->where($where)->count();
     }
 }

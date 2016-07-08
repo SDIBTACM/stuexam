@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\StudentDbConfig;
+use Constant\DbConfig\StudentDbConfig;
 
 class StudentBaseModel extends GeneralModel
 {
@@ -41,18 +41,15 @@ class StudentBaseModel extends GeneralModel
     }
 
     public function addStudentScore($data) {
-        $dao = $this->getDao();
-        $return = $dao->add($data);
-        return $return;
+        return $this->getDao()->add($data);
     }
 
     public function updateStudentScore($examId, $userId, $data) {
-        $dao = $this->getDao();
         $where = array(
             'exam_id' => $examId,
             'user_id' => $userId
         );
-        return $dao->data($data)->where($where)->save();
+        return $this->getDao()->data($data)->where($where)->save();
     }
 
     public function getStudentScoreInfoByExamAndUserId($examId, $userId) {

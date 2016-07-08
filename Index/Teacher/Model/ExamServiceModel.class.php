@@ -1,6 +1,9 @@
 <?php
 namespace Teacher\Model;
 
+use Constant\ReqResult\Result;
+use Teacher\Convert\ExamConvert;
+
 class ExamServiceModel
 {
 
@@ -20,62 +23,42 @@ class ExamServiceModel
     }
 
     public function updateExamInfo() {
-        $eid = intval($_POST['examid']);
-        $tmp = ExamBaseModel::instance()->getExamInfoById($eid, array('creator'));
-        if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
-            return -1;
-        } else {
-            $arr['start_time'] = intval($_POST['syear']) . "-" . intval($_POST['smonth']) . "-" . intval($_POST['sday']) . " " . intval($_POST['shour']) . ":" . intval($_POST['sminute']) . ":00";
-            $arr['end_time'] = intval($_POST['eyear']) . "-" . intval($_POST['emonth']) . "-" . intval($_POST['eday']) . " " . intval($_POST['ehour']) . ":" . intval($_POST['eminute']) . ":00";
-            $title = I('post.examname', '');
-            if (get_magic_quotes_gpc()) {
-                $title = stripslashes($title);
-            }
-            $arr['title'] = $title;
-            $arr['choosescore'] = I('post.xzfs', 0, 'intval');
-            $arr['judgescore'] = I('post.pdfs', 0, 'intval');
-            $arr['fillscore'] = I('post.tkfs', 0, 'intval');
-            $arr['prgans'] = I('post.yxjgfs', 0, 'intval');
-            $arr['prgfill'] = I('post.cxtkfs', 0, 'intval');
-            $arr['programscore'] = I('post.cxfs', 0, 'intval');
-            $arr['isvip'] = I('post.isvip', 'Y');
-            $arr['isprivate'] = I('post.isprivate',0, 'intval');
-
-            $result = ExamBaseModel::instance()->updateExamInfoById($eid, $arr);
-            if ($result !== false) {
-                return 1;
-            } else {
-                return -2;
-            }
+        $reqResult = new Result();
+        $examId = intval($_POST['examid']);
+        $_examInfo = ExamBaseModel::instance()->getExamInfoById($examId, array('creator'));
+        if (empty($_examInfo) || !checkAdmin(4, $_examInfo['creator'])) {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("You have no privilege to modify it!");
+            return $reqResult;
         }
+
+        $data = ExamConvert::convertExamDataFromPost();
+        $res = ExamBaseModel::instance()->updateExamInfoById($examId, $data);
+        if ($res !== false) {
+            $reqResult->setMessage("考试修改成功!");
+            $reqResult->setData("index");
+        } else {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("考试修改失败!");
+        }
+        return $reqResult;
     }
 
     public function addExamInfo() {
-        $arr['start_time'] = intval($_POST['syear']) . "-" . intval($_POST['smonth']) . "-" . intval($_POST['sday']) . " " . intval($_POST['shour']) . ":" . intval($_POST['sminute']) . ":00";
-        $arr['end_time'] = intval($_POST['eyear']) . "-" . intval($_POST['emonth']) . "-" . intval($_POST['eday']) . " " . intval($_POST['ehour']) . ":" . intval($_POST['eminute']) . ":00";
-        $creator = $_SESSION['user_id'];
-        $arr['creator'] = $creator;
+        $reqResult = new Result();
+        $data = ExamConvert::convertExamDataFromPost();
+        $data['creator'] = $_SESSION['user_id'];
 
-        $arr['choosescore'] = I('post.xzfs', 0, 'intval');
-        $arr['judgescore'] = I('post.pdfs', 0, 'intval');
-        $arr['fillscore'] = I('post.tkfs', 0, 'intval');
-        $arr['prgans'] = I('post.yxjgfs', 0, 'intval');
-        $arr['prgfill'] = I('post.cxtkfs', 0, 'intval');
-        $arr['programscore'] = I('post.cxfs', 0, 'intval');
-        $arr['isvip'] = I('post.isvip', 'Y');
-        $arr['isprivate'] = I('post.isprivate',0, 'intval');
+        $return = ExamBaseModel::instance()->addExamBaseInfo($data);
 
-        $title = $_POST['examname'];
-        if (get_magic_quotes_gpc()) {
-            $title = stripslashes($title);
-        }
-        $arr['title'] = $title;
-        $return = ExamBaseModel::instance()->addExamBaseInfo($arr);
         if ($return) {
-            return true;
+            $reqResult->setMessage("考试添加成功!");
+            $reqResult->setData("index");
         } else {
-            return false;
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("考试添加失败!");
         }
+        return $reqResult;
     }
 
     public function addUsers2Exam($eid) {

@@ -1,6 +1,9 @@
 <?php
 namespace Teacher\Model;
 
+use Constant\ReqResult\Result;
+use Teacher\Convert\JudgeConvert;
+
 class JudgeServiceModel
 {
 
@@ -20,44 +23,44 @@ class JudgeServiceModel
     }
 
     public function updateJudgeInfo() {
+        $reqResult = new Result();
         $judgeid = I('post.judgeid', 0, 'intval');
         $field = array('creator', 'isprivate');
         $tmp = JudgeBaseModel::instance()->getJudgeById($judgeid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
-            return -1;
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("您没有权限进行此操作!");
         } else if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
-            return -1;
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("您没有权限进行此操作!");
         } else {
-            $arr['question'] = test_input($_POST['judge_des']);
-            $arr['answer'] = $_POST['answer'];
-            $arr['point'] = implode(",", $_POST['point']);
-            if (empty($arr['point'])) {
-                return -2;
-            }
-            $arr['easycount'] = intval($_POST['easycount']);
-            $arr['isprivate'] = intval($_POST['isprivate']);
+            $arr = JudgeConvert::convertJudgeFromPost();
             $result = JudgeBaseModel::instance()->updateJudgeById($judgeid, $arr);
             if ($result !== false) {
-                return 1;
+                $reqResult->setMessage("判断题修改成功!");
+                $reqResult->setData("judge");
             } else {
-                return -2;
+                $reqResult->setStatus(false);
+                $reqResult->setMessage("判断题修改失败!");
             }
         }
+        return $reqResult;
     }
 
     public function addJudgeInfo() {
-        $arr['question'] = test_input($_POST['judge_des']);
-        $arr['point'] = implode(",", $_POST['point']);
-        if (empty($arr['point'])) {
-            return false;
-        }
-        $arr['answer'] = $_POST['answer'];
-        $arr['easycount'] = intval($_POST['easycount']);
-        $arr['isprivate'] = intval($_POST['isprivate']);
+        $reqResult = new Result();
+        $arr = JudgeConvert::convertJudgeFromPost();
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
         $lastId = JudgeBaseModel::instance()->insertJudgeInfo($arr);
-        return $lastId ? true : false;
+        if ($lastId) {
+            $reqResult->setMessage("判断题添加成功!");
+            $reqResult->setData("judge");
+        } else {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("判断题添加失败!");
+        }
+        return $reqResult;
     }
 
     public function doRejudgeJudgeByExamIdAndUserId($eid, $userId, $judgeScore) {

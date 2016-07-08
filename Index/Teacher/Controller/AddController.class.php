@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Constant\ReqResult\Result;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ChooseServiceModel;
 use Teacher\Model\ExamServiceModel;
@@ -29,26 +30,26 @@ class AddController extends TemplateController
             if (!$this->isCreator()) {
                 $this->echoError('You have no privilege!');
             }
+            $reqResult = null;
             if (isset($_POST['examid'])) {
-                $flag = ExamServiceModel::instance()->updateExamInfo();
-                $this->flagChecked($flag, 3);
+                $reqResult = ExamServiceModel::instance()->updateExamInfo();
             } else if (isset($_POST['examname'])) {
-                $flag = ExamServiceModel::instance()->addExamInfo();
-                $this->flagChecked($flag, 3);
+                $reqResult = ExamServiceModel::instance()->addExamInfo();
             }
+            $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.eid') != '') {
-            $eid = I('get.eid', 0, 'intval');
+            $examId = I('get.eid', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $key = set_post_key();
-            $row = ExamBaseModel::instance()->getExamInfoById($eid);
-            if (empty($row)) {
+            $examInfo = ExamBaseModel::instance()->getExamInfoById($examId);
+            if (empty($examInfo)) {
                 $this->echoError('No Such Exam!');
             }
-            if (!$this->isOwner4ExamByUserId($row['creator'])) {
+            if (!$this->isOwner4ExamByUserId($examInfo['creator'])) {
                 $this->echoError('You have no privilege!');
             }
             $this->zadd('page', $page);
-            $this->zadd('row', $row);
+            $this->zadd('row', $examInfo);
             $this->zadd('mykey', $key);
             $this->auto_display();
         } else {
@@ -65,13 +66,13 @@ class AddController extends TemplateController
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
             }
+            $reqResult = null;
             if (isset($_POST['chooseid'])) {
-                $flag = ChooseServiceModel::instance()->updateChooseInfo();
-                $this->flagChecked($flag, 0);
+                $reqResult = ChooseServiceModel::instance()->updateChooseInfo();
             } else if (isset($_POST['choose_des'])) {
-                $flag = ChooseServiceModel::instance()->addChooseInfo();
-                $this->flagChecked($flag, 0);
+                $reqResult = ChooseServiceModel::instance()->addChooseInfo();
             }
+            $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
@@ -111,13 +112,13 @@ class AddController extends TemplateController
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
             }
+            $reqResult = null;
             if (isset($_POST['judgeid'])) {
-                $flag = JudgeServiceModel::instance()->updateJudgeInfo();
-                $this->flagChecked($flag, 1);
+                $reqResult = JudgeServiceModel::instance()->updateJudgeInfo();
             } else if (isset($_POST['judge_des'])) {
-                $flag = JudgeServiceModel::instance()->addJudgeInfo();
-                $this->flagChecked($flag, 1);
+                $reqResult = JudgeServiceModel::instance()->addJudgeInfo();
             }
+            $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.id') != '') {
 
             $id = I('get.id', 0, 'intval');
@@ -158,13 +159,13 @@ class AddController extends TemplateController
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
             }
+            $reqResult = null;
             if (isset($_POST['fillid'])) {
-                $flag = FillServiceModel::instance()->updateFillInfo();
-                $this->flagChecked($flag, 2);
+                $reqResult = FillServiceModel::instance()->updateFillInfo();
             } else if (isset($_POST['fill_des'])) {
-                $flag = FillServiceModel::instance()->addFillInfo();
-                $this->flagChecked($flag, 2);
+                $reqResult = FillServiceModel::instance()->addFillInfo();
             }
+            $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.id') != '') {
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
@@ -241,27 +242,17 @@ class AddController extends TemplateController
         }
     }
 
-    private function flagChecked($flag, $type, $second = 1) {
-        $typech = $this->typename_ch[$type];
-        $typeen = $this->typename_en[$type];
-        if (is_bool($flag)) {
-            if ($flag === true) {
-                $page = I('post.page', 1, 'intval');
-                $problem = I('post.problem', 0, 'intval');
-                $this->success("$typech 添加成功!", U("Teacher/Index/$typeen", array('page' => $page, 'problem' => $problem)), $second);
-            } else {
-                $this->echoError("$typech 添加失败！");
-            }
+    private function checkReqResult(Result $result) {
+        if ($result == null) {
+            $this->echoError("网络错误, 请刷新页面!");
+        }
+
+        if ($result->getStatus()) {
+            $page = I('post.page', 1, 'intval');
+            $problem = I('post.problem', 0, 'intval');
+            $this->success($result->getMessage(), U("Teacher/Index/" . $result->getData(), array('page' => $page, 'problem' => $problem)), 1);
         } else {
-            if ($flag === -1) {
-                $this->echoError('You have no privilege to modify it!');
-            } else if ($flag === -2) {
-                $this->echoError("$typech 修改失败！");
-            } else if ($flag === 1) {
-                $page = I('post.page', 1, 'intval');
-                $problem = I('post.problem', 0, 'intval');
-                $this->success("$typech 修改成功!", U("Teacher/Index/$typeen", array('page' => $page, 'problem' => $problem)), $second);
-            }
+            $this->echoError($result->getMessage());
         }
     }
 }

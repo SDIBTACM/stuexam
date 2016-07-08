@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\FillDbConfig;
+use Constant\DbConfig\FillDbConfig;
 
 class FillBaseModel extends GeneralModel
 {
@@ -51,26 +51,21 @@ class FillBaseModel extends GeneralModel
     }
 
     public function updateFillById($fillId, $data) {
-        $dao = $this->getDao();
         $where = array(
             'fill_id' => $fillId
         );
-        $res = $dao->where($where)->data($data)->save();
-        return $res;
+        return $this->getDao()->where($where)->data($data)->save();
     }
 
     public function insertFillInfo($data) {
-        $dao = $this->getDao();
-        $lastId = $dao->add($data);
-        return $lastId;
+        return $this->getDao()->add($data);
     }
 
     public function delFillById($fillId) {
-        $dao = $this->getDao();
         $where = array(
             'fill_id' => $fillId
         );
-        $res = $dao->where($where)->delete();
+        $res = $this->getDao()->where($where)->delete();
         return $res;
     }
 

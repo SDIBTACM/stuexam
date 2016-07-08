@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\ExamDbConfig;
+use Constant\DbConfig\ExamDbConfig;
 
 class ExamBaseModel extends GeneralModel
 {
@@ -46,35 +46,28 @@ class ExamBaseModel extends GeneralModel
     }
 
     public function getExamInfoById($examId, $field = array()) {
-        $examDao = $this->getDao();
         $where = array(
             'exam_id' => $examId,
             'visible' => 'Y'
         );
-        $result = $examDao->field($field)->where($where)->find();
-        return $result;
+        return $this->getDao()->field($field)->where($where)->find();
     }
 
     public function updateExamInfoById($examId, $data) {
-        $examDao = $this->getDao();
         $where = array(
             'exam_id' => $examId
         );
-        return $examDao->data($data)->where($where)->save();
+        return $this->getDao()->data($data)->where($where)->save();
     }
 
     public function addExamBaseInfo($data) {
-        $examDao = $this->getDao();
-        $return = $examDao->add($data);
-        return $return;
+        return $this->getDao()->add($data);
     }
 
     public function delExamById($examId) {
-        $dao = $this->getDao();
         $where = array(
             'exam_id' => $examId
         );
-        $res = $dao->where($where)->delete();
-        return $res;
+        return $this->getDao()->where($where)->delete();
     }
 }

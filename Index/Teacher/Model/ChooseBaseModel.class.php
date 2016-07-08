@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\ChooseDbConfig;
+use Constant\DbConfig\ChooseDbConfig;
 
 class ChooseBaseModel extends GeneralModel
 {

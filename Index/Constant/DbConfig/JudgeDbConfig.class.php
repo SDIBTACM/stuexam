@@ -3,25 +3,24 @@
  * drunk , fix later
  * Created by Magic.
  * User: jiaying
- * Datetime: 7/3/16 02:30
+ * Datetime: 7/3/16 02:31
  */
 
-namespace Teacher\DbConfig;
+namespace Constant\DbConfig;
 
 
-class FillDbConfig
+class JudgeDbConfig
 {
-    const TABLE_NAME = "ex_fill";
+    const TABLE_NAME = "ex_judge";
 
     public static $TABLE_FIELD = array(
-        'fill_id' => 'int',
+        'judge_id' => 'int',
         'question' => 'text',
-        'answernum' => 'tinyint',
+        'answer' => 'char',
         'point' => 'varchar',
         'addtime' => 'datetime',
         'creator' => 'varchar',
         'easycount' => 'tinyint',
-        'kind' => 'tinyint',
         'isprivate' => 'tinyint'
     );
 }

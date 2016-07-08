@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\PrivilegeDbConfig;
+use Constant\DbConfig\PrivilegeDbConfig;
 
 class PrivilegeBaseModel extends GeneralModel
 {
@@ -46,13 +46,11 @@ class PrivilegeBaseModel extends GeneralModel
     }
 
     public function insertPrivilege($privilege) {
-        $dao = $this->getDao();
-        return $dao->add($privilege);
+        return $this->getDao()->add($privilege);
     }
 
     public function insertPrivileges($privileges) {
-        $dao = $this->getDao();
-        return $dao->addAll($privileges);
+        return $this->getDao()->addAll($privileges);
     }
 
     public function getUsersByExamId($eid, $field = array()) {
@@ -71,12 +69,11 @@ class PrivilegeBaseModel extends GeneralModel
     }
 
     public function updatePrivilegeByUserIdAndExamId($userId, $eid, $data) {
-        $dao = $this->getDao();
         $where = array(
             'user_id' => $userId,
             'rightstr' => "e$eid"
         );
-        return $dao->where($where)->data($data)->save();
+        return $this->getDao()->where($where)->data($data)->save();
     }
 
     /**

@@ -1,6 +1,9 @@
 <?php
 namespace Teacher\Model;
 
+use Constant\ReqResult\Result;
+use Teacher\Convert\FillConvert;
+
 class FillServiceModel
 {
 
@@ -20,67 +23,61 @@ class FillServiceModel
     }
 
     public function updateFillInfo() {
-        $fillid = I('post.fillid', 0, 'intval');
+        $reqResult = new Result();
+        $fillId = I('post.fillid', 0, 'intval');
         $field = array('creator', 'isprivate');
-        $tmp = FillBaseModel::instance()->getFillById($fillid, $field);
-        if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
-            return -1;
-        } else if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
-            return -1;
+        $_fillInfo = FillBaseModel::instance()->getFillById($fillId, $field);
+        if (empty($_fillInfo) || !checkAdmin(4, $_fillInfo['creator'])) {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("您没有权限进行此操作!");
+        } else if ($_fillInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("您没有权限进行此操作!");
         } else {
-            $arr['question'] = test_input($_POST['fill_des']);
-            $arr['point'] = implode(",", $_POST['point']);
-            if (empty($arr['point'])) {
-                return -2;
-            }
-            $arr['easycount'] = intval($_POST['easycount']);
-            $arr['answernum'] = intval($_POST['numanswer']);
-            $arr['kind'] = intval($_POST['kind']);
-            $arr['isprivate'] = intval($_POST['isprivate']);
-            $result = FillBaseModel::instance()->updateFillById($fillid, $arr);
+            $arr = FillConvert::convertFillFromPost();
+            $result = FillBaseModel::instance()->updateFillById($fillId, $arr);
             if ($result !== false) {
-                $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$fillid";
+                $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$fillId";
                 M()->execute($sql);
                 $ins = array();
                 for ($i = 1; $i <= $arr['answernum']; $i++) {
                     $answer = test_input($_POST["answer$i"]);
-                    $ins[] = array("fill_id" => "$fillid", "answer_id" => "$i", "answer" => "$answer");
+                    $ins[] = array("fill_id" => "$fillId", "answer_id" => "$i", "answer" => "$answer");
                 }
                 if ($arr['answernum']) {
                     M('fill_answer')->addAll($ins);
                 }
-                return 1;
+                $reqResult->setMessage("填空题修改成功!");
+                $reqResult->setData("fill");
             } else {
-                return -2;
+                $reqResult->setStatus(false);
+                $reqResult->setMessage("填空题修改失败!");
             }
         }
+        return $reqResult;
     }
 
     public function addFillInfo() {
-        $arr['question'] = test_input($_POST['fill_des']);
-        $arr['point'] = implode(",", $_POST['point']);
-        if (empty($arr['point'])) {
-            return false;
-        }
-        $arr['easycount'] = intval($_POST['easycount']);
-        $arr['answernum'] = intval($_POST['numanswer']);
-        $arr['kind'] = intval($_POST['kind']);
-        $arr['isprivate'] = intval($_POST['isprivate']);
+        $reqResult = new Result();
+        $arr = FillConvert::convertFillFromPost();
         $arr['addtime'] = date('Y-m-d H:i:s');
         $arr['creator'] = $_SESSION['user_id'];
-        $fillid = FillBaseModel::instance()->insertFillInfo($arr);
-        if ($fillid) {
+        $fillId = FillBaseModel::instance()->insertFillInfo($arr);
+        if ($fillId) {
             for ($i = 1; $i <= $arr['answernum']; $i++) {
                 $answer = test_input($_POST["answer$i"]);
-                $arr2['fill_id'] = $fillid;
+                $arr2['fill_id'] = $fillId;
                 $arr2['answer_id'] = $i;
                 $arr2['answer'] = $answer;
                 M('fill_answer')->add($arr2);
             }
-            return true;
+            $reqResult->setMessage("填空题添加成功!");
+            $reqResult->setData("fill");
         } else {
-            return false;
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("填空题添加失败!");
         }
+        return $reqResult;
     }
 
     public function doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore) {

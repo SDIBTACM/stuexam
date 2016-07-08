@@ -1,6 +1,9 @@
 <?php
 namespace Teacher\Model;
 
+use Constant\ReqResult\Result;
+use Teacher\Convert\ChooseConvert;
+
 class ChooseServiceModel
 {
 
@@ -20,52 +23,44 @@ class ChooseServiceModel
     }
 
     public function updateChooseInfo() {
+        $reqResult = new Result();
         $chooseid = I('post.chooseid', 0, 'intval');
         $field = array('creator', 'isprivate');
-        $tmp = ChooseBaseModel::instance()->getChooseById($chooseid, $field);
-        if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
-            return -1;
-        } else if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
-            return -1;
+        $_chooseInfo = ChooseBaseModel::instance()->getChooseById($chooseid, $field);
+        if (empty($_chooseInfo) || !checkAdmin(4, $_chooseInfo['creator'])) {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("您没有权限进行此操作!");
+        } else if ($_chooseInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("您没有权限进行此操作!");
         } else {
-            $arr['question'] = test_input($_POST['choose_des']);
-            $arr['ams'] = test_input($_POST['ams']);
-            $arr['bms'] = test_input($_POST['bms']);
-            $arr['cms'] = test_input($_POST['cms']);
-            $arr['dms'] = test_input($_POST['dms']);
-            $arr['point'] = implode(",", $_POST['point']);
-            if (empty($arr['point'])) {
-                return -2;
-            }
-            $arr['answer'] = $_POST['answer'];
-            $arr['easycount'] = intval($_POST['easycount']);
-            $arr['isprivate'] = intval($_POST['isprivate']);
+            $arr = ChooseConvert::convertChooseFromPost();
             $result = ChooseBaseModel::instance()->updateChooseById($chooseid, $arr);
             if ($result !== false) {
-                return 1;
+                $reqResult->setMessage("选择题修改成功!");
+                $reqResult->setData("choose");
             } else {
-                return -2;
+                $reqResult->setStatus(false);
+                $reqResult->setMessage("选择题修改失败!");
             }
         }
+        return $reqResult;
     }
 
     public function addChooseInfo() {
-        $arr['question'] = test_input($_POST['choose_des']);
-        $arr['ams'] = test_input($_POST['ams']);
-        $arr['bms'] = test_input($_POST['bms']);
-        $arr['cms'] = test_input($_POST['cms']);
-        $arr['dms'] = test_input($_POST['dms']);
-        $arr['answer'] = $_POST['answer'];
+        $reqResult = new Result();
+        $arr = ChooseConvert::convertChooseFromPost();
         $arr['creator'] = $_SESSION['user_id'];
-        $arr['point'] = implode(",", $_POST['point']);
-        if (empty($arr['point'])) {
-            return false;
-        }
         $arr['addtime'] = date('Y-m-d H:i:s');
-        $arr['easycount'] = intval($_POST['easycount']);
-        $arr['isprivate'] = intval($_POST['isprivate']);
         $lastId = ChooseBaseModel::instance()->insertChooseInfo($arr);
-        return $lastId ? true : false;
+        if ($lastId) {
+            $reqResult->setMessage("选择题添加成功!");
+            $reqResult->setData("choose");
+        } else {
+            $reqResult->setStatus(false);
+            $reqResult->setMessage("选择题添加失败!");
+        }
+        return $reqResult;
     }
 
     public function doRejudgeChooseByExamIdAndUserId($eid, $userId, $chooseScore) {

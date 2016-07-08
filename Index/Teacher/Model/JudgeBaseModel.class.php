@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Teacher\DbConfig\JudgeDbConfig;
+use Constant\DbConfig\JudgeDbConfig;
 
 class JudgeBaseModel extends GeneralModel
 {
@@ -51,27 +51,21 @@ class JudgeBaseModel extends GeneralModel
     }
 
     public function updateJudgeById($judgeId, $data) {
-        $dao = $this->getDao();
         $where = array(
             'judge_id' => $judgeId
         );
-        $res = $dao->where($where)->data($data)->save();
-        return $res;
+        return $this->getDao()->where($where)->data($data)->save();
     }
 
     public function insertJudgeInfo($data) {
-        $dao = $this->getDao();
-        $lastId = $dao->add($data);
-        return $lastId;
+        return $this->getDao()->add($data);
     }
 
     public function delJudgeById($judgeId) {
-        $dao = $this->getDao();
         $where = array(
             'judge_id' => $judgeId
         );
-        $res = $dao->where($where)->delete();
-        return $res;
+        return $this->getDao()->where($where)->delete();
     }
 
     /**

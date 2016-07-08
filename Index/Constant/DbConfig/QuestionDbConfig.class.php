@@ -6,7 +6,7 @@
  * Datetime: 7/3/16 02:35
  */
 
-namespace Teacher\DbConfig;
+namespace Constant\DbConfig;
 
 
 class QuestionDbConfig
