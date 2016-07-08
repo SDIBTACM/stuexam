@@ -8,7 +8,6 @@
 
 namespace Teacher\Service;
 
-
 use Teacher\Model\StudentBaseModel;
 
 class StudentService

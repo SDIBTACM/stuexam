@@ -1,6 +1,10 @@
 <?php
 namespace Teacher\Service;
 
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\FillBaseModel;
+
 class ProblemService
 {
     const PROGRAM_PROBLEM_TYPE = 4;

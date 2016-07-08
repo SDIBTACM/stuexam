@@ -4,6 +4,9 @@ namespace Teacher\Service;
 use Constant\ReqResult\Result;
 use Teacher\Convert\FillConvert;
 
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
+
 class FillService
 {
 

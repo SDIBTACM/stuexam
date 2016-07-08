@@ -4,6 +4,9 @@ namespace Teacher\Service;
 use Constant\ReqResult\Result;
 use Teacher\Convert\ChooseConvert;
 
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
+
 class ChooseService
 {
 

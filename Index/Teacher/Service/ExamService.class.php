@@ -4,6 +4,11 @@ namespace Teacher\Service;
 use Constant\ReqResult\Result;
 use Teacher\Convert\ExamConvert;
 
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\ExamBaseModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
+
 class ExamService
 {
 

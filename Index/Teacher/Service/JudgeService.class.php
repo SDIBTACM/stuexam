@@ -4,6 +4,9 @@ namespace Teacher\Service;
 use Constant\ReqResult\Result;
 use Teacher\Convert\JudgeConvert;
 
+use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
+
 class JudgeService
 {
 
