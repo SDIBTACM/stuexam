@@ -1,10 +1,10 @@
 <?php
-namespace Teacher\Model;
+namespace Teacher\Service;
 
 use Constant\ReqResult\Result;
 use Teacher\Convert\JudgeConvert;
 
-class JudgeServiceModel
+class JudgeService
 {
 
     private static $_instance = null;
@@ -65,7 +65,7 @@ class JudgeServiceModel
 
     public function doRejudgeJudgeByExamIdAndUserId($eid, $userId, $judgeScore) {
         $judgeSum = 0;
-        $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);;
+        $judgearr = ExamService::instance()->getUserAnswer($eid, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);;
         $query = "SELECT `judge_id`,`answer` FROM `ex_judge` WHERE `judge_id` IN
 		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='2')";
         $row = M()->query($query);

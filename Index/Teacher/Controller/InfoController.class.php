@@ -2,15 +2,17 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ChooseServiceModel;
-use Teacher\Model\ExamServiceModel;
-use Teacher\Model\FillBaseModel;
-use Teacher\Model\FillServiceModel;
 use Teacher\Model\JudgeBaseModel;
-use Teacher\Model\JudgeServiceModel;
+use Teacher\Model\FillBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
-use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\ExamBaseModel;
+
+use Teacher\Service\ChooseService;
+use Teacher\Service\JudgeService;
+use Teacher\Service\ExamService;
+use Teacher\Service\FillService;
+use Teacher\Service\ProblemService;
+
 use Think\Controller;
 
 class InfoController extends TemplateController
@@ -33,21 +35,21 @@ class InfoController extends TemplateController
                 $this->echoError("The student have no privilege to take part in it");
             }
 
-            $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
+            $allscore = ExamService::instance()->getBaseScoreByExamId($eid);
 
-            $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $judgearr = ExamServiceModel::instance()->getUserAnswer($eid, $users, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-            $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $users, FillBaseModel::FILL_PROBLEM_TYPE);
+            $choosearr = ExamService::instance()->getUserAnswer($eid, $users, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $judgearr = ExamService::instance()->getUserAnswer($eid, $users, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $fillarr = ExamService::instance()->getUserAnswer($eid, $users, FillBaseModel::FILL_PROBLEM_TYPE);
 
-            $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-            $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($eid, FillBaseModel::FILL_PROBLEM_TYPE);
+            $chooseans = ProblemService::instance()->getProblemsAndAnswer4Exam($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $judgeans = ProblemService::instance()->getProblemsAndAnswer4Exam($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($eid, FillBaseModel::FILL_PROBLEM_TYPE);
             $fillans2 = array();
 
             if ($fillans) {
                 foreach ($fillans as $key => $value) {
-                    $fillans2[$value['fill_id']] = ProblemServiceModel::instance()
-                        ->getProblemsAndAnswer4Exam($value['fill_id'], ProblemServiceModel::PROBLEMANS_TYPE_FILL);
+                    $fillans2[$value['fill_id']] = ProblemService::instance()
+                        ->getProblemsAndAnswer4Exam($value['fill_id'], ProblemService::PROBLEMANS_TYPE_FILL);
                 }
             }
             $this->zadd('title', $row['title']);
@@ -271,12 +273,12 @@ class InfoController extends TemplateController
 
     private function rejudgepaper($userId, $eid, $start_timeC, $end_timeC, $mark) {
 
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($eid);
+        $allscore = ExamService::instance()->getBaseScoreByExamId($eid);
 
-        $choosesum = ChooseServiceModel::instance()->doRejudgeChooseByExamIdAndUserId($eid, $userId, $allscore['choosescore']);
-        $judgesum = JudgeServiceModel::instance()->doRejudgeJudgeByExamIdAndUserId($eid, $userId, $allscore['judgescore']);
-        $fillsum = FillServiceModel::instance()->doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore);
-        $programsum = ProblemServiceModel::instance()->doRejudgeProgramByExamIdAndUserId($eid, $userId, $allscore['programscore'], $start_timeC, $end_timeC);
+        $choosesum = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($eid, $userId, $allscore['choosescore']);
+        $judgesum = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($eid, $userId, $allscore['judgescore']);
+        $fillsum = FillService::instance()->doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore);
+        $programsum = ProblemService::instance()->doRejudgeProgramByExamIdAndUserId($eid, $userId, $allscore['programscore'], $start_timeC, $end_timeC);
 
         $sum = $choosesum + $judgesum + $fillsum + $programsum;
         if ($mark == 0) { // if the student has not submitted the paper

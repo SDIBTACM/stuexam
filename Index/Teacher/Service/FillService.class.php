@@ -1,10 +1,10 @@
 <?php
-namespace Teacher\Model;
+namespace Teacher\Service;
 
 use Constant\ReqResult\Result;
 use Teacher\Convert\FillConvert;
 
-class FillServiceModel
+class FillService
 {
 
     private static $_instance = null;
@@ -82,7 +82,7 @@ class FillServiceModel
 
     public function doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore) {
         $fillSum = 0;
-        $fillarr = ExamServiceModel::instance()->getUserAnswer($eid, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $fillarr = ExamService::instance()->getUserAnswer($eid, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
         $query = "SELECT `fill_answer`.`fill_id`,`answer_id`,`answer`,`answernum`,`kind` FROM `fill_answer`,`ex_fill` WHERE
 		`fill_answer`.`fill_id`=`ex_fill`.`fill_id` AND `fill_answer`.`fill_id` IN ( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')";
         $row = M()->query($query);

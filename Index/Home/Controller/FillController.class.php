@@ -10,10 +10,12 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
-use Teacher\Model\ExamServiceModel;
+
 use Teacher\Model\FillBaseModel;
-use Teacher\Model\ProblemServiceModel;
-use Teacher\Model\StudentBaseModel;
+
+use Teacher\Service\ExamService;
+use Teacher\Service\ProblemService;
+use Teacher\Service\StudentService;
 
 class FillController extends QuestionController
 {
@@ -34,9 +36,9 @@ class FillController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $fillarr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
+        $fillarr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
+        $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
         $fillsx = ExamadminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allBaseScore);
@@ -57,7 +59,7 @@ class FillController extends QuestionController
     public function submitPaper() {
         $fscore = AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
         $inarr['fillsum'] = $fscore;
-        StudentBaseModel::instance()->submitExamPaper(
+        StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));

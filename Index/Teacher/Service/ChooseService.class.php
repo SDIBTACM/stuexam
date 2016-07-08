@@ -1,10 +1,10 @@
 <?php
-namespace Teacher\Model;
+namespace Teacher\Service;
 
 use Constant\ReqResult\Result;
 use Teacher\Convert\ChooseConvert;
 
-class ChooseServiceModel
+class ChooseService
 {
 
     private static $_instance = null;
@@ -65,7 +65,7 @@ class ChooseServiceModel
 
     public function doRejudgeChooseByExamIdAndUserId($eid, $userId, $chooseScore) {
         $chooseSum = 0;
-        $choosearr = ExamServiceModel::instance()->getUserAnswer($eid, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $choosearr = ExamService::instance()->getUserAnswer($eid, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $query = "SELECT `choose_id`,`answer` FROM `ex_choose` WHERE `choose_id` IN
 		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1')";
         $row = M()->query($query);

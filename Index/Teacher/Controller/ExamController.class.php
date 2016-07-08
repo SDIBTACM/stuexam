@@ -2,12 +2,14 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ExamServiceModel;
-use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\FillBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
-use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\QuestionBaseModel;
+
+use Teacher\Service\ExamService;
+use Teacher\Service\ProblemService;
+
 
 class ExamController extends TemplateController
 {
@@ -33,16 +35,16 @@ class ExamController extends TemplateController
             $this->echoError('You have no privilege of this exam~');
         }
 
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->eid);
-        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $judgeans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $fillans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
-        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->eid, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+        $allscore = ExamService::instance()->getBaseScoreByExamId($this->eid);
+        $chooseans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $judgeans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
+        $programans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
 
         $fillans2 = array();
         if ($fillans) {
             foreach ($fillans as $key => $value) {
-                $fillans2[$value['fill_id']] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($value['fill_id'], ProblemServiceModel::PROBLEMANS_TYPE_FILL);
+                $fillans2[$value['fill_id']] = ProblemService::instance()->getProblemsAndAnswer4Exam($value['fill_id'], ProblemService::PROBLEMANS_TYPE_FILL);
             }
         }
         $numofchoose = count($chooseans);
@@ -77,7 +79,7 @@ class ExamController extends TemplateController
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
-                $flag = ExamServiceModel::instance()->addUsers2Exam($eid);
+                $flag = ExamService::instance()->addUsers2Exam($eid);
                 if ($flag === true) {
                     $this->success('考生添加成功', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
                 } else {

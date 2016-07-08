@@ -1,10 +1,10 @@
 <?php
-namespace Teacher\Model;
+namespace Teacher\Service;
 
 use Constant\ReqResult\Result;
 use Teacher\Convert\ExamConvert;
 
-class ExamServiceModel
+class ExamService
 {
 
     private static $_instance = null;

@@ -59,15 +59,4 @@ class StudentBaseModel extends GeneralModel
         );
         return $this->queryOne($where);
     }
-
-    public function submitExamPaper($userId, $examId, $scores) {
-        $oldData = $this->getStudentScoreInfoByExamAndUserId($examId, $userId);
-        if (empty($oldData)) {
-            $scores['user_id'] = $userId;
-            $scores['exam_id'] = $examId;
-            $this->addStudentScore($scores);
-        } else {
-            $this->updateStudentScore($examId, $userId, $scores);
-        }
-    }
 }

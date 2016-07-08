@@ -1,7 +1,7 @@
 <?php
-namespace Teacher\Model;
+namespace Teacher\Service;
 
-class ProblemServiceModel
+class ProblemService
 {
     const PROGRAM_PROBLEM_TYPE = 4;
     const PROBLEMANS_TYPE_FILL = 100;
@@ -33,7 +33,7 @@ class ProblemServiceModel
                 $programid = intval($programid);
                 $data = array(
                     'exam_id' => $eid,
-                    'type' => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
+                    'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
                     'question_id' => $programid
                 );
                 M('exp_question')->data($data)->add();
@@ -79,7 +79,7 @@ class ProblemServiceModel
         $where = array(
             'user_id' => $userId,
             'exam_id' => $eid,
-            'type'    => ProblemServiceModel::PROGRAM_PROBLEM_TYPE,
+            'type'    => ProblemService::PROGRAM_PROBLEM_TYPE,
             'question_id' => $pid,
             'answer_id' => 1
         );

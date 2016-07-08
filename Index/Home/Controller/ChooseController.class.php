@@ -10,10 +10,12 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
+
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ExamServiceModel;
-use Teacher\Model\ProblemServiceModel;
-use Teacher\Model\StudentBaseModel;
+
+use Teacher\Service\ExamService;
+use Teacher\Service\ProblemService;
+use Teacher\Service\StudentService;
 
 class ChooseController extends QuestionController
 {
@@ -34,9 +36,9 @@ class ChooseController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $choosearr = ExamServiceModel::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $chooseans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
+        $choosearr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $chooseans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $choosesx = ExamadminModel::instance()->getProblemSequence($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allBaseScore);
@@ -55,10 +57,10 @@ class ChooseController extends QuestionController
     }
 
     public function submitPaper() {
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $allscore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $cright = AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
         $inarr['choosesum'] = $cright * $allscore['choosescore'];
-        StudentBaseModel::instance()->submitExamPaper(
+        StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));

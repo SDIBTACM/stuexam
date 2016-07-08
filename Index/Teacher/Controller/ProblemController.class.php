@@ -4,8 +4,10 @@ namespace Teacher\Controller;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
-use Teacher\Model\ProblemServiceModel;
 use Teacher\Model\QuestionBaseModel;
+
+use Teacher\Service\ProblemService;
+
 use Think\Controller;
 
 class ProblemController extends TemplateController
@@ -48,7 +50,7 @@ class ProblemController extends TemplateController
             case FillBaseModel::FILL_PROBLEM_TYPE:
                 $this->addFillProblem();
                 break;
-            case ProblemServiceModel::PROGRAM_PROBLEM_TYPE:
+            case ProblemService::PROGRAM_PROBLEM_TYPE:
                 $this->addProgramProblem();
                 break;
             default:
@@ -150,7 +152,7 @@ class ProblemController extends TemplateController
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
-                $flag = ProblemServiceModel::instance()->addProgram2Exam($eid);
+                $flag = ProblemService::instance()->addProgram2Exam($eid);
                 if ($flag === true) {
                     $this->success('程序题添加成功', U('Teacher/Problem/addProgramProblem', array('eid' => $eid, 'type' => 4)), 2);
                 } else {
@@ -158,7 +160,7 @@ class ProblemController extends TemplateController
                 }
             }
         } else {
-            $ansrow = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+            $ansrow = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
             $answernumC = count($ansrow);
             $key = set_post_key();
             $widgets = array(

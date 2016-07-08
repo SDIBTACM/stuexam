@@ -3,21 +3,19 @@ namespace Teacher\Controller;
 
 use Constant\ReqResult\Result;
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ChooseServiceModel;
-use Teacher\Model\ExamServiceModel;
 use Teacher\Model\FillBaseModel;
-use Teacher\Model\FillServiceModel;
 use Teacher\Model\JudgeBaseModel;
-use Teacher\Model\JudgeServiceModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\QuestionBaseModel;
 
+use Teacher\Service\ChooseService;
+use Teacher\Service\ExamService;
+use Teacher\Service\FillService;
+use Teacher\Service\JudgeService;
+
+
 class AddController extends TemplateController
 {
-
-    private $typename_ch = array('选择题', '判断题', '填空题', '考试');
-    private $typename_en = array('choose', 'judge', 'fill', 'index');
-
     public function _initialize() {
         parent::_initialize();
     }
@@ -32,9 +30,9 @@ class AddController extends TemplateController
             }
             $reqResult = null;
             if (isset($_POST['examid'])) {
-                $reqResult = ExamServiceModel::instance()->updateExamInfo();
+                $reqResult = ExamService::instance()->updateExamInfo();
             } else if (isset($_POST['examname'])) {
-                $reqResult = ExamServiceModel::instance()->addExamInfo();
+                $reqResult = ExamService::instance()->addExamInfo();
             }
             $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.eid') != '') {
@@ -68,9 +66,9 @@ class AddController extends TemplateController
             }
             $reqResult = null;
             if (isset($_POST['chooseid'])) {
-                $reqResult = ChooseServiceModel::instance()->updateChooseInfo();
+                $reqResult = ChooseService::instance()->updateChooseInfo();
             } else if (isset($_POST['choose_des'])) {
-                $reqResult = ChooseServiceModel::instance()->addChooseInfo();
+                $reqResult = ChooseService::instance()->addChooseInfo();
             }
             $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.id') != '') {
@@ -114,9 +112,9 @@ class AddController extends TemplateController
             }
             $reqResult = null;
             if (isset($_POST['judgeid'])) {
-                $reqResult = JudgeServiceModel::instance()->updateJudgeInfo();
+                $reqResult = JudgeService::instance()->updateJudgeInfo();
             } else if (isset($_POST['judge_des'])) {
-                $reqResult = JudgeServiceModel::instance()->addJudgeInfo();
+                $reqResult = JudgeService::instance()->addJudgeInfo();
             }
             $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.id') != '') {
@@ -161,9 +159,9 @@ class AddController extends TemplateController
             }
             $reqResult = null;
             if (isset($_POST['fillid'])) {
-                $reqResult = FillServiceModel::instance()->updateFillInfo();
+                $reqResult = FillService::instance()->updateFillInfo();
             } else if (isset($_POST['fill_des'])) {
-                $reqResult = FillServiceModel::instance()->addFillInfo();
+                $reqResult = FillService::instance()->addFillInfo();
             }
             $this->checkReqResult($reqResult);
         } else if (IS_GET && I('get.id') != '') {

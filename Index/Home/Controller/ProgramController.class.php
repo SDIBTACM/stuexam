@@ -9,9 +9,10 @@
 namespace Home\Controller;
 
 use Home\Model\AnswerModel;
-use Teacher\Model\ExamServiceModel;
-use Teacher\Model\ProblemServiceModel;
-use Teacher\Model\StudentBaseModel;
+
+use Teacher\Service\ExamService;
+use Teacher\Service\ProblemService;
+use Teacher\Service\StudentService;
 
 class ProgramController extends QuestionController
 {
@@ -46,8 +47,8 @@ class ProgramController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
-        $programans = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
+        $programans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
 
         foreach ($programans as &$pans) {
             $pans['pFillNum'] = $this->getProgramFillNum($pans['program_id']);
@@ -57,7 +58,7 @@ class ProgramController extends QuestionController
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('programans', $programans);
         $this->zadd('questionName', '编程题');
-        $this->zadd('problemType', ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+        $this->zadd('problemType', ProblemService::PROGRAM_PROBLEM_TYPE);
 
         $this->auto_display('Exam:program', 'exlayout');
     }
@@ -65,14 +66,14 @@ class ProgramController extends QuestionController
     public function submitPaper() {
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $allscore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $inarr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
         $inarr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
         $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
         $pright = AnswerModel::instance()->getRightProgramCount($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
         $inarr['programsum'] = $pright * $allscore['programscore'];
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
-        StudentBaseModel::instance()->submitExamPaper(
+        StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Index/score'));
@@ -168,7 +169,7 @@ class ProgramController extends QuestionController
             } else {
                 $ans = $trow['result'];
                 if ($ans == 4) {
-                    ProblemServiceModel::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
+                    ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
                 }
                 $colorarr = C('judge_color');
                 $resultarr = C('judge_result');
@@ -188,7 +189,7 @@ class ProgramController extends QuestionController
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
             ->count();
         if ($row_cnt) {
-            ProblemServiceModel::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
+            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
             $this->echoError(4);
         } else {
             $this->echoError(-1);

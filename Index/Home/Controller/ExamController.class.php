@@ -3,12 +3,15 @@ namespace Home\Controller;
 
 use Home\Model\AnswerModel;
 use Home\Model\ExamadminModel;
+
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ExamServiceModel;
-use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\FillBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
-use Teacher\Model\ProblemServiceModel;
+
+use Teacher\Service\ExamService;
+use Teacher\Service\ProblemService;
+
 use Think\Exception;
 
 // This Controller is for Version 1.0.0
@@ -23,16 +26,16 @@ class ExamController extends QuestionController
         $widgets = array();
         $userId = $this->userInfo['user_id'];
         try {
-            $widgets['allscore'] = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+            $widgets['allscore'] = ExamService::instance()->getBaseScoreByExamId($this->examId);
 
-            $widgets['choosearr'] = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $widgets['judgearr'] = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-            $widgets['fillarr'] = ExamServiceModel::instance()->getUserAnswer($this->examId, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
+            $widgets['choosearr'] = ExamService::instance()->getUserAnswer($this->examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $widgets['judgearr'] = ExamService::instance()->getUserAnswer($this->examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $widgets['fillarr'] = ExamService::instance()->getUserAnswer($this->examId, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
 
-            $widgets['chooseans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $widgets['judgeans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-            $widgets['fillans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-            $widgets['programans'] = ProblemServiceModel::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+            $widgets['chooseans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $widgets['judgeans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $widgets['fillans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+            $widgets['programans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
 
             $widgets['choosesx'] = ExamadminModel::instance()->getProblemSequence($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
             $widgets['judgesx'] = ExamadminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
@@ -63,7 +66,7 @@ class ExamController extends QuestionController
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
 
-        $allscore = ExamServiceModel::instance()->getBaseScoreByExamId($this->examId);
+        $allscore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $cright = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
         $jright = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
         $fscore = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
@@ -100,7 +103,7 @@ class ExamController extends QuestionController
                 } else {
                     $ans = $trow['result'];
                     if ($ans == 4) {
-                        ProblemServiceModel::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
+                        ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
                     }
                     $colorarr = C('judge_color');
                     $resultarr = C('judge_result');
@@ -182,7 +185,7 @@ class ExamController extends QuestionController
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
             ->count();
         if ($row_cnt) {
-            ProblemServiceModel::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
+            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
             echo 4;
         } else {
             echo -1;

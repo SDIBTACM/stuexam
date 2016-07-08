@@ -9,14 +9,18 @@
 namespace Home\Controller;
 
 use Home\Model\ExamadminModel;
+
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ExamBaseModel;
-use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
-use Teacher\Model\PrivilegeBaseModel;
-use Teacher\Model\ProblemServiceModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\ExamBaseModel;
 use Teacher\Model\QuestionBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\StudentBaseModel;
+
+use Teacher\Service\ProblemService;
+use Teacher\Service\StudentService;
+
 
 class QuestionController extends TemplateController
 {
@@ -104,7 +108,7 @@ class QuestionController extends TemplateController
         $this->chooseCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $this->judgeCount =  QuestionBaseModel::instance()->getQuestionCntByType($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $this->fillCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $this->programCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ProblemServiceModel::PROGRAM_PROBLEM_TYPE);
+        $this->programCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
     }
 
     protected function initExamUserScore() {
@@ -137,7 +141,7 @@ class QuestionController extends TemplateController
             $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
             $inarr['programsum'] = ($this->programSumScore == -1 ? 0 : $this->programSumScore);
             $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
-            StudentBaseModel::instance()->submitExamPaper(
+            StudentService::instance()->submitExamPaper(
                 $this->userInfo['user_id'], $this->examId, $inarr);
             $this->success('恭喜你所有题型已提交完成~', U('Home/Index/score'), 2);
             exit(0);

@@ -2,9 +2,9 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\ExamBaseModel;
-use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\ExamBaseModel;
 use Think\Controller;
 
 class DelController extends TemplateController

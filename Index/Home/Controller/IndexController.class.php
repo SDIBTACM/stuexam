@@ -2,6 +2,7 @@
 namespace Home\Controller;
 
 use Home\Model\ExamadminModel;
+
 use Teacher\Model\ExamBaseModel;
 
 class IndexController extends TemplateController
