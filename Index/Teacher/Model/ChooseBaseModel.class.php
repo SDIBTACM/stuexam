@@ -15,6 +15,7 @@ class ChooseBaseModel extends GeneralModel
 {
 
     const CHOOSE_PROBLEM_TYPE = 1;
+    const CHOOSE_PROBLEM_NAME = "选择题";
 
     private static $_instance = null;
 

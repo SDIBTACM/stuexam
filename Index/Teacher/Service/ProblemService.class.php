@@ -9,6 +9,7 @@ class ProblemService
 {
     const PROGRAM_PROBLEM_TYPE = 4;
     const PROBLEMANS_TYPE_FILL = 100;
+    const PROGRAM_PROBLEM_NAME = "编程题";
 
     private static $_instance = null;
 

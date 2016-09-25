@@ -142,7 +142,6 @@ class InfoController extends TemplateController
         $allHaveScore = M('ex_student')->distinct('user_id')->field('user_id,score')
             ->where('exam_id=%d', $eid)->select();
 
-
         $haveScoreUserIds = array();
         $userIds2Submit = array();
         $negScoreUserId = array();

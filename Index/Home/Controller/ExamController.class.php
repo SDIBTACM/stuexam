@@ -27,18 +27,28 @@ class ExamController extends QuestionController
         try {
             $widgets['allscore'] = ExamService::instance()->getBaseScoreByExamId($this->examId);
 
-            $widgets['choosearr'] = ExamService::instance()->getUserAnswer($this->examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $widgets['judgearr'] = ExamService::instance()->getUserAnswer($this->examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-            $widgets['fillarr'] = ExamService::instance()->getUserAnswer($this->examId, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
+            $widgets['choosearr'] = ExamService::instance()->getUserAnswer(
+                $this->examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $widgets['judgearr'] = ExamService::instance()->getUserAnswer(
+                $this->examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $widgets['fillarr'] = ExamService::instance()->getUserAnswer(
+                $this->examId, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
 
-            $widgets['chooseans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $widgets['judgeans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-            $widgets['fillans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-            $widgets['programans'] = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
+            $widgets['chooseans'] = ProblemService::instance()->getProblemsAndAnswer4Exam(
+                $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $widgets['judgeans'] = ProblemService::instance()->getProblemsAndAnswer4Exam(
+                $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            $widgets['fillans'] = ProblemService::instance()->getProblemsAndAnswer4Exam(
+                $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+            $widgets['programans'] = ProblemService::instance()->getProblemsAndAnswer4Exam(
+                $this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
 
-            $widgets['choosesx'] = ExamadminModel::instance()->getProblemSequence($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
-            $widgets['judgesx'] = ExamadminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
-            $widgets['fillsx'] = ExamadminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+            $widgets['choosesx'] = ExamadminModel::instance()->getProblemSequence(
+                $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
+            $widgets['judgesx'] = ExamadminModel::instance()->getProblemSequence(
+                $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
+            $widgets['fillsx'] = ExamadminModel::instance()->getProblemSequence(
+                $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
             $data = array(
                 'extrainfo' => $this->leftTime + 1
@@ -51,11 +61,14 @@ class ExamController extends QuestionController
     }
 
     public function saveanswer() {
-        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
+        AnswerModel::instance()->saveProblemAnswer(
+            $this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);//choose over
         usleep(1000);
-        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
+        AnswerModel::instance()->saveProblemAnswer(
+            $this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);//judge over
         usleep(1000);
-        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
+        AnswerModel::instance()->saveProblemAnswer(
+            $this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
         usleep(30000);
         echo "ok";
     }
@@ -66,10 +79,17 @@ class ExamController extends QuestionController
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
 
         $allscore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $cright = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
-        $jright = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
-        $fscore = AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
-        $pright = AnswerModel::instance()->getRightProgramCount($userId, $this->examId, $start_timeC, $end_timeC);
+        $cright = AnswerModel::instance()->saveProblemAnswer(
+            $userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
+
+        $jright = AnswerModel::instance()->saveProblemAnswer(
+            $userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
+
+        $fscore = AnswerModel::instance()->saveProblemAnswer(
+            $userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
+
+        $pright = AnswerModel::instance()->getRightProgramCount(
+            $userId, $this->examId, $start_timeC, $end_timeC);
         $inarr['user_id'] = $userId;
         $inarr['exam_id'] = $this->examId;
         $inarr['choosesum'] = $cright * $allscore['choosescore'];
@@ -83,36 +103,37 @@ class ExamController extends QuestionController
 
     public function updresult() {
         $id = I('get.id', 0, 'intval');
-        if (!empty($id)) {
-            $userId = $this->userInfo['user_id'];
-            $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
-            $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
+        if (empty($id)) {
+            $this->echoError("参数错误");
+            return;
+        }
 
-            $row_cnt = M('solution')//->where($where)->find();
-            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)->find();
-            if (!empty($row_cnt)) {
-                echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
-            } else {
-                $trow = M('solution')->field('result')
-                    ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
-                    ->order('solution_id desc')
-                    ->find();
-                if (empty($trow)) {
-                    echo "<font color='green' size='5px'>未提交</font>";
-                } else {
-                    $ans = $trow['result'];
-                    if ($ans == 4) {
-                        ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
-                    }
-                    $colorarr = C('judge_color');
-                    $resultarr = C('judge_result');
-                    $color = $colorarr[$ans];
-                    $result = $resultarr[$ans];
-                    echo "<font color=$color size='5px'>$result</font>";
-                }
-            }
+        $userId = $this->userInfo['user_id'];
+        $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
+        $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
+
+        $row_cnt = M('solution')//->where($where)->find();
+        ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'",
+            $id, $userId)->find();
+        if (!empty($row_cnt)) {
+            echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
-            echo "参数错误";
+            $trow = M('solution')->field('result')
+                ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'",
+                    $id, $userId)->order('solution_id desc')->find();
+            if (empty($trow)) {
+                echo "<font color='green' size='5px'>未提交</font>";
+            } else {
+                $ans = $trow['result'];
+                if ($ans == 4) {
+                    ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
+                }
+                $colorarr = C('judge_color');
+                $resultarr = C('judge_result');
+                $color = $colorarr[$ans];
+                $result = $resultarr[$ans];
+                echo "<font color=$color size='5px'>$result</font>";
+            }
         }
     }
 
@@ -151,7 +172,8 @@ class ExamController extends QuestionController
             exit(0);
         }
 
-        $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
+        $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id .
+            "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
         $row = M()->query($sql);
         if ($row) {
             echo "You should not submit more than twice in 10 seconds.....<br>";
@@ -181,8 +203,8 @@ class ExamController extends QuestionController
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
         $row_cnt = M('solution')
-            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
-            ->count();
+            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'",
+                $pid, $userId)->count();
         if ($row_cnt) {
             ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
             echo 4;

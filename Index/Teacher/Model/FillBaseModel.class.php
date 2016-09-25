@@ -15,6 +15,7 @@ class FillBaseModel extends GeneralModel
 {
 
     const FILL_PROBLEM_TYPE = 3;
+    const FILL_PROBLEM_NAME = "填空题";
 
     private static $_instance = null;
 

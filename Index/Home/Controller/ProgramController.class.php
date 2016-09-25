@@ -56,7 +56,7 @@ class ProgramController extends QuestionController
 
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('programans', $programans);
-        $this->zadd('questionName', '编程题');
+        $this->zadd('questionName', ProblemService::PROGRAM_PROBLEM_NAME);
         $this->zadd('problemType', ProblemService::PROGRAM_PROBLEM_TYPE);
 
         $this->auto_display('Exam:program', 'exlayout');

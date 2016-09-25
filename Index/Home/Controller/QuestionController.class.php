@@ -62,7 +62,8 @@ class QuestionController extends TemplateController
             $this->navigationUrl = U('Home/Question/navigation', array('eid' => $this->examId));
 
             if (is_array($this->examBase)) {
-                $isruning = ExamadminModel::instance()->getExamRunningStatus($this->examBase['start_time'], $this->examBase['end_time']);
+                $isruning = ExamadminModel::instance()->getExamRunningStatus(
+                    $this->examBase['start_time'], $this->examBase['end_time']);
                 if ($isruning != ExamBaseModel::EXAM_RUNNING) {
                     $this->alertError('exam is not running!', U('Home/Index/index'));
                 }
@@ -106,14 +107,19 @@ class QuestionController extends TemplateController
     }
 
     protected function initExamQuestionCount() {
-        $this->chooseCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $this->judgeCount =  QuestionBaseModel::instance()->getQuestionCntByType($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $this->fillCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $this->programCount = QuestionBaseModel::instance()->getQuestionCntByType($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
+        $this->chooseCount = QuestionBaseModel::instance()->getQuestionCntByType(
+            $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $this->judgeCount =  QuestionBaseModel::instance()->getQuestionCntByType(
+            $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $this->fillCount = QuestionBaseModel::instance()->getQuestionCntByType(
+            $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $this->programCount = QuestionBaseModel::instance()->getQuestionCntByType(
+            $this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
     }
 
     protected function initExamUserScore() {
-        $allScore = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId($this->examId, $this->userInfo['user_id']);
+        $allScore = StudentBaseModel::instance()->getStudentScoreInfoByExamAndUserId(
+            $this->examId, $this->userInfo['user_id']);
         if (empty($allScore)) {
             $this->chooseSumScore = -1;
             $this->judgeSumScore = -1;
@@ -153,7 +159,8 @@ class QuestionController extends TemplateController
         $data = array(
             'extrainfo' => $this->leftTime + 1
         );
-        PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId($this->userInfo['user_id'], $this->examId, $data);
+        PrivilegeBaseModel::instance()->updatePrivilegeByUserIdAndExamId(
+            $this->userInfo['user_id'], $this->examId, $data);
     }
 
     public function navigation() {

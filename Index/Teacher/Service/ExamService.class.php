@@ -67,32 +67,42 @@ class ExamService
     }
 
     public function addUsers2Exam($eid) {
-        if ($eid > 0) {
-            M('ex_privilege')->where("rightstr='e$eid'")->delete();
-            $pieces = explode("\n", trim($_POST['ulist']));
-            if (count($pieces) > 0 && strlen($pieces[0]) > 0) {
-                for ($i = 0; $i < count($pieces); $i++) {
-                    $pieces[$i] = trim($pieces[$i]);
-                }
-            }
-            $pieces = array_unique($pieces);
-            if (count($pieces) > 0 && strlen($pieces[0]) > 0) {
-                $randnum = rand(1, 39916800);
-                $query = "INSERT INTO `ex_privilege`(`user_id`,`rightstr`,`randnum`) VALUES('" . trim($pieces[0]) . "','e$eid','$randnum')";
-                for ($i = 1; $i < count($pieces); $i++) {
-                    $randnum = rand(1, 39916800);
-                    if (isset($pieces[$i])) {
-                        $query = $query . ",('" . trim($pieces[$i]) . "','e$eid','$randnum')";
-                    }
-                }
-                M()->execute($query);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
+        if ($eid <= 0) {
             return false;
         }
+        $userPrivilegeList = M('ex_privilege')->field('user_id, extrainfo')->where("rightstr='e$eid'")->select();
+        $userIdMap = array();
+        foreach ($userPrivilegeList as $_privilege) {
+            $userIdMap[$_privilege['user_id']] = $_privilege['extrainfo'];
+        }
+        $pieces = explode("\n", trim($_POST['ulist']));
+        if (count($pieces) > 0 && strlen($pieces[0]) > 0) {
+            for ($i = 0; $i < count($pieces); $i++) {
+                $pieces[$i] = trim($pieces[$i]);
+            }
+        }
+        $pieces = array_unique($pieces);
+        if (count($pieces) == 0) {
+            return false;
+        }
+        $flag = true;
+        $query = "";
+        foreach ($pieces as $piece) {
+            $randnum = rand(1, 39916800);
+            $extraInfo = 0;
+            if (isset($userIdMap[$piece])) {
+                $extraInfo = $userIdMap[$piece];
+            }
+            if ($flag) {
+                $flag = false;
+                $query = "INSERT INTO `ex_privilege`(`user_id`,`rightstr`,`randnum`, `extrainfo`) VALUES('" . trim($piece) . "','e$eid','$randnum', $extraInfo)";
+            } else {
+                $query = $query . ",('" . trim($piece) . "','e$eid','$randnum', $extraInfo)";
+            }
+        }
+        M('ex_privilege')->where("rightstr='e$eid'")->delete();
+        M()->execute($query);
+        return true;
     }
 
     public function getBaseScoreByExamId($eid) {

@@ -44,7 +44,7 @@ class JudgeController extends QuestionController
         $this->zadd('judgearr', $judgearr);
         $this->zadd('judgesx', $judgesx);
         $this->zadd('judgeans', $judgeans);
-        $this->zadd('questionName', '判断题');
+        $this->zadd('questionName', JudgeBaseModel::JUDGE_PROBLEM_NAME);
         $this->zadd('problemType', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
 
         $this->auto_display('Exam:judge', 'exlayout');

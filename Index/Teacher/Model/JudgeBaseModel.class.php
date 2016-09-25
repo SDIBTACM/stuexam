@@ -15,6 +15,7 @@ class JudgeBaseModel extends GeneralModel
 {
 
     const JUDGE_PROBLEM_TYPE = 2;
+    const JUDGE_PROBLEM_NAME = "判断题";
 
     private static $_instance = null;
 
