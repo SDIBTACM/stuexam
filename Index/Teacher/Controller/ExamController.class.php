@@ -116,22 +116,28 @@ class ExamController extends TemplateController
 
         $isExamEnd = (time() > strtotime($prirow['end_time']) ? true : false);
 
-        $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`,`extrainfo`
-			FROM (SELECT `users`.`user_id`,`users`.`nick`,`extrainfo` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND
-			 `ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND 
-			`ex_student`.`exam_id`='$this->eid' $sqladd";
+        $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`,`extrainfo` ".
+			"FROM (SELECT `users`.`user_id`,`users`.`nick`,`extrainfo` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND ".
+            "`ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND ".
+			"`ex_student`.`exam_id`='$this->eid' $sqladd";
         $row = M()->query($query);
 
         $hasSubmit = 0;
         $hasTakeIn = 0;
-        foreach ($row as $r) {
-            if (!is_null($r['score']) && $r['score'] >= 0) {
+        foreach ($row as &$r) {
+            $r['hasTakenIn'] = 0;
+            $r['hasSubmit'] = 0;
+            if (isset($r['score']) && $r['score'] >= 0) {
                 $hasSubmit++;
+                $r['hasSubmit'] = 1;
             }
-            if ($r['extrainfo'] != 0) {
+            if ($r['extrainfo'] != 0 ||
+                (isset($r['score']) && ($r['choosesum'] + $r['judgesum'] + $r['fillsum'] + $r['programsum']) != -4)) {
                 $hasTakeIn++;
+                $r['hasTakenIn'] = 1;
             }
         }
+        unset($r);
 
         $isShowDel = false;
         if ($hasTakeIn <= $hasSubmit) {
@@ -162,11 +168,11 @@ class ExamController extends TemplateController
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")
             ->count();
 
-        $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,
-				MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,
-				MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`,AVG(`choosesum`) as `chooseavg`,
-				AVG(`judgesum`) as `judgeavg`,AVG(`fillsum`) as `fillavg`,AVG(`programsum`) as `programavg`,
-				AVG(`score`) as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
+        $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,".
+				"MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,".
+				"MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`,AVG(`choosesum`) as `chooseavg`,".
+				"AVG(`judgesum`) as `judgeavg`,AVG(`fillsum`) as `fillavg`,AVG(`programsum`) as `programavg`,".
+				"AVG(`score`) as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
         $row = M()->query($query);
 
         $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
@@ -198,13 +204,21 @@ class ExamController extends TemplateController
         $userRank = array();
         $users = array();
         $unames = array();
+        $programCount = array();
+
+        $query = "select user_id, count(distinct question_id) as cnt" .
+            " from ex_stuanswer where exam_id = ".  $this->eid .
+            " and type = 4 and answer_id = 1 and answer = 4 group by user_id order by cnt desc";
+        $acCount = M()->query($query);
+        foreach($acCount as $ac) {
+            $programCount[$ac['user_id']] = $ac['cnt'];
+            $users[] = $ac['user_id'];
+        }
 
         foreach ($programRank as $p) {
             $userRank[$p['user_id']][$p['question_id']] = 4;
-            $users[] = $p['user_id'];
         }
-        $users = array_unique($users);
-        $users = array_values($users);
+
         $userIds_chunk = array_chunk($users, 50);
         foreach ($userIds_chunk as $_userIds) {
             $where = array(
@@ -229,6 +243,7 @@ class ExamController extends TemplateController
         $this->zadd('userIds', $users);
         $this->zadd('programIds', $programs);
         $this->zadd('userRank', $userRank);
+        $this->zadd('programCount', $programCount);
         $this->auto_display('ranklist');
     }
 

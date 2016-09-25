@@ -22,7 +22,6 @@ class ExamController extends QuestionController
     }
 
     public function showquestion() {
-        $this->addExamBaseInfo();
         $widgets = array();
         $userId = $this->userInfo['user_id'];
         try {

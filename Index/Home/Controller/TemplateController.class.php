@@ -15,7 +15,7 @@ class TemplateController extends Controller
     protected $isNeedLogin = true;
     protected $isNeedFilterSql = false;
 
-    private $teacerFilterUrl = array(
+    private $teacherFilterUrl = array(
         'home_index_index', 'home_index_about'
     );
 
@@ -54,7 +54,7 @@ class TemplateController extends Controller
     private function specialLogicality() {
         if($this->isTeacher()) {
             $url = $this->module . '_' . $this->controller . '_' . $this->action;
-            if (in_array($url, $this->teacerFilterUrl)) {
+            if (in_array($url, $this->teacherFilterUrl)) {
                 redirect(U('/Teacher'));
             }
         }

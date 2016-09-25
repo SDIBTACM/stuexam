@@ -174,56 +174,56 @@ class ProblemController extends TemplateController
     }
 
     public function addpte() {
-        if (isset($_POST['eid']) && isset($_POST['id']) && isset($_POST['type']) && isset($_POST['sid'])) {
-            $eid = intval($_POST['eid']);
-            $quesid = intval($_POST['id']);
-            $typeid = intval($_POST['type']);
-            if ($this->isOwner4ExamByExamId($eid) &&
-                $eid > 0 && $quesid > 0 &&
-                in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
-            ) {
-                $data = array(
-                    'exam_id' => $eid,
-                    'question_id' => $quesid,
-                    'type' => $typeid
-                );
-                if (M('exp_question')->add($data)) {
-                    $this->echoError("已添加");
-                } else {
-                    $this->echoError("添加失败");
-                }
+        if (!(isset($_POST['eid']) && isset($_POST['id']) && isset($_POST['type']) && isset($_POST['sid']))) {
+            $this->echoError("Invaild path");
+            return;
+        }
+        $eid = intval($_POST['eid']);
+        $quesid = intval($_POST['id']);
+        $typeid = intval($_POST['type']);
+        if ($this->isOwner4ExamByExamId($eid) &&
+            $eid > 0 && $quesid > 0 &&
+            in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
+        ) {
+            $data = array(
+                'exam_id' => $eid,
+                'question_id' => $quesid,
+                'type' => $typeid
+            );
+            if (M('exp_question')->add($data)) {
+                $this->echoError("已添加");
             } else {
-                $this->echoError("No Privilege!");
+                $this->echoError("添加失败");
             }
         } else {
-            $this->echoError("Invaild path");
+            $this->echoError("No Privilege!");
         }
     }
 
     public function delpte() {
-        if (isset($_POST['eid']) && isset($_POST['id']) && isset($_POST['type']) && isset($_POST['sid'])) {
-            $eid = intval($_POST['eid']);
-            $quesid = intval($_POST['id']);
-            $typeid = intval($_POST['type']);
-            if ($this->isOwner4ExamByExamId($eid) &&
-                $eid > 0 && $quesid > 0 &&
-                in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
-            ) {
-                $data = array(
-                    'exam_id' => $eid,
-                    'question_id' => $quesid,
-                    'type' => $typeid
-                );
-                if (M('exp_question')->where($data)->delete()) {
-                    $this->echoError("ok");
-                } else {
-                    $this->echoError("删除错误");
-                }
+        if (!(isset($_POST['eid']) && isset($_POST['id']) && isset($_POST['type']) && isset($_POST['sid']))) {
+            $this->echoError("Invaild path");
+            return;
+        }
+        $eid = intval($_POST['eid']);
+        $quesid = intval($_POST['id']);
+        $typeid = intval($_POST['type']);
+        if ($this->isOwner4ExamByExamId($eid) &&
+            $eid > 0 && $quesid > 0 &&
+            in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
+        ) {
+            $data = array(
+                'exam_id' => $eid,
+                'question_id' => $quesid,
+                'type' => $typeid
+            );
+            if (M('exp_question')->where($data)->delete()) {
+                $this->echoError("ok");
             } else {
-                $this->echoError("No Privilege!");
+                $this->echoError("删除错误");
             }
         } else {
-            $this->echoError("Invaild path");
+            $this->echoError("No Privilege!");
         }
     }
 }

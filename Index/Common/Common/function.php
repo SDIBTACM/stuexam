@@ -60,7 +60,8 @@ function splitpage($table, $searchsql = "") {
         'nextpage' => $nextpage,
         'lastpage' => $lastpage,
         'eachpage' => $each_page,
-        'sqladd' => $sqladd);
+        'sqladd' => $sqladd
+    );
 }
 
 function showpagelast($pageinfo, $url, $urladd = "") {
@@ -70,20 +71,23 @@ function showpagelast($pageinfo, $url, $urladd = "") {
     echo "<nav>";
     echo "<ul class='pagination'>";
     echo "<li><a href='{$url}?page=1&{$urladd}'>First</a></li>";
-    if ($page == 1)
+    if ($page == 1) {
         echo "<li class='disabled'><a href='javascript:;'>Previous</a></li>";
-    else
+    } else {
         echo "<li><a href='{$url}?page=$prepage&{$urladd}'>Previous</a></li>";
-    for ($i = $startpage; $i <= $endpage; $i++) {
-        if ($i == $page)
-            echo "<li class='active'><a href='{$url}?page=$i&{$urladd}'>$i</a></li>";
-        else
-            echo "<li><a href='{$url}?page=$i&{$urladd}'>$i</a></li>";
     }
-    if ($page == $lastpage)
+    for ($i = $startpage; $i <= $endpage; $i++) {
+        if ($i == $page) {
+            echo "<li class='active'><a href='{$url}?page=$i&{$urladd}'>$i</a></li>";
+        } else {
+            echo "<li><a href='{$url}?page=$i&{$urladd}'>$i</a></li>";
+        }
+    }
+    if ($page == $lastpage) {
         echo "<li class='disabled'><a href='javascript:;'>Next</a></li>";
-    else
+    } else {
         echo "<li><a href='{$url}?page=$nextpage&{$urladd}'>Next</a></li>";
+    }
     echo "<li><a href='{$url}?page=$lastpage&{$urladd}'>Last</a></li>";
     echo "</ul>";
     echo "</nav>";

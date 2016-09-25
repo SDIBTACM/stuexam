@@ -22,7 +22,6 @@ class ChooseController extends QuestionController
 
     public function _initialize() {
         parent::_initialize();
-        $this->addExamBaseInfo();
         if ($this->chooseSumScore != -1) {
             $this->success('该题型你已经交卷,不能再查看了哦', $this->navigationUrl, 1);
             exit;

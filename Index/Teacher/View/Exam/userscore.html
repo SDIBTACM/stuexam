@@ -98,43 +98,34 @@
                     <td>{$r['fillsum']|checkScore}</td>
                     <td>{$r['programsum']|checkScore}</td>
                     <td>{$r['score']|checkScore}</td>
-                    <if condition="is_null($r['score'])">
-                        <if condition="$r['extrainfo'] neq 0">
-                            <if condition="$isEnd eq true">
-                                <td><span class='label label-warning'>未交卷</span></td>
-                                <else/>
-                                <td><a class='label label-danger'
-                                       href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
-                                </td>
-                            </if>
-                            <else/>
-                            <td><span class='label label-default'>未参加</span></td>
-                        </if>
-                        <else/>
-                        <td><a class='label label-info'
-                               href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">查看试卷>></a>
-                        </td>
-                    </if>
 
-                    <if condition="is_null($r['score'])">
-                        <if condition="$r['extrainfo'] neq 0">
-                            <if condition="$isEnd eq true">
-                                <td><a class='label label-success'
-                                       href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">提交试卷>></a>
+                    <if condition="$r['hasTakenIn'] eq 0">
+                            <td><span class='label label-default'>未参加</span></td>
+                            <td>无</td>
+                        <else/>
+                            <if condition="$r['hasSubmit'] eq 1">
+                                <td><a class='label label-info'
+                                       href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">已交卷>></a>
+                                </td>
+                                <td><a class='label label-danger'
+                                       href="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}"
+                                       onclick="return suredo('','是否要删除该考生成绩,让考生重新参加考试？')">删除分数 X</a>
                                 </td>
                                 <else/>
-                                <td><a class='label label-warning'
-                                       href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">强制交卷>></a>
-                                </td>
+                                    <if condition="$isEnd eq true">
+                                        <td><span class='label label-warning'>未交卷</span></td>
+                                        <td><a class='label label-success'
+                                               href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">提交试卷>></a>
+                                        </td>
+                                        <else/>
+                                        <td><a class='label label-danger'
+                                               href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
+                                        </td>
+                                        <td><a class='label label-warning'
+                                               href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">强制交卷>></a>
+                                        </td>
+                                    </if>
                             </if>
-                            <else/>
-                            <td>无</td>
-                        </if>
-                        <else/>
-                        <td><a class='label label-danger'
-                               href="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}"
-                               onclick="return suredo('','是否要删除该考生成绩,让考生重新参加考试？')">删除分数 X</a>
-                        </td>
                     </if>
                     <td>
                         <input type="checkbox" name="check{$r['user_id']}" class="delCheck" value="1">

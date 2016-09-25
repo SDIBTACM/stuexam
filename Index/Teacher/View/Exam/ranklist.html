@@ -15,6 +15,7 @@
             <th width="3%">ID</th>
             <th width="5%">学号</th>
             <th width="7%">姓名</th>
+            <th width="5%">题数</th>
             <foreach name="programIds" item="pid">
                 <th width="6%">{$pid['question_id']}</th>
             </foreach>
@@ -25,6 +26,7 @@
                     <td>{$k + 1}</td>
                     <td>{$userId}</td>
                     <td>{$unames[ $userId ]|cutstring=###,12}</td>
+                    <td>{$programCount[$userId]}</td>
                     <foreach name="programIds" item="pid">
                         <if condition="isset($userRank[ $userId ][ $pid['question_id'] ])">
                             <td class="problemac">Accept</td>

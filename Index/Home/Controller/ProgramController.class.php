@@ -19,7 +19,6 @@ class ProgramController extends QuestionController
 
     public function _initialize() {
         parent::_initialize();
-        $this->addExamBaseInfo();
         if ($this->programSumScore != -1) {
             $this->success('该题型你已经交卷,不能再查看了哦', $this->navigationUrl, 1);
             exit;
@@ -75,7 +74,6 @@ class ProgramController extends QuestionController
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
         StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
-        $this->checkActionAfterSubmit();
         redirect(U('Home/Index/score'));
     }
 

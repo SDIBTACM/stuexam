@@ -54,7 +54,7 @@ class IndexController extends TemplateController
         $row = M('users')->field('nick,email,reg_time')
             ->where("user_id='%s'", $user_id)->find();
         $query = "SELECT `title`,`exam`.`exam_id`,`score`,`choosesum`,`judgesum`,`fillsum`,`programsum` FROM `exam`,`ex_student` WHERE `ex_student`.`user_id`='" . $user_id . "'
-			AND `exam`.`visible`='Y' AND `ex_student`.`exam_id`=`exam`.`exam_id` ORDER BY `exam`.`exam_id` DESC";
+			AND `exam`.`visible`='Y' AND `ex_student`.`exam_id`=`exam`.`exam_id` AND score >= 0 ORDER BY `exam`.`exam_id` DESC";
         $score = M()->query($query);
         $this->zadd('score', $score);
         $this->zadd('row', $row);

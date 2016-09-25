@@ -48,6 +48,7 @@ class QuestionController extends TemplateController
         $this->preExamQuestion();
         $this->initExamQuestionCount();
         $this->initExamUserScore();
+        $this->addExamBaseInfo();
     }
 
     protected function preExamQuestion() {
