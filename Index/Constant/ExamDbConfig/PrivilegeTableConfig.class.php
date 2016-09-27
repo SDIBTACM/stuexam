@@ -6,10 +6,10 @@
  * Datetime: 7/3/16 02:34
  */
 
-namespace Constant\DbConfig;
+namespace Constant\ExamDbConfig;
 
 
-class PrivilegeDbConfig
+class PrivilegeTableConfig
 {
     const TABLE_NAME = "ex_privilege";
 

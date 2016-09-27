@@ -6,10 +6,10 @@
  * Datetime: 7/3/16 02:30
  */
 
-namespace Constant\DbConfig;
+namespace Constant\ExamDbConfig;
 
 
-class ExamDbConfig
+class ExamTableConfig
 {
     const TABLE_NAME = "exam";
 

@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Constant\DbConfig\JudgeDbConfig;
+use Constant\ExamDbConfig\JudgeTableConfig;
 
 class JudgeBaseModel extends GeneralModel
 {
@@ -30,11 +30,11 @@ class JudgeBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return JudgeDbConfig::TABLE_NAME;
+        return JudgeTableConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return JudgeDbConfig::$TABLE_FIELD;
+        return JudgeTableConfig::$TABLE_FIELD;
     }
 
     public static function instance() {
@@ -76,8 +76,10 @@ class JudgeBaseModel extends GeneralModel
      */
     public function getJudgeProblems4Exam($eid) {
         $type = self::JUDGE_PROBLEM_TYPE;
-        $sql = "SELECT `ex_judge`.`judge_id`,`question`,`answer` FROM `ex_judge`,`exp_question`
-		WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_judge`.`judge_id`=`exp_question`.`question_id` ORDER BY `judge_id`";
+        $sql = "SELECT `ex_judge`.`judge_id`,`question`,`answer`" .
+                " FROM `ex_judge`,`exp_question`" .
+		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_judge`.`judge_id`=`exp_question`.`question_id`" .
+                " ORDER BY `judge_id`";
         $ans = M()->query($sql);
         return $ans;
     }

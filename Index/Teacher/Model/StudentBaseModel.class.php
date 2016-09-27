@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Constant\DbConfig\StudentDbConfig;
+use Constant\ExamDbConfig\StudentTableConfig;
 
 class StudentBaseModel extends GeneralModel
 {
@@ -26,11 +26,11 @@ class StudentBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return StudentDbConfig::TABLE_NAME;
+        return StudentTableConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return StudentDbConfig::$TABLE_FIELD;
+        return StudentTableConfig::$TABLE_FIELD;
     }
 
     public static function instance() {

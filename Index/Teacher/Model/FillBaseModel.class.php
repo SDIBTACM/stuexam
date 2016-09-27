@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Constant\DbConfig\FillDbConfig;
+use Constant\ExamDbConfig\FillTableConfig;
 
 class FillBaseModel extends GeneralModel
 {
@@ -30,11 +30,11 @@ class FillBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return FillDbConfig::TABLE_NAME;
+        return FillTableConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return FillDbConfig::$TABLE_FIELD;
+        return FillTableConfig::$TABLE_FIELD;
     }
 
     public static function instance() {
@@ -72,16 +72,18 @@ class FillBaseModel extends GeneralModel
 
     public function getFillProblems4Exam($eid) {
         $type = self::FILL_PROBLEM_TYPE;
-        $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind` FROM `ex_fill`,`exp_question`
-		WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_fill`.`fill_id`=`exp_question`.`question_id` ORDER BY `fill_id`";
+        $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind`" .
+                " FROM `ex_fill`,`exp_question`" .
+		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_fill`.`fill_id`=`exp_question`.`question_id`" .
+                " ORDER BY `fill_id`";
         $ans = M()->query($sql);
         return $ans;
     }
 
-    public function getFillAnswerByFillId($fillid) {
+    public function getFillAnswerByFillId($fillId) {
         $ans = M('fill_answer')
             ->field('answer_id,answer')
-            ->where('fill_id=%d', $fillid)
+            ->where('fill_id=%d', $fillId)
             ->order('answer_id')
             ->select();
         return $ans;

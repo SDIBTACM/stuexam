@@ -9,7 +9,7 @@
 namespace Teacher\Model;
 
 
-use Constant\DbConfig\ChooseDbConfig;
+use Constant\ExamDbConfig\ChooseTableConfig;
 
 class ChooseBaseModel extends GeneralModel
 {
@@ -30,11 +30,11 @@ class ChooseBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return ChooseDbConfig::TABLE_NAME;
+        return ChooseTableConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return ChooseDbConfig::$TABLE_FIELD;
+        return ChooseTableConfig::$TABLE_FIELD;
     }
 
     public static function instance() {
@@ -52,26 +52,22 @@ class ChooseBaseModel extends GeneralModel
     }
 
     public function updateChooseById($chooseId, $data) {
-        $dao = $this->getDao();
         $where = array(
             'choose_id' => $chooseId
         );
-        $res = $dao->where($where)->data($data)->save();
+        $res = $this->getDao()->where($where)->data($data)->save();
         return $res;
     }
 
     public function insertChooseInfo($data) {
-        $dao = $this->getDao();
-        $lastId = $dao->add($data);
-        return $lastId;
+        return $this->getDao()->add($data);
     }
 
     public function delChooseById($chooseId) {
-        $dao = $this->getDao();
         $where = array(
             'choose_id' => $chooseId
         );
-        $res = $dao->where($where)->delete();
+        $res = $this->getDao()->where($where)->delete();
         return $res;
     }
 
@@ -82,8 +78,10 @@ class ChooseBaseModel extends GeneralModel
      */
     public function getChooseProblems4Exam($eid) {
         $type = self::CHOOSE_PROBLEM_TYPE;
-        $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer` FROM `ex_choose`,`exp_question`
-		WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_choose`.`choose_id`=`exp_question`.`question_id` ORDER BY `choose_id`";
+        $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer`".
+                " FROM `ex_choose`,`exp_question`".
+		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_choose`.`choose_id`=`exp_question`.`question_id`".
+                " ORDER BY `choose_id`";
         $ans = M()->query($sql);
         return $ans;
     }
