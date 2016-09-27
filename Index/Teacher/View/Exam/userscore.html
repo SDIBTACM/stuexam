@@ -9,11 +9,11 @@
             <th width=2%>Rank</th>
             <th width=7%>账号</th>
             <th width=9%>姓名</th>
-            <th width=5%>选择题</th>
-            <th width=5%>判断题</th>
-            <th width=5%>填空题</th>
-            <th width=5%>程序题</th>
-            <th width=5%>总成绩</th>
+            <th width=5%>选择题<input type="radio" name="typeRadio" value="choose" /></th>
+            <th width=5%>判断题<input type="radio" name="typeRadio" value="judge" /></th>
+            <th width=5%>填空题<input type="radio" name="typeRadio" value="fill" /></th>
+            <th width=5%>程序题<input type="radio" name="typeRadio" value="program" /></th>
+            <th width=5%>总成绩<input type="radio" name="typeRadio" value="all" checked="checked"/></th>
             <th width=7%>试卷</th>
             <th width=7%>操作</th>
             <th width=6%>选择删除</th>
@@ -88,6 +88,7 @@
         </tr>
         <form name="checkForm" id="checkSubmit" action="{:U('Info/DelAllUserScore')}" method="post">
             <input type="hidden" name="eid" value="{$eid}"/>
+            <input type="hidden" name="type" value="all" id="delType">
             <foreach name='row' item='r' key='k'>
                 <tr>
                     <td>{$k+1}</td>
@@ -108,8 +109,8 @@
                                        href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">已交卷>></a>
                                 </td>
                                 <td><a class='label label-danger'
-                                       href="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}"
-                                       onclick="return suredo('','是否要删除该考生成绩,让考生重新参加考试？')">删除分数 X</a>
+                                       href="#" data-skip="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}"
+                                       onclick="checkWhetherDel(this)">删除分数 X</a>
                                 </td>
                                 <else/>
                                     <if condition="$isEnd eq true">
@@ -138,6 +139,32 @@
 </div>
 <script type="text/javascript">
     var scoreurl = "{:U('Teacher/Exam/userscore')}";
+    function checkWhetherDel(the) {
+        var skipLink = $(the).data("skip");
+        var type = $('input[name="typeRadio"]:checked').val();
+        var name = getSelectNameByType(type);
+        var c = confirm('确定要删除选定考生的' + name +'嘛?');
+        if (c) {
+            window.location.href=skipLink + "?type=" + type;
+        }
+    }
+
+    function getSelectNameByType(type) {
+        var name;
+        if (type == "choose") {
+            name = "选择题分数"
+        } else if (type == "judge") {
+            name = "判断题分数";
+        } else if (type == "fill") {
+            name = "填空题分数";
+        } else if (type == "program") {
+            name = "程序题分数";
+        } else {
+            name = "总成绩";
+        }
+        return name;
+    }
+
     $(function () {
         $("#exam_userscore").addClass('active');
 
@@ -160,7 +187,10 @@
         });
 
         $("#oneClickDel").click(function () {
-            var c = confirm('确定要删除选定的考生分数嘛?');
+            var type = $('input[name="typeRadio"]:checked').val();
+            var name = getSelectNameByType(type);
+            $("#delType").val(type);
+            var c = confirm('确定要删除选定考生的' + name +'嘛?');
             if (c) {
                 $("#checkSubmit").submit();
             }

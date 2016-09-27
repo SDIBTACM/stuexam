@@ -76,7 +76,7 @@ class InfoController extends TemplateController
         }
 
         $eid = intval(trim($_GET['eid']));
-        $type = I('type', 'all'); // TODO
+        $type = I('type', 'all');
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         $users = trim($_GET['users']);
@@ -85,38 +85,11 @@ class InfoController extends TemplateController
             return;
         }
 
-        switch ($type) {
-            case "choose" : {
-                M('ex_student')
-                    ->where("exam_id=%d and user_id='%s'", $eid, $users)
-                    ->save(array("choosesum" => -1, "score" => -1));
-                break;
-            }
-            case "judge" : {
-                M('ex_student')
-                    ->where("exam_id=%d and user_id='%s'", $eid, $users)
-                    ->save(array("judgesum" => -1, "score" => -1));
-                break;
-            }
-            case "fill" : {
-                M('ex_student')
-                    ->where("exam_id=%d and user_id='%s'", $eid, $users)
-                    ->save(array("fillsum" => -1, "score" => -1));
-                break;
-            }
-            case "program" : {
-                M('ex_student')
-                    ->where("exam_id=%d and user_id='%s'", $eid, $users)
-                    ->save(array("programsum" => -1, "score" => -1));
-                break;
-            }
-            default : {
-                M('ex_student')
-                    ->where("exam_id=%d and user_id='%s'", $eid, $users)
-                    ->delete();
-                break;
-            }
-        }
+        $where = array(
+            'exam_id' => $eid,
+            'user_id' => $users
+        );
+        $this->delScoreByType($type, $where);
         $this->redirect("Exam/userscore", array(
             'eid' => $eid,
             'sortdnum' => $sortdnum,
@@ -183,6 +156,7 @@ class InfoController extends TemplateController
 
     public function DelAllUserScore() {
         $eid = I('post.eid', 0, 'intval');
+        $type = I('post.type', 'all');
         if (empty($eid)) {
             $this->echoError("bad exam id");
             return;
@@ -190,7 +164,9 @@ class InfoController extends TemplateController
         if (!$this->isOwner4ExamByExamId($eid)) {
             $this->echoError('You have no privilege to do it!');
         }
+        unset($_POST['type']);
         unset($_POST['eid']);
+
         $userIds = array();
         foreach ($_POST as $k => $v) {
             $userIds[] = mb_substr($k, 5);
@@ -200,9 +176,7 @@ class InfoController extends TemplateController
                 'exam_id' => $eid,
                 'user_id' => array('in', $userIds)
             );
-            M('ex_student')
-                ->where($where)
-                ->delete();
+            $this->delScoreByType($type, $where);
         }
         $this->redirect("Exam/userscore", array('eid' => $eid));
     }
@@ -322,6 +296,31 @@ class InfoController extends TemplateController
             $sql = "UPDATE `ex_student` SET `score`='$sum',`choosesum`='$choosesum',`judgesum`='$judgesum',`fillsum`='$fillsum',`programsum`='$programsum'
 			WHERE `user_id`='" . $userId . "' AND `exam_id`='$eid'";
             M()->execute($sql);
+        }
+    }
+
+    private function delScoreByType($type, $where) {
+        switch ($type) {
+            case "choose" : {
+                M('ex_student')->where($where)->save(array("choosesum" => -1, "score" => -1));
+                break;
+            }
+            case "judge" : {
+                M('ex_student')->where($where)->save(array("judgesum" => -1, "score" => -1));
+                break;
+            }
+            case "fill" : {
+                M('ex_student')->where($where)->save(array("fillsum" => -1, "score" => -1));
+                break;
+            }
+            case "program" : {
+                M('ex_student')->where($where)->save(array("programsum" => -1, "score" => -1));
+                break;
+            }
+            default : {
+                M('ex_student')->where($where)->delete();
+                break;
+            }
         }
     }
 }
