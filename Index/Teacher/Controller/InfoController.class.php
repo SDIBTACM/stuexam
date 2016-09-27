@@ -107,7 +107,7 @@ class InfoController extends TemplateController
             case "program" : {
                 M('ex_student')
                     ->where("exam_id=%d and user_id='%s'", $eid, $users)
-                    ->save(array("program" => -1, "score" => -1));
+                    ->save(array("programsum" => -1, "score" => -1));
                 break;
             }
             default : {

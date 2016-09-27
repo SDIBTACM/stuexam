@@ -75,13 +75,13 @@ class ExamService
         foreach ($userPrivilegeList as $_privilege) {
             $userIdMap[$_privilege['user_id']] = $_privilege['extrainfo'];
         }
-        $pieces = explode("\n", trim($_POST['ulist']));
-        if (count($pieces) > 0 && strlen($pieces[0]) > 0) {
-            for ($i = 0; $i < count($pieces); $i++) {
-                $pieces[$i] = trim($pieces[$i]);
+        $_pieces = explode("\n", trim($_POST['ulist']));
+        if (count($_pieces) > 0 && strlen($_pieces[0]) > 0) {
+            for ($i = 0; $i < count($_pieces); $i++) {
+                $_pieces[$i] = trim($_pieces[$i]);
             }
         }
-        $pieces = array_unique($pieces);
+        $pieces = array_intersect_key($_pieces, array_unique(array_map('strtolower', $_pieces)));
         if (count($pieces) == 0) {
             return false;
         }
