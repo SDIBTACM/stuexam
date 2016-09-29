@@ -142,6 +142,9 @@
     function checkWhetherDel(the) {
         var skipLink = $(the).data("skip");
         var _typeAndName = getTypeAndNameSelect();
+        if (_typeAndName.length == 0) {
+            return;
+        }
         var typeAndName = _typeAndName.split("|");
         var typeStr = typeAndName[0];
         var nameStr = typeAndName[1];
@@ -178,7 +181,7 @@
         });
         if (typeList.length == 0) {
             alert("请选择需要删除的题目类型!");
-            return;
+            return "";
         }
         var typeStr = typeList.join(",");
         var nameStr = nameList.join(",");
@@ -208,6 +211,9 @@
 
         $("#oneClickDel").click(function () {
             var _typeAndName = getTypeAndNameSelect();
+            if (_typeAndName.length == 0) {
+                return;
+            }
             var typeAndName = _typeAndName.split("|");
             var typeStr = typeAndName[0];
             var nameStr = typeAndName[1];
