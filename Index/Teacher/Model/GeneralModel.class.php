@@ -36,8 +36,11 @@ abstract class GeneralModel
         $where = array();
         $dao = $this->getDao();
         $tableFields = $this->getTableFields();
-        foreach ($tableFields as $k => $v) {
-            if (!empty($query[$k])) {
+        foreach ($query as $k => $v) {
+            if (isset($tableFields[$k])) {
+                $where[$k] = $query[$k];
+            }
+            if ($k == "_logic" || $k == "_complex") {
                 $where[$k] = $query[$k];
             }
         }
@@ -53,7 +56,7 @@ abstract class GeneralModel
         }
 
         if (!empty($query['limit'])) {
-            $dao->limit(intval($query['limit']));
+            $dao->limit($query['limit']);
         }
         $res = $dao->select();
         return $res;

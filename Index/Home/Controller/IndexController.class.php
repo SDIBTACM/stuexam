@@ -16,7 +16,16 @@ class IndexController extends TemplateController
         if (!$this->isSuperAdmin()) {
             if ($this->isCreator()) {
                 $userId = $this->userInfo['user_id'];
-                $where = "`visible`='Y' AND (`isprivate`=0 or `creator` like '$userId')";
+                $_where = array(
+                    'isprivate' => 0,
+                    'creator' => array('eq', $userId),
+                    '_logic' => 'or'
+                );
+                $where = array(
+                    'visible' => 'Y',
+                    '_complex' => $_where,
+                    '_logic' => 'and'
+                );
             } else {
                 $where = array(
                     'user_id' => $this->userInfo['user_id']
