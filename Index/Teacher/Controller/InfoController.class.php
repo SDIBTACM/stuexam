@@ -76,7 +76,7 @@ class InfoController extends TemplateController
         }
 
         $eid = intval(trim($_GET['eid']));
-        $type = I('type', 'all');
+        $typeStr = I('type', 'all');
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         $users = trim($_GET['users']);
@@ -89,7 +89,10 @@ class InfoController extends TemplateController
             'exam_id' => $eid,
             'user_id' => $users
         );
-        $this->delScoreByType($type, $where);
+        $typeList = $this->getTypeList($typeStr);
+        foreach ($typeList as $type) {
+            $this->delScoreByType($type, $where);
+        }
         $this->redirect("Exam/userscore", array(
             'eid' => $eid,
             'sortdnum' => $sortdnum,
@@ -156,7 +159,7 @@ class InfoController extends TemplateController
 
     public function DelAllUserScore() {
         $eid = I('post.eid', 0, 'intval');
-        $type = I('post.type', 'all');
+        $typeStr = I('post.type', 'all');
         if (empty($eid)) {
             $this->echoError("bad exam id");
             return;
@@ -176,7 +179,10 @@ class InfoController extends TemplateController
                 'exam_id' => $eid,
                 'user_id' => array('in', $userIds)
             );
-            $this->delScoreByType($type, $where);
+            $typeList = $this->getTypeList($typeStr);
+            foreach ($typeList as $type) {
+                $this->delScoreByType($type, $where);
+            }
         }
         $this->redirect("Exam/userscore", array('eid' => $eid));
     }
@@ -297,6 +303,14 @@ class InfoController extends TemplateController
 			WHERE `user_id`='" . $userId . "' AND `exam_id`='$eid'";
             M()->execute($sql);
         }
+    }
+
+    private function getTypeList($typeStr) {
+        $typeList = explode(',', $typeStr);
+        if (in_array('all', $typeList)) {
+            $typeList = array('all');
+        }
+        return $typeList;
     }
 
     private function delScoreByType($type, $where) {

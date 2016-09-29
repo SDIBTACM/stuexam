@@ -9,11 +9,11 @@
             <th width=2%>Rank</th>
             <th width=7%>账号</th>
             <th width=9%>姓名</th>
-            <th width=5%>选择题<input type="radio" name="typeRadio" value="choose" /></th>
-            <th width=5%>判断题<input type="radio" name="typeRadio" value="judge" /></th>
-            <th width=5%>填空题<input type="radio" name="typeRadio" value="fill" /></th>
-            <th width=5%>程序题<input type="radio" name="typeRadio" value="program" /></th>
-            <th width=5%>总成绩<input type="radio" name="typeRadio" value="all" checked="checked"/></th>
+            <th width=5%>选择题<input type="checkbox" name="typeRadio" value="choose" /></th>
+            <th width=5%>判断题<input type="checkbox" name="typeRadio" value="judge" /></th>
+            <th width=5%>填空题<input type="checkbox" name="typeRadio" value="fill" /></th>
+            <th width=5%>程序题<input type="checkbox" name="typeRadio" value="program" /></th>
+            <th width=5%>总成绩<input type="checkbox" name="typeRadio" value="all" checked="checked"/></th>
             <th width=7%>试卷</th>
             <th width=7%>操作</th>
             <th width=6%>选择删除</th>
@@ -141,11 +141,13 @@
     var scoreurl = "{:U('Teacher/Exam/userscore')}";
     function checkWhetherDel(the) {
         var skipLink = $(the).data("skip");
-        var type = $('input[name="typeRadio"]:checked').val();
-        var name = getSelectNameByType(type);
-        var c = confirm('确定要删除选定考生的' + name +'嘛?');
+        var _typeAndName = getTypeAndNameSelect();
+        var typeAndName = _typeAndName.split("|");
+        var typeStr = typeAndName[0];
+        var nameStr = typeAndName[1];
+        var c = confirm('确定要删除选定考生的' + nameStr +'嘛?');
         if (c) {
-            window.location.href=skipLink + "?type=" + type;
+            window.location.href=skipLink + "?type=" + typeStr;
         }
     }
 
@@ -163,6 +165,24 @@
             name = "总成绩";
         }
         return name;
+    }
+
+    function getTypeAndNameSelect() {
+        var typeList =[];
+        var nameList = [];
+        $('input[name="typeRadio"]:checked').each(function() {
+            var type = $(this).val();
+            typeList.push(type);
+            var name = getSelectNameByType(type);
+            nameList.push(name);
+        });
+        if (typeList.length == 0) {
+            alert("请选择需要删除的题目类型!");
+            return;
+        }
+        var typeStr = typeList.join(",");
+        var nameStr = nameList.join(",");
+        return typeStr + "|" + nameStr;
     }
 
     $(function () {
@@ -187,10 +207,12 @@
         });
 
         $("#oneClickDel").click(function () {
-            var type = $('input[name="typeRadio"]:checked').val();
-            var name = getSelectNameByType(type);
-            $("#delType").val(type);
-            var c = confirm('确定要删除选定考生的' + name +'嘛?');
+            var _typeAndName = getTypeAndNameSelect();
+            var typeAndName = _typeAndName.split("|");
+            var typeStr = typeAndName[0];
+            var nameStr = typeAndName[1];
+            $("#delType").val(typeStr);
+            var c = confirm('确定要删除选定考生的' + nameStr +'嘛?');
             if (c) {
                 $("#checkSubmit").submit();
             }
