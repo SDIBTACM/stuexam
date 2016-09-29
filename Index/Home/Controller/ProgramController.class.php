@@ -155,6 +155,7 @@ class ProgramController extends QuestionController
         $row_cnt = M('solution')//->where($where)->find();
         ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)->find();
         if (!empty($row_cnt)) {
+            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4);
             echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
             $trow = M('solution')
