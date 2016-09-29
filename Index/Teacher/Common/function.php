@@ -104,17 +104,16 @@ function SortStuScore($table) {
         if ($sortdnum & 8) $order[] = "programsum DESC";
         if ($sortdnum & 16) $order[] = "score DESC";
     }
+    $order[] = "user_id ASC";
     if (!empty($where[0])) {
         $where = join(' AND ', $where);
         $where = " WHERE " . $where;
-    } else
-        $where = join('', $where);
-    if (!empty($order[0])) {
-        $order = join(',', $order);
-        $order = "ORDER BY " . $order;
     } else {
-        $order = join('', $order);
+        $where = join('', $where);
     }
+    $order = join(',', $order);
+    $order = "ORDER BY " . $order;
+
     $sqladd = $where . " " . $order;
     return $sqladd;
 }
