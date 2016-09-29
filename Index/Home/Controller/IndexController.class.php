@@ -39,7 +39,7 @@ class IndexController extends TemplateController
 
         $mypage = splitpage('exam', $where);
 
-        $where['order'] = array('exam_id desc');
+        $where['order'] = array('end_time desc');
         $where['limit'] = $mypage['sqladd'];
         $field = array('exam_id', 'title', 'start_time', 'end_time');
         $row = ExamBaseModel::instance()->queryData($where, $field);

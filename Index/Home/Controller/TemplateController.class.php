@@ -15,10 +15,6 @@ class TemplateController extends Controller
     protected $isNeedLogin = true;
     protected $isNeedFilterSql = false;
 
-    private $teacherFilterUrl = array(
-        'home_index_index', 'home_index_about'
-    );
-
     public function _initialize() {
         header("Pragma: no-cache");
         // HTTP/1.0
@@ -31,7 +27,6 @@ class TemplateController extends Controller
 
         $this->initSqlInjectionFilter();
         $this->initLoginUserInfo();
-        $this->specialLogicality();
     }
 
     private function initLoginUserInfo() {
@@ -48,15 +43,6 @@ class TemplateController extends Controller
     private function initSqlInjectionFilter() {
         if (function_exists('sqlInjectionFilter') && $this->isNeedFilterSql) {
             sqlInjectionFilter();
-        }
-    }
-
-    private function specialLogicality() {
-        if($this->isTeacher()) {
-            $url = $this->module . '_' . $this->controller . '_' . $this->action;
-            if (in_array($url, $this->teacherFilterUrl)) {
-                redirect(U('/Teacher'));
-            }
         }
     }
 
