@@ -1,39 +1,39 @@
 <div class="container exam_content">
-	<form class='form-inline'>
-	<input type="hidden" name="page" value="{$mypage['page']}" >
-	<input type="hidden" name="problem" value="{$problem}" >
-	<div class="form-group">
-		<input type="text" class="form-control input-lg search-input" id="search" name='search' value="{$search}" placeholder="查询创建者或考试名称">
-	</div>
-	<button type="submit" class="btn btn-default btn-lg">Search</button>
-	</form>
+	<!--<form class='form-inline'>-->
+	<!--<input type="hidden" name="page" value="{$mypage['page']}" >-->
+	<!--<input type="hidden" name="problem" value="{$problem}" >-->
+	<!--<div class="form-group">-->
+	<!--<input type="text" class="form-control input-lg search-input" id="search" name='search' value="{$search}" placeholder="查询创建者或考试名称">-->
+	<!--</div>-->
+	<!--<button type="submit" class="btn btn-default btn-lg">Search</button>-->
+	<!--</form>-->
 	<div class='row'>
 		<div class="col-md-3"><h2>填空题库总览</h2></div>
-		<div class='col-md-2'>
+		<div class='col-md-1'>
 			<h1><a href="{:U('Teacher/Add/fill',array('page'=>$mypage['page']))}" class='btn btn-info'>添加填空题</a></h1>
 		</div>
         <div class="col-md-2">
             <if condition="$problem eq 0">
-                <h1><input type="button" value="公共题库" class="btn btn-success" onclick="window.location.href='?problem=0'"></h1>
+                <h2><input type="button" value="公共题库" class="btn btn-success" onclick="window.location.href='?problem=0'"></h2>
                 <else />
-                <h1><input type="button" value="公共题库" class="btn btn-default" onclick="window.location.href='?problem=0'"></h1>
+                <h2><input type="button" value="公共题库" class="btn btn-default" onclick="window.location.href='?problem=0'"></h2>
             </if>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-1">
             <if condition="$problem eq 1">
-                <h1><input type="button" value="私人题库" class="btn btn-success" onclick="window.location.href='?problem=1'"></h1>
+                <h2><input type="button" value="私人题库" class="btn btn-success" onclick="window.location.href='?problem=1'"></h2>
                 <else />
-                <h1><input type="button" value="私人题库" class="btn btn-default" onclick="window.location.href='?problem=1'"></h1>
+                <h2><input type="button" value="私人题库" class="btn btn-default" onclick="window.location.href='?problem=1'"></h2>
             </if>
         </div>
 
         <if condition="$isadmin eq true">
             <div class="col-md-2">
                 <if condition="$problem eq 2">
-                    <h1><input type="button" value="隐藏题库" class="btn btn-success" onclick="window.location.href='?problem=2'"></h1>
+                    <h2><input type="button" value="隐藏题库" class="btn btn-success" onclick="window.location.href='?problem=2'"></h2>
                     <else />
-                    <h1><input type="button" value="隐藏题库" class="btn btn-default" onclick="window.location.href='?problem=2'"></h1>
+                    <h2><input type="button" value="隐藏题库" class="btn btn-default" onclick="window.location.href='?problem=2'"></h2>
                 </if>
             </div>
         </if>
@@ -52,7 +52,7 @@
 			<foreach name='row' item='r' key='k'>
 				<tr>
 					<td>{$numoffill+$k}</td>
-					<td align='left'>{$r['question']|cutstring}...
+					<td align='left'>{$r['question']|cutstring}
                         <button type="button"
           			class="pull-right btn btn-danger btn-xs" 
 					data-toggle="tooltip" 

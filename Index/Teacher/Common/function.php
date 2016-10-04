@@ -72,7 +72,12 @@ function check_post_key() {
 function cutstring($str, $length = 0) {
     $len = C('cutlen');
     $length = ($length ?: $len);
-    return mb_substr($str, 0, $length, "utf-8");
+    $str = str_replace(array("　", "\t", "\n", "\r"), '', $str);
+    if (mb_strlen($str) > $length) {
+        return mb_substr($str, 0, $length, "utf-8");
+    } else {
+        return $str;
+    }
 }
 
 function SortStuScore($table) {
