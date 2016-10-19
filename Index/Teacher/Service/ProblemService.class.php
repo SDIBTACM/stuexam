@@ -30,6 +30,7 @@ class ProblemService
         $ansnum = I('post.numanswer', 0, 'intval');
         $sql = "DELETE FROM `exp_question` WHERE `exam_id`={$eid} AND `type`='4'";
         M()->execute($sql);
+        $dataList = array();
         for ($i = 1; $i <= $ansnum; $i++) {
             $programid = test_input($_POST["answer$i"]);
             if (!is_numeric($programid)) {
@@ -41,11 +42,12 @@ class ProblemService
                     'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
                     'question_id' => $programid
                 );
-                M('exp_question')->data($data)->add();
+                $dataList[] = $data;
                 M('problem')->where('problem_id=%d', $programid)
                     ->data(array("defunct" => "Y"))->save();
             }
         }
+        M('exp_question')->addAll($dataList);
         return true;
     }
 

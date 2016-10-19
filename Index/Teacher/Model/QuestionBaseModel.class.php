@@ -61,7 +61,7 @@ class QuestionBaseModel extends GeneralModel
             'type' => $type
         );
         $field = array('question_id');
-        return $this->queryAll($where, $field);
+        return $this->queryAll($where, $field, array('exp_qid', 'asc'));
     }
 
     public function getQuestionCntByType($eid, $type) {

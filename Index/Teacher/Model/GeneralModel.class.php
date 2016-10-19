@@ -25,11 +25,15 @@ abstract class GeneralModel
         return $this->getDao()->field($field)->where($where)->find();
     }
 
-    public function queryAll($where, $field = array()) {
+    public function queryAll($where, $field = array(), $order = array()) {
         if (empty($where)) {
             return array();
         }
-        return $this->getDao()->field($field)->where($where)->select();
+        if (empty($order)) {
+            return $this->getDao()->field($field)->where($where)->select();
+        } else {
+            return $this->getDao()->field($field)->where($where)->order($order)->select();
+        }
     }
 
     public function queryData($query, $field = array()) {
