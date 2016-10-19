@@ -235,7 +235,7 @@ class ExamController extends TemplateController
         $query = array(
             'exam_id' => $this->eid,
             'type' => 4,
-            'order' => 'question_id'
+            'order' => 'exp_qid'
         );
         $programs = QuestionBaseModel::instance()->queryData($query, array('question_id'));
 
