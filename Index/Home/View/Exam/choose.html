@@ -7,14 +7,14 @@
         <h3>选择题</h3>
         <php></php>
         <foreach name='choosesx' item='csx' key='QuestionIndex'>
-            <div style="position: absolute; width: 100%; height: 100%;  z-index: 399; font-size: 14px; top: {($QuestionIndex + 1) * 110}px; left: 0;">
-                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
-                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
-                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
-            </div>
             <div class="panel panel-default">
-                <div class="panel-heading">
+                <div class="panel-heading" style="position: relative">
                     <pre><font color='red'>({$allscore['choosescore']} 分)</font>{$QuestionIndex+1}.{$chooseans[$csx]['question']|nl2br}</pre>
+                    <div style="position: absolute; width: 100%; height: 100%;  z-index: 20; font-size: 15px; top: 0; left: 0;">
+                        <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                        <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                        <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                    </div>
                 </div>
                 <div class="panel-body">
                     <p>
