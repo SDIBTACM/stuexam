@@ -5,10 +5,16 @@
         <input type="hidden" id="problemType" name="problemType" value="{$problemType}">
 
         <h3>选择题</h3>
-        <foreach name='choosesx' item='csx' key='numofchoose'>
+        <php></php>
+        <foreach name='choosesx' item='csx' key='QuestionIndex'>
+            <div style="position: absolute; width: 100%; height: 100%;  z-index: 399; font-size: 14px; top: {($QuestionIndex + 1) * 110}px; left: 0;">
+                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+            </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <pre><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$chooseans[$csx]['question']|nl2br}</pre>
+                    <pre><font color='red'>({$allscore['choosescore']} 分)</font>{$QuestionIndex+1}.{$chooseans[$csx]['question']|nl2br}</pre>
                 </div>
                 <div class="panel-body">
                     <p>

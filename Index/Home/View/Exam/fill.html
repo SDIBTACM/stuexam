@@ -5,15 +5,20 @@
         <input type="hidden" id="problemType" name="problemType" value="{$problemType}">
 
         <h3>填空题</h3>
-        <foreach name='fillsx' item='fsx' key='numoffill'>
+        <foreach name='fillsx' item='fsx' key='QuestionIndex'>
+            <div style="position: absolute; width: 100%; height: 100%;  z-index: 399; font-size: 14px; top: {($QuestionIndex + 1) * 110}px; left: 0;">
+                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+                <div class="myOpacity pull-left">{$Think.session.user_id}</div>
+            </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <if condition="$fillans[$fsx]['kind'] eq 1">
-                        <pre><font color='red'>({$allscore['fillscore']*$fillans[$fsx]['answernum']} 分)</font>{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</pre>
+                        <pre><font color='red'>({$allscore['fillscore']*$fillans[$fsx]['answernum']} 分)</font>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                         <elseif condition="$fillans[$fsx]['kind'] eq 2"/>
-                        <pre><font color='red'>({$allscore['prgans']} 分)</font>{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</pre>
+                        <pre><font color='red'>({$allscore['prgans']} 分)</font>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                         <else/>
-                        <pre><font color='red'>({$allscore['prgfill']} 分)</font>{$numoffill+1}.{$fillans[$fsx]['question']|nl2br}</pre>
+                        <pre><font color='red'>({$allscore['prgfill']} 分)</font>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                     </if>
                 </div>
                 <div class="panel-body">

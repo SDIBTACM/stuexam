@@ -58,6 +58,7 @@ $(function () {
         var span = "span" + pid;
         updateresult(this, span, pid, eid);
     });
+    $(".myOpacity").rotate(-45);
     antiCheat();
     GetRTime();
 });
