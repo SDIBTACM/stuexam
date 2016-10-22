@@ -118,9 +118,11 @@ function savePaper(saveUrl, formId) {
         dataType: "html",
         data: $("#" + formId).serialize(),
         success: function(e) {
-            "ok" == e ? ($("#saveover").html("[已保存]"), setTimeout(function() {
+            console.log(e);
+            0 < e ? ($("#saveover").html("[已保存]"), setTimeout(function() {
                 $("#saveover").html("")
-            }, 6e3)) : $("#saveover").html(e)
+            }, 6e3)) : $("#saveover").html("[保存失败]");
+            if (e > 0) { left = e * 1000;runtimes = 0;}
         },
         error: function() {
             alert("something error when you save")
@@ -209,6 +211,7 @@ function GetRTime() {
                     savePaper(fillSaveUrl, "fillExam");
                     break;
             }
+            runtimes = 0;
         }
         runtimes++;
         setTimeout("GetRTime()", 1000);

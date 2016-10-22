@@ -70,7 +70,7 @@ class ExamController extends QuestionController
         AnswerModel::instance()->saveProblemAnswer(
             $this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);//fillover
         usleep(30000);
-        echo "ok";
+        echo $this->leftTime;
     }
 
     public function submitpaper() {

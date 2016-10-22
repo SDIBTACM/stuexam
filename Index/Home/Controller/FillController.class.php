@@ -52,7 +52,7 @@ class FillController extends QuestionController
 
     public function saveAnswer() {
         AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        echo 'ok';
+        echo $this->leftTime;
     }
 
     public function submitPaper() {
