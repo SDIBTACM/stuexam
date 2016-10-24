@@ -58,7 +58,6 @@ $(function () {
         var span = "span" + pid;
         updateresult(this, span, pid, eid);
     });
-    $(".myOpacity").rotate(-45);
     antiCheat();
     GetRTime();
 });
@@ -134,6 +133,7 @@ function savePaper(saveUrl, formId) {
 function antiCheat() {
     var problemType = $("#problemType").val();
     if (problemType != 4) {
+        $(".myOpacity").rotate(-45);
         $("body").keydown(function (event) {
             if (event.keyCode == 116) {
                 event.returnValue = false;
