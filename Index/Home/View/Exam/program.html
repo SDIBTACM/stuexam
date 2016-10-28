@@ -1,3 +1,9 @@
+<style>
+    .panel-body {
+        white-space: pre;
+        line-height: 15px;
+    }
+</style>
 <body>
 <div class="container">
     <h3>程序设计题</h3>
@@ -31,7 +37,7 @@
 
                         <p>{$pans['sample_output']|nl2br}</p>
 
-                        <p>
+                        <p class="text-left">
                             <for start="1" end="$pans['pFillNum'] + 1">
                                 <label for="code{$pans['program_id']}_{$i}">Code {$i} here:</label>
 						    <textarea class='form-control' id="code{$pans['program_id']}_{$i}"
