@@ -12,7 +12,7 @@
 <foreach name='chooseans' item='cans' key='numofchoose'>
 <div class="panel panel-default">
 	<div class="panel-heading"><pre><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$cans['question']|nl2br}</pre></div>
-	<div class="panel-body">
+	<div class="panel-body" style="white-space: pre;line-height: 15px;">
 		<p>(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
 		<p><strong>正确答案:{$cans['answer']}</strong></p>
 	</div>
