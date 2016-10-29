@@ -1,9 +1,3 @@
-<style>
-    .panel-body {
-        white-space: pre;
-        line-height: 15px;
-    }
-</style>
 <body>
 <div class="container">
     <h3>程序设计题</h3>
@@ -22,22 +16,21 @@
                 <div class="collapse" id="collapseExample{$pans['program_id']}" data-accepted="0">
                     <div class="panel-body">
                         <h4><strong>Description</strong></h4>
+                        <p class="Qtext">{$pans['description']}</p>
 
-                        <p>{$pans['description']}</p>
                         <h4><strong>Input</strong></h4>
+                        <p class="Qtext">{$pans['input']}</p>
 
-                        <p>{$pans['input']}</p>
                         <h4><strong>Output</strong></h4>
+                        <p class="Qtext">{$pans['output']}</p>
 
-                        <p>{$pans['output']}</p>
                         <h4><strong>Sample Input</strong></h4>
+                        <p class="Qtext">{$pans['sample_input']}</p>
 
-                        <p>{$pans['sample_input']|nl2br}</p>
                         <h4><strong>Sample Output</strong></h4>
+                        <p class="Qtext">{$pans['sample_output']}</p>
 
-                        <p>{$pans['sample_output']|nl2br}</p>
-
-                        <p class="text-left">
+                        <p>
                             <for start="1" end="$pans['pFillNum'] + 1">
                                 <label for="code{$pans['program_id']}_{$i}">Code {$i} here:</label>
 						    <textarea class='form-control' id="code{$pans['program_id']}_{$i}"
