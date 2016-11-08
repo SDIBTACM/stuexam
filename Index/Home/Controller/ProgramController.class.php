@@ -82,7 +82,8 @@ class ProgramController extends QuestionController
         if ($id <= 0) {
             $this->echoError("No Such Problem");
         }
-        $language = intval($_POST['language']);
+        $languagePostName = 'language' . $id;
+        $language = intval($_POST[$languagePostName]);
         if ($language > 9 || $language < 0) $language = 0;
         $language = strval($language);
 

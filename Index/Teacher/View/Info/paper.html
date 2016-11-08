@@ -22,7 +22,7 @@
 		<div class="panel-footer">
 			<strong>我的答案:
 				<php>
-                    $myanswer = $choosearr[ $cans['choose_id'] ] ?: "未选";
+                    $myanswer = isset($choosearr[ $cans['choose_id'] ]) ? $choosearr[ $cans['choose_id'] ] : "未选";
                     if ($myanswer == $cans['answer']) {
                         echo "<span class='answerac'>$myanswer | 正确</span>";
                     } else {
@@ -40,7 +40,7 @@
 			<div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</div>
 			<div class="panel-body"><strong>我的答案:
                 <php>
-                    $myanswer = $judgearr[ $jans['judge_id'] ] ?: "未选";
+                    $myanswer = isset($judgearr[ $jans['judge_id'] ]) ? $judgearr[ $jans['judge_id'] ] : "未选";
                     if ($myanswer == $jans['answer']) {
                         echo "<span class='answerac'>$myanswer | 正确</span>";
                     } else {
