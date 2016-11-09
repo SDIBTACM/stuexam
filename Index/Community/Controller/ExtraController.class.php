@@ -7,8 +7,6 @@
  */
 
 namespace Community\Controller;
-use Teacher\Model\StudentBaseModel;
-
 
 /**
  * 本控制器主要用于一些特殊情况下要显示的页面, just for fun
@@ -54,6 +52,8 @@ class ExtraController extends TemplateController
             $englishNum = isset($userEnProblemSolved[$_userId]) ? $userEnProblemSolved[$_userId] : 0;
             $chineseNum = $userAllSolved[$_userId] - $englishNum;
             $score = $chineseNum * $this->scorePercent['chinese'] + $englishNum * $this->scorePercent['english'];
+            $student['chineseNum'] = $chineseNum;
+            $student['englishNum'] = $englishNum;
             $student['score'] = $score;
         }
         unset($student);
