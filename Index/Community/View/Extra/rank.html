@@ -40,16 +40,20 @@
     </div>
     <table class="table table-hover table-bordered table-condensed">
         <thread>
-            <th width=10%>排名</th>
-            <th width=20%>中文题(占比10%)</th>
-            <th width=20%>英文题(占比70%)</th>
-            <th width=20%>平时表现(占比20%)</th>
+            <th width=5%>排名</th>
+            <th width=10%>账号</th>
+            <th width=10%>姓名</th>
+            <th width=15%>中文题(占比10%)</th>
+            <th width=15%>英文题(占比70%)</th>
+            <th width=15%>平时表现(占比20%)</th>
             <th width=30%>总得分(中文*1+英文*7+平时表现*2)</th>
         </thread>
         <tbody>
         <foreach name='students' item='student' key='index'>
             <tr>
                 <td>{$index + 1}</td>
+                <td>{$student['user_id']}</td>
+                <td>{$student['name']}</td>
                 <td>{$student['chineseNum']}</td>
                 <td>{$student['englishNum']}</td>
                 <td>{$student['person']}</td>
