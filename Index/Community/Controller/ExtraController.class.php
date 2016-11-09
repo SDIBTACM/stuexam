@@ -57,6 +57,8 @@ class ExtraController extends TemplateController
             $student['score'] = $score;
         }
         unset($student);
+
+        $students = myMultiSort($students, 'score');
         echo json_encode($students);
 
     }
