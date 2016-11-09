@@ -21,18 +21,15 @@ class ExtraController extends TemplateController
         parent::_initialize();
     }
 
+    private static $DEFAULTRATE = 200;
+
     // 计分比例
     private $scorePercent = array(
         'english' => 7,
         'chinese' => 1,
-        'personal' => 2
-        //'score'   =>
+        'person'  => 2
     );
 
-    /*
-     * 第一周：英文题目（1145-1191）数量（占40%）+上次机考成绩（40%）+主观评价（20%）=总成绩！
-     * 以后：英文题目（1145-1191）数量（占70%）+主观评价（30%）=总成绩！
-     * */
     public function rank() {
         // 获取所有注册的学生
         $students = $this->getAllSignUpStudent();
@@ -49,18 +46,22 @@ class ExtraController extends TemplateController
 
         foreach ($students as &$student) {
             $_userId = $student['user_id'];
-            $englishNum = isset($userEnProblemSolved[$_userId]) ? $userEnProblemSolved[$_userId] : 0;
+            $englishNum = isset($userEnProblemSolved[$_userId]) ? intval($userEnProblemSolved[$_userId]) : 0;
             $chineseNum = $userAllSolved[$_userId] - $englishNum;
-            $score = $chineseNum * $this->scorePercent['chinese'] + $englishNum * $this->scorePercent['english'];
             $student['chineseNum'] = $chineseNum;
             $student['englishNum'] = $englishNum;
+            $student['person'] = self::$DEFAULTRATE;
+            $score = $chineseNum * $this->scorePercent['chinese']
+                + $englishNum * $this->scorePercent['english']
+                + $student['person'] * $this->scorePercent['person'];
             $student['score'] = $score;
         }
         unset($student);
 
-        $students = myMultiSort($students, 'score');
-        echo json_encode($students);
-
+        $students = myMultiSort($students, 'score', SORT_DESC);
+        //echo json_encode($students);
+        $this->zadd("students", $students);
+        $this->auto_display(null, false);
     }
 
     private function getAllSignUpStudent() {
@@ -95,5 +96,9 @@ class ExtraController extends TemplateController
             $userEnProblemSolved[$solved['user_id']] = $solved['num'];
         }
         return $userEnProblemSolved;
+    }
+
+    private function getPersonalRate() {
+
     }
 }
