@@ -55,6 +55,9 @@ class ExtraController extends TemplateController
                 + $englishNum * $this->scorePercent['english']
                 + $student['person'] * $this->scorePercent['person'];
             $student['score'] = $score;
+            if ($student['stusex'] == 'F') {
+                $student['score'] = $student['score'] * 1.1;
+            }
         }
         unset($student);
 
@@ -66,7 +69,7 @@ class ExtraController extends TemplateController
 
     private function getAllSignUpStudent() {
         // contest id is 1753
-        $sql = "select user_id, sturealname as `name`, seatnum from contestreg where contest_id = 1753";
+        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = 1753";
         $students = M()->query($sql);
         return $students;
     }
