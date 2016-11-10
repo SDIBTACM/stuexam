@@ -50,14 +50,18 @@
         </thread>
         <tbody>
         <foreach name='students' item='student' key='index'>
-            <tr>
-                <td>{$index + 1}</td>
-                <td>{$student['user_id']}</td>
-                <td>{$student['name']}</td>
-                <td>{$student['chineseNum']}</td>
-                <td>{$student['englishNum']}</td>
-                <td>{$student['person']}</td>
-                <td>{$student['score']}</td>
+            <if condition="$index lt 13">
+                <tr class="label-info">
+                    <else/>
+                <tr>
+            </if>
+            <td>{$index + 1}</td>
+            <td>{$student['user_id']}</td>
+            <td>{$student['name']}</td>
+            <td>{$student['chineseNum']}</td>
+            <td>{$student['englishNum']}</td>
+            <td>{$student['person']}</td>
+            <td>{$student['score']}</td>
             </tr>
         </foreach>
         </tbody>
