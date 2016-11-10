@@ -50,7 +50,7 @@
         </thread>
         <tbody>
         <foreach name='students' item='student' key='index'>
-            <if condition="$index lt 13">
+            <if condition="$student['rank'] lt 14">
                 <tr class="alert-info">
                     <else/>
                 <tr>

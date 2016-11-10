@@ -62,7 +62,19 @@ class ExtraController extends TemplateController
         unset($student);
 
         $students = myMultiSort($students, 'score', SORT_DESC);
-        //echo json_encode($students);
+        $rank = 0; $preScore = -1; $cnt = 0;
+        foreach ($students as &$student) {
+            if ($student['score'] != $preScore) {
+                $rank = $rank + $cnt + 1;
+                $preScore = $student['score'];
+                $cnt = 0;
+            } else {
+                $cnt++;
+            }
+            $student['rank'] = $rank;
+        }
+        unset($student);
+
         $this->zadd("students", $students);
         $this->auto_display(null, false);
     }
