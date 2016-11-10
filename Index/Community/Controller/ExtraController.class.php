@@ -21,7 +21,7 @@ class ExtraController extends TemplateController
         parent::_initialize();
     }
 
-    private static $DEFAULTRATE = 200;
+    private static $DEFAULTRATE = 0;
 
     // 计分比例
     private $scorePercent = array(
@@ -56,7 +56,7 @@ class ExtraController extends TemplateController
                 + $student['person'] * $this->scorePercent['person'];
             $student['score'] = $score;
             if ($student['stusex'] == 'F') {
-                $student['score'] = $student['score'] * 1.1;
+                $student['score'] = $student['score'] * 1.05;
             }
         }
         unset($student);
