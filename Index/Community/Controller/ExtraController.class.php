@@ -50,7 +50,7 @@ class ExtraController extends TemplateController
             $chineseNum = $userAllSolved[$_userId] - $englishNum;
             $student['chineseNum'] = $chineseNum;
             $student['englishNum'] = $englishNum;
-            $student['person'] = self::$DEFAULTRATE;
+            $student['person'] = empty($student['seatnum']) ? self::$DEFAULTRATE : $student['seatnum'];
             $score = $chineseNum * $this->scorePercent['chinese']
                 + $englishNum * $this->scorePercent['english']
                 + $student['person'] * $this->scorePercent['person'];
@@ -66,7 +66,7 @@ class ExtraController extends TemplateController
 
     private function getAllSignUpStudent() {
         // contest id is 1753
-        $sql = "select user_id, sturealname as `name` from contestreg where contest_id = 1753";
+        $sql = "select user_id, sturealname as `name`, seatnum from contestreg where contest_id = 1753";
         $students = M()->query($sql);
         return $students;
     }
@@ -96,9 +96,5 @@ class ExtraController extends TemplateController
             $userEnProblemSolved[$solved['user_id']] = $solved['num'];
         }
         return $userEnProblemSolved;
-    }
-
-    private function getPersonalRate() {
-
     }
 }
