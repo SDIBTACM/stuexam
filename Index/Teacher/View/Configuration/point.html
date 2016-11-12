@@ -1,0 +1,60 @@
+<div class="container exam_content">
+    <h2>知识点管理</h2>
+
+    <form class="form-inline" role="form" action="{:U('Teacher/Configuration/addPoint')}" method="post">
+        <div class="form-group">
+            <label class="sr-only">key point</label>
+            <select class="form-control" name="chapterId">
+                <option value="0">请选择知识点对应章节</option>
+                <foreach name='chapters' item='chapter' key='index'>
+                    <option value="{$index}">第{$index}章: {$chapter}</option>
+                </foreach>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="pointDesc" class="sr-only">key point description</label>
+            <input type="text" class="form-control" id="pointDesc" name="name" placeholder="知识点">
+        </div>
+        <button type="submit" class="btn btn-default">确定添加</button>
+    </form>
+
+    <div class='row text-left'>
+        <foreach name='chapters' item='chapter' key='index'>
+            <div class="panel panel-info">
+                <div class="panel-heading">第{$index}章: {$chapter}</div>
+                <div class="panel-body">
+                    <ul>
+                        <foreach name="points[$index]" item="point" key="k">
+                            <li>{$point['name']}
+                                <a title="删除" class="pointAnchor" href="#" data-point="{$point['id']}">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </a>
+                            </li>
+                        </foreach>
+                    </ul>
+                </div>
+            </div>
+        </foreach>
+    </div>
+</div>
+<script type="text/javascript">
+    var removePointLink = "{:U('Teacher/Configuration/removePoint')}";
+    $(function () {
+        $(".pointAnchor").click(function () {
+            var that = $(this);
+            var pointId = that.data('point');
+            $.ajax({
+                url: removePointLink,
+                type: "POST",
+                dataType: "html",
+                data: "pointid=" + pointId + "&sid=" + Math.random(),
+                success: function () {
+                    that.parent().remove();
+                },
+                error: function () {
+                    alert("sorry,something error")
+                }
+            });
+        });
+    });
+</script>

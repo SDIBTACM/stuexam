@@ -44,6 +44,10 @@ class KeyPointBaseModel extends GeneralModel
         return self::$_instance;
     }
 
+    public function getAllPoint() {
+        return $this->getDao()->select();
+    }
+
     public function getByChapterId($chapterId, $field = array()) {
         $where = array(
             'chapter_id' => $chapterId

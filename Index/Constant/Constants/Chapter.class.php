@@ -21,7 +21,7 @@ class Chapter
 
     private $priority;
 
-    private static $map = null;
+    private static $chapters = null;
 
     private function __construct($id, $name, $priority) {
         $this->id = $id;
@@ -42,9 +42,8 @@ class Chapter
     }
 
     public static function initConstant() {
-        if (self::$map == null) {
-            dbg("none");
-            self::$map = array(
+        if (self::$chapters == null) {
+            self::$chapters = array(
                 new Chapter(1, "计算机基础知识", 1),
                 new Chapter(2, "C程序和C编译器简介", 2),
                 new Chapter(3, "C编程基础知识", 3),
@@ -62,19 +61,17 @@ class Chapter
                 new Chapter(15, "文件", 15),
                 new Chapter(16, "编译预处理", 16)
             );
-        } else {
-            dbg("full");
         }
     }
 
     public static function getConstant() {
         self::initConstant();
-        return self::$map;
+        return self::$chapters;
     }
 
     public static function getById($id) {
         self::initConstant();
-        foreach (self::$map as $res) {
+        foreach (self::$chapters as $res) {
             if ($res->getId() == $id) {
                 return $res;
             }
@@ -85,7 +82,7 @@ class Chapter
     public static function getIdBiggerPriority($priority) {
         self::initConstant();
         $ans = array();
-        foreach (self::$map as $res) {
+        foreach (self::$chapters as $res) {
             if ($res->getPriority() > $priority) {
                 $ans[] = $res->getId();
             }
