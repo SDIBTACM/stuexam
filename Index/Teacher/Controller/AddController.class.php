@@ -75,7 +75,7 @@ class AddController extends TemplateController
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
-            $pnt = M('ex_point')->where(array("type" => 0))->select();
+            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $row = ChooseBaseModel::instance()->getChooseById($id);
             if (empty($row)) {
@@ -92,7 +92,7 @@ class AddController extends TemplateController
             $this->zadd('pnt', $pnt);
             $this->auto_display();
         } else {
-            $pnt = M('ex_point')->where(array("type" => 0))->select();
+            $pnt = ExamService::instance()->getExPointList();
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
             $key = set_post_key();
@@ -122,7 +122,7 @@ class AddController extends TemplateController
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
-            $pnt = M('ex_point')->where(array("type" => 0))->select();
+            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $row = JudgeBaseModel::instance()->getJudgeById($id);
             if (empty($row)) {
@@ -141,7 +141,7 @@ class AddController extends TemplateController
         } else {
 
             $page = I('get.page', 1, 'intval');
-            $pnt = M('ex_point')->where(array("type" => 0))->select();
+            $pnt = ExamService::instance()->getExPointList();
             $problemType = I('get.problem', 0, 'intval');
             $key = set_post_key();
             $this->zadd('page', $page);
@@ -168,7 +168,7 @@ class AddController extends TemplateController
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
-            $pnt = M('ex_point')->where(array("type" => 0))->select();
+            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $row = FillBaseModel::instance()->getFillById($id);
             if (empty($row)) {
@@ -190,7 +190,7 @@ class AddController extends TemplateController
             $this->auto_display();
         } else {
             $page = I('get.page', 1, 'intval');
-            $pnt = M('ex_point')->where(array("type" => 0))->select();
+            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $problemType = I('get.problem', 0, 'intval');
             $this->zadd('page', $page);
@@ -198,20 +198,6 @@ class AddController extends TemplateController
             $this->zadd('pnt', $pnt);
             $this->zadd('problemType', $problemType);
             $this->auto_display();
-        }
-    }
-
-    public function point() {
-        $action = I('post.action', '', 'htmlspecialchars');
-        if ($action == 'add') {
-            $data['point'] = I('post.point', '');
-            $id = M('ex_point')->data($data)->add();
-            $data['id'] = $id;
-            $this->ajaxReturn(json_encode($data));
-        } else if ($action == 'del') {
-            $id = I('post.id', 0, 'intval');
-            M('ex_point')->delete($id);
-            echo "ok";
         }
     }
 

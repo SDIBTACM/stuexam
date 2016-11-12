@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Teacher\Service\ExamService;
 use Think\Controller;
 
 class IndexController extends TemplateController
@@ -9,7 +10,7 @@ class IndexController extends TemplateController
     private $pointMap = array();
 
     public function _initialize() {
-        $points = M("ex_point")->where(array("type" => 0))->select();
+        $points = ExamService::instance()->getExPointList();
         foreach ($points as $point) {
             $this->pointMap[$point['point_id']] = $point['point'];
         }
@@ -110,25 +111,5 @@ class IndexController extends TemplateController
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();
-    }
-
-    public function point() {
-        if (!$this->isSuperAdmin()) {
-            $this->echoError('Sorry,Only admin can do');
-        }
-        $points = M('ex_point')->where(array("type" => 0))->order('point_pos')->select();
-        $this->zadd('pnt', $points);
-        $this->auto_display();
-    }
-
-    public function dosort() {
-        if (IS_AJAX && I('get.id', false) && I('get.pos', false)) {
-            $arr['point_id'] = intval($_GET['id']);
-            $arr['point_pos'] = intval($_GET['pos']);
-            M('ex_point')->data($arr)->save();
-            $this->echoError("success");
-        } else {
-            $this->echoError("wrong method");
-        }
     }
 }

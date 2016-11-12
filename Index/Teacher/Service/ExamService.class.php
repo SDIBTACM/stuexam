@@ -143,4 +143,9 @@ class ExamService
         }
         return $arr;
     }
+
+    public function getExPointList() {
+        $pnt = M('ex_point')->where(array("type" => 0))->select();
+        return $pnt;
+    }
 }
