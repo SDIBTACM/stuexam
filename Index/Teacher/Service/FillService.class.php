@@ -29,7 +29,7 @@ class FillService
         $reqResult = new Result();
         $fillId = I('post.fillid', 0, 'intval');
         $field = array('creator', 'isprivate');
-        $_fillInfo = FillBaseModel::instance()->getFillById($fillId, $field);
+        $_fillInfo = FillBaseModel::instance()->getById($fillId, $field);
         if (empty($_fillInfo) || !checkAdmin(4, $_fillInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
@@ -38,7 +38,7 @@ class FillService
             $reqResult->setMessage("您没有权限进行此操作!");
         } else {
             $arr = FillConvert::convertFillFromPost();
-            $result = FillBaseModel::instance()->updateFillById($fillId, $arr);
+            $result = FillBaseModel::instance()->updateById($fillId, $arr);
             if ($result !== false) {
                 $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$fillId";
                 M()->execute($sql);
@@ -65,7 +65,7 @@ class FillService
         $arr = FillConvert::convertFillFromPost();
         $arr['addtime'] = date('Y-m-d H:i:s');
         $arr['creator'] = $_SESSION['user_id'];
-        $fillId = FillBaseModel::instance()->insertFillInfo($arr);
+        $fillId = FillBaseModel::instance()->insertData($arr);
         if ($fillId) {
             for ($i = 1; $i <= $arr['answernum']; $i++) {
                 $answer = test_input($_POST["answer$i"]);

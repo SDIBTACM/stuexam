@@ -9,14 +9,8 @@
 namespace Teacher\Model;
 
 
-abstract class GeneralModel
+abstract class GeneralModel extends BasicBaseModel
 {
-
-    abstract protected function getDao();
-
-    abstract protected function getTableName();
-
-    abstract protected function getTableFields();
 
     public function queryOne($where, $field = array()) {
         if (empty($where)) {
@@ -65,5 +59,4 @@ abstract class GeneralModel
         $res = $dao->select();
         return $res;
     }
-
 }

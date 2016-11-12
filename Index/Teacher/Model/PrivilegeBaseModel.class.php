@@ -38,15 +38,15 @@ class PrivilegeBaseModel extends GeneralModel
         return PrivilegeTableConfig::$TABLE_FIELD;
     }
 
+    protected function getPrimaryId() {
+        return null;
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
-    }
-
-    public function insertPrivilege($privilege) {
-        return $this->getDao()->add($privilege);
     }
 
     public function insertPrivileges($privileges) {

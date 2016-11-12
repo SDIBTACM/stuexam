@@ -37,37 +37,15 @@ class FillBaseModel extends GeneralModel
         return FillTableConfig::$TABLE_FIELD;
     }
 
+    protected function getPrimaryId() {
+        return 'fill_id';
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
-    }
-
-    public function getFillById($fillId, $field = array()) {
-        $where = array(
-            'fill_id' => $fillId
-        );
-        return $this->queryOne($where, $field);
-    }
-
-    public function updateFillById($fillId, $data) {
-        $where = array(
-            'fill_id' => $fillId
-        );
-        return $this->getDao()->where($where)->data($data)->save();
-    }
-
-    public function insertFillInfo($data) {
-        return $this->getDao()->add($data);
-    }
-
-    public function delFillById($fillId) {
-        $where = array(
-            'fill_id' => $fillId
-        );
-        $res = $this->getDao()->where($where)->delete();
-        return $res;
     }
 
     public function getFillProblems4Exam($eid) {

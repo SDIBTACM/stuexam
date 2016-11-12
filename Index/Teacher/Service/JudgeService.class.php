@@ -29,7 +29,7 @@ class JudgeService
         $reqResult = new Result();
         $judgeid = I('post.judgeid', 0, 'intval');
         $field = array('creator', 'isprivate');
-        $tmp = JudgeBaseModel::instance()->getJudgeById($judgeid, $field);
+        $tmp = JudgeBaseModel::instance()->getById($judgeid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
@@ -38,7 +38,7 @@ class JudgeService
             $reqResult->setMessage("您没有权限进行此操作!");
         } else {
             $arr = JudgeConvert::convertJudgeFromPost();
-            $result = JudgeBaseModel::instance()->updateJudgeById($judgeid, $arr);
+            $result = JudgeBaseModel::instance()->updateById($judgeid, $arr);
             if ($result !== false) {
                 $reqResult->setMessage("判断题修改成功!");
                 $reqResult->setData("judge");
@@ -55,7 +55,7 @@ class JudgeService
         $arr = JudgeConvert::convertJudgeFromPost();
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
-        $lastId = JudgeBaseModel::instance()->insertJudgeInfo($arr);
+        $lastId = JudgeBaseModel::instance()->insertData($arr);
         if ($lastId) {
             $reqResult->setMessage("判断题添加成功!");
             $reqResult->setData("judge");

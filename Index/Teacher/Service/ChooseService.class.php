@@ -29,7 +29,7 @@ class ChooseService
         $reqResult = new Result();
         $chooseid = I('post.chooseid', 0, 'intval');
         $field = array('creator', 'isprivate');
-        $_chooseInfo = ChooseBaseModel::instance()->getChooseById($chooseid, $field);
+        $_chooseInfo = ChooseBaseModel::instance()->getById($chooseid, $field);
         if (empty($_chooseInfo) || !checkAdmin(4, $_chooseInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
@@ -38,7 +38,7 @@ class ChooseService
             $reqResult->setMessage("您没有权限进行此操作!");
         } else {
             $arr = ChooseConvert::convertChooseFromPost();
-            $result = ChooseBaseModel::instance()->updateChooseById($chooseid, $arr);
+            $result = ChooseBaseModel::instance()->updateById($chooseid, $arr);
             if ($result !== false) {
                 $reqResult->setMessage("选择题修改成功!");
                 $reqResult->setData("choose");
@@ -55,7 +55,7 @@ class ChooseService
         $arr = ChooseConvert::convertChooseFromPost();
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
-        $lastId = ChooseBaseModel::instance()->insertChooseInfo($arr);
+        $lastId = ChooseBaseModel::instance()->insertData($arr);
         if ($lastId) {
             $reqResult->setMessage("选择题添加成功!");
             $reqResult->setData("choose");

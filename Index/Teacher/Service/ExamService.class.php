@@ -38,7 +38,7 @@ class ExamService
         }
 
         $data = ExamConvert::convertExamDataFromPost();
-        $res = ExamBaseModel::instance()->updateExamInfoById($examId, $data);
+        $res = ExamBaseModel::instance()->updateById($examId, $data);
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
             $reqResult->setData("index");
@@ -54,7 +54,7 @@ class ExamService
         $data = ExamConvert::convertExamDataFromPost();
         $data['creator'] = $_SESSION['user_id'];
 
-        $return = ExamBaseModel::instance()->addExamBaseInfo($data);
+        $return = ExamBaseModel::instance()->insertData($data);
 
         if ($return) {
             $reqResult->setMessage("考试添加成功!");

@@ -33,15 +33,15 @@ class QuestionBaseModel extends GeneralModel
         return QuestionTableConfig::$TABLE_FIELD;
     }
 
+    protected function getPrimaryId() {
+        return 'exp_qid';
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
-    }
-
-    public function insertQuestion($data) {
-        return $this->getDao()->add($data);
     }
 
     public function insertQuestions($data) {

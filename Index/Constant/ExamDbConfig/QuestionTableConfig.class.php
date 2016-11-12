@@ -14,6 +14,7 @@ class QuestionTableConfig
     const TABLE_NAME = "exp_question";
 
     public static $TABLE_FIELD = array(
+        'exp_qid' => 'int',
         'exam_id' => 'int',
         'question_id' => 'int',
         'type' => 'tinyint'

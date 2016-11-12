@@ -37,38 +37,15 @@ class ChooseBaseModel extends GeneralModel
         return ChooseTableConfig::$TABLE_FIELD;
     }
 
+    protected function getPrimaryId() {
+        return 'choose_id';
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
-    }
-
-    public function getChooseById($chooseId, $field = array()) {
-        $where = array(
-            'choose_id' => $chooseId
-        );
-        return $this->queryOne($where, $field);
-    }
-
-    public function updateChooseById($chooseId, $data) {
-        $where = array(
-            'choose_id' => $chooseId
-        );
-        $res = $this->getDao()->where($where)->data($data)->save();
-        return $res;
-    }
-
-    public function insertChooseInfo($data) {
-        return $this->getDao()->add($data);
-    }
-
-    public function delChooseById($chooseId) {
-        $where = array(
-            'choose_id' => $chooseId
-        );
-        $res = $this->getDao()->where($where)->delete();
-        return $res;
     }
 
     /**

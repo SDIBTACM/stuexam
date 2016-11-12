@@ -27,7 +27,7 @@ class DelController extends TemplateController
             $this->echoError('You have no privilege!');
         } else {
             $data = array('visible' => 'N');
-            ExamBaseModel::instance()->updateExamInfoById($this->id, $data);
+            ExamBaseModel::instance()->updateById($this->id, $data);
             $this->success("考试删除成功", U("Teacher/Index/index", array('page' => $this->page)), 2);
             //if the exam was deleted
             //the info of exam was deleted
@@ -39,11 +39,11 @@ class DelController extends TemplateController
     }
 
     public function choose() {
-        $tmp = ChooseBaseModel::instance()->getChooseById($this->id, array('creator', 'isprivate'));
+        $tmp = ChooseBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->echoError('You have no privilege!');
         } else {
-            ChooseBaseModel::instance()->delChooseById($this->id);
+            ChooseBaseModel::instance()->delById($this->id);
             $sql = "DELETE FROM `exp_question` WHERE `question_id`=$this->id and `type`=1";
             M()->execute($sql);
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=1";
@@ -53,11 +53,11 @@ class DelController extends TemplateController
     }
 
     public function judge() {
-        $tmp = JudgeBaseModel::instance()->getJudgeById($this->id, array('creator', 'isprivate'));
+        $tmp = JudgeBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->echoError('You have no privilege!');
         } else {
-            JudgeBaseModel::instance()->delJudgeById($this->id);
+            JudgeBaseModel::instance()->delById($this->id);
             $sql = "DELETE FROM `exp_question` WHERE `question_id`=$this->id and `type`=2";
             M()->execute($sql);
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=2";
@@ -67,11 +67,11 @@ class DelController extends TemplateController
     }
 
     public function fill() {
-        $tmp = FillBaseModel::instance()->getFillById($this->id, array('creator', 'isprivate'));
+        $tmp = FillBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->echoError('You have no privilege!');
         } else {
-            FillBaseModel::instance()->delFillById($this->id);
+            FillBaseModel::instance()->delById($this->id);
             $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$this->id";
             M()->execute($sql);
             $sql = "DELETE FROM `exp_question` WHERE `question_id`=$this->id and `type`=3";

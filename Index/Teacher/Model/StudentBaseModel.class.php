@@ -33,15 +33,15 @@ class StudentBaseModel extends GeneralModel
         return StudentTableConfig::$TABLE_FIELD;
     }
 
+    protected function getPrimaryId() {
+        return null;
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
-    }
-
-    public function addStudentScore($data) {
-        return $this->getDao()->add($data);
     }
 
     public function updateStudentScore($examId, $userId, $data) {

@@ -1,23 +1,18 @@
 <?php
 /**
  * drunk , fix later
- * Created by PhpStorm.
+ * Created by Magic.
  * User: jiaying
- * Datetime: 15/10/25 19:09
+ * Datetime: 12/11/2016 15:12
  */
 
 namespace Teacher\Model;
 
 
-use Constant\ExamDbConfig\ExamTableConfig;
+use Constant\ExamDbConfig\KeyPointTableConfig;
 
-class ExamBaseModel extends GeneralModel
+class KeyPointBaseModel extends GeneralModel
 {
-
-    const EXAM_NOT_START = 0;
-    const EXAM_RUNNING = 1;
-    const EXAM_END = -1;
-
     private static $_instance = null;
 
     private function __construct() {
@@ -31,15 +26,15 @@ class ExamBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return ExamTableConfig::TABLE_NAME;
+        return KeyPointTableConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return ExamTableConfig::$TABLE_FIELD;
+        return KeyPointTableConfig::$TABLE_FIELD;
     }
 
     protected function getPrimaryId() {
-        return 'exam_id';
+        return 'id';
     }
 
     public static function instance() {
@@ -49,11 +44,10 @@ class ExamBaseModel extends GeneralModel
         return self::$_instance;
     }
 
-    public function getExamInfoById($examId, $field = array()) {
+    public function getByChapterId($chapterId, $field = array()) {
         $where = array(
-            'exam_id' => $examId,
-            'visible' => 'Y'
+            'chapter_id' => $chapterId
         );
-        return $this->getDao()->field($field)->where($where)->find();
+        return $this->queryAll($where, $field);
     }
 }

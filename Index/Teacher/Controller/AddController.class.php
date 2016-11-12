@@ -77,7 +77,7 @@ class AddController extends TemplateController
             $problemType = I('get.problem', 0, 'intval');
             $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
-            $row = ChooseBaseModel::instance()->getChooseById($id);
+            $row = ChooseBaseModel::instance()->getById($id);
             if (empty($row)) {
                 $this->error('No Such Problem!');
             }
@@ -124,7 +124,7 @@ class AddController extends TemplateController
             $problemType = I('get.problem', 0, 'intval');
             $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
-            $row = JudgeBaseModel::instance()->getJudgeById($id);
+            $row = JudgeBaseModel::instance()->getById($id);
             if (empty($row)) {
                 $this->echoError('No Such Problem!');
             }
@@ -170,7 +170,7 @@ class AddController extends TemplateController
             $problemType = I('get.problem', 0, 'intval');
             $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
-            $row = FillBaseModel::instance()->getFillById($id);
+            $row = FillBaseModel::instance()->getById($id);
             if (empty($row)) {
                 $this->echoError('No Such Problem!');
             }
@@ -213,7 +213,10 @@ class AddController extends TemplateController
             // copy exam's base info
             unset($row['exam_id']);
             $row['creator'] = $this->userInfo['user_id'];
-            $examId = ExamBaseModel::instance()->addExamBaseInfo($row);
+            $examId = ExamBaseModel::instance()->insertData($row);
+            if (empty($examId)) {
+                $this->echoError("复制考试失败,请刷新页面重试");
+            }
             // copy exam's problem
             $field = array('exam_id', 'question_id', 'type');
             $res = QuestionBaseModel::instance()->getQuestionByExamId($eid, $field);

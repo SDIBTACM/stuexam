@@ -37,36 +37,15 @@ class JudgeBaseModel extends GeneralModel
         return JudgeTableConfig::$TABLE_FIELD;
     }
 
+    protected function getPrimaryId() {
+        return 'judge_id';
+    }
+
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
-    }
-
-    public function getJudgeById($judgeId, $field = array()) {
-        $where = array(
-            'judge_id' => $judgeId
-        );
-        return $this->queryOne($where, $field);
-    }
-
-    public function updateJudgeById($judgeId, $data) {
-        $where = array(
-            'judge_id' => $judgeId
-        );
-        return $this->getDao()->where($where)->data($data)->save();
-    }
-
-    public function insertJudgeInfo($data) {
-        return $this->getDao()->add($data);
-    }
-
-    public function delJudgeById($judgeId) {
-        $where = array(
-            'judge_id' => $judgeId
-        );
-        return $this->getDao()->where($where)->delete();
     }
 
     /**

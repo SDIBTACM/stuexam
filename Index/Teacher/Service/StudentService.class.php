@@ -32,7 +32,7 @@ class StudentService
         if (empty($oldData)) {
             $scores['user_id'] = $userId;
             $scores['exam_id'] = $examId;
-            StudentBaseModel::instance()->addStudentScore($scores);
+            StudentBaseModel::instance()->insertData($scores);
         } else {
             StudentBaseModel::instance()->updateStudentScore($examId, $userId, $scores);
         }
