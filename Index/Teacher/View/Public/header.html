@@ -36,6 +36,9 @@
                 <li id='navjudge'><a href="{:U('Teacher/Index/judge')}">判断题</a></li>
                 <li id='navfill'><a href="{:U('Teacher/Index/fill')}">填空题</a></li>
                 <li><a href="{:U('/Home')}">前台列表</a></li>
+                <if condition="session('administrator') neq null">
+                    <li><a href="{:U('Teacher/Configuration/keyPoint')}">配置中心</a></li>
+                </if>
                 <li><a href="/JudgeOnline/">返回OJ</a></li>
             </ul>
             <!-- first ul end -->

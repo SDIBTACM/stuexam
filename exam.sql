@@ -153,3 +153,31 @@ CREATE TABLE `pro_point` (
     	primary key(`type`,`question_id`,`point_id`)
 )ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `ex_key_point`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ex_key_point` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `chapter_id` tinyint(4) NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `chapterId` (`chapter_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `ex_question_point`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ex_question_point` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `question_id` int(11) NOT NULL DEFAULT '0' COMMENT '题目编号',
+  `type` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '题目类型',
+  `chapter_id` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '所属章节,冗余字段',
+  `point_id` int(11) NOT NULL DEFAULT '0' COMMENT '知识点编号',
+  PRIMARY KEY (`id`),
+  KEY `pid_type` (`question_id`,`type`),
+  KEY `chapterId` (`chapter_id`),
+  KEY `pointId` (`point_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
