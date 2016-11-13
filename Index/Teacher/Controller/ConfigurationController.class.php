@@ -73,13 +73,16 @@ class ConfigurationController extends TemplateController
 
     public function addPoint() {
         $chapterId = I('post.chapterId', 0, 'intval');
+        $parentId = I('post.parentId', 0, 'intval');
         $name = I('post.name', '');
+
         if (empty($name) || empty($chapterId)) {
             $this->echoError("章节或知识点内容不能为空!");
         }
 
         $point = array(
             'chapter_id' => $chapterId,
+            'parent_id' => $parentId,
             'name' => $name
         );
         $res = KeyPointBaseModel::instance()->insertData($point);
@@ -88,5 +91,11 @@ class ConfigurationController extends TemplateController
         } else {
             redirect(U('keyPoint'));
         }
+    }
+
+    public function getParentPointByChapterId() {
+        $chapterId = I('get.chapterId', 0, 'intval');
+        $parentPoint = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);
+        $this->ajaxReturn($parentPoint, 'JSON');
     }
 }

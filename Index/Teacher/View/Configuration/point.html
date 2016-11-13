@@ -4,11 +4,17 @@
     <form class="form-inline" role="form" action="{:U('Teacher/Configuration/addPoint')}" method="post">
         <div class="form-group">
             <label class="sr-only">key point</label>
-            <select class="form-control" name="chapterId">
-                <option value="0">请选择知识点对应章节</option>
+            <select class="form-control" name="chapterId" id="chapterSelect">
+                <option value="0" selected>请选择知识点对应章节</option>
                 <foreach name='chapters' item='chapter' key='index'>
                     <option value="{$index}">第{$index}章: {$chapter}</option>
                 </foreach>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">parent point</label>
+            <select class="form-control" name="parentId" id="parentSelect">
+                <option value="0" selected>请选择上一级知识点关联</option>
             </select>
         </div>
         <div class="form-group">
@@ -48,6 +54,7 @@
 </div>
 <script type="text/javascript">
     var removePointLink = "{:U('Teacher/Configuration/removePoint')}";
+    var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
     $(function () {
         $(".pointAnchor").click(function () {
             var that = $(this);
@@ -59,6 +66,26 @@
                 data: "pointid=" + pointId + "&sid=" + Math.random(),
                 success: function () {
                     that.parent().remove();
+                },
+                error: function () {
+                    alert("sorry,something error")
+                }
+            });
+        });
+        $("#chapterSelect").change(function(){
+            var that = $(this);
+            var parentSelect = $("#parentSelect");
+            var chapterId = that.children('option:selected').val();
+            parentSelect.empty().append('<option value="0" selected>请选择上一级知识点关联</option>');
+            $.ajax({
+                url : getParentNodeLink,
+                type: "GET",
+                dataType: "json",
+                data: {"chapterId":chapterId},
+                success: function (parents) {
+                    $.each(parents, function(index, _parent) {
+                        parentSelect.append('<option value="'+_parent.id+'">'+ _parent.name +'</option>');
+                    });
                 },
                 error: function () {
                     alert("sorry,something error")
