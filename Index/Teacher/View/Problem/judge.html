@@ -36,7 +36,7 @@
         </foreach>
         </tbody>
     </table>
-    {$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"problem=$problem"}
+    {$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
 </div>
 <script type="text/javascript">
     var addtoexamurl = "{:U('Teacher/Problem/addpte')}";

@@ -51,11 +51,7 @@ function getproblemsearch($idKey, $problemType) {
     $prosql = problemshow($problem, $sql);
     $sql .= $prosql;
     return array(
-        'problem' => $problem,
-        'sql' => $sql,
-        'chapterId' => $chapterId,
-        'parentId' => $parentId,
-        'pointId' => $pointId
+        'sql' => $sql
     );
 }
 

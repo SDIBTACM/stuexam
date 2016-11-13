@@ -67,23 +67,22 @@ class KeyPointBaseModel extends GeneralModel
     }
 
     public function getParentNodeByChapterId($chapterId) {
+        if (intval($chapterId) <= 0) {
+            return array();
+        }
         $where = array(
-            'chapter_id' => $chapterId,
+            'chapter_id' => intval($chapterId),
             'parent_id' => 0
         );
         return $this->queryAll($where);
     }
 
-    public function getByParentId($parentId, $field = array()) {
+    public function getChildrenNodeByParentId($parentId, $field = array()) {
+        if (intval($parentId) <= 0) {
+            return array();
+        }
         $where = array(
-            'parent_id' => $parentId
-        );
-        return $this->queryAll($where, $field);
-    }
-
-    public function getByChapterId($chapterId, $field = array()) {
-        $where = array(
-            'chapter_id' => $chapterId
+            'parent_id' => intval($parentId)
         );
         return $this->queryAll($where, $field);
     }

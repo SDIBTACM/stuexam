@@ -9,7 +9,6 @@
 namespace Teacher\Controller;
 
 
-use Constant\Constants\Chapter;
 use Teacher\Model\KeyPointBaseModel;
 
 class ConfigurationController extends TemplateController
@@ -22,13 +21,8 @@ class ConfigurationController extends TemplateController
     }
 
     public function keyPoint() {
-        $chapters = Chapter::getConstant();
-        $chapterMap = array();
-        foreach ($chapters as $chapter) {
-            if ($chapter instanceof Chapter) {
-                $chapterMap[$chapter->getId()] = $chapter->getName();
-            }
-        }
+
+        $this->ZaddChapters();
 
         $points = KeyPointBaseModel::instance()->getAllPoint();
         $pointMap = array();
@@ -53,8 +47,6 @@ class ConfigurationController extends TemplateController
                 $pointMap[$chapterId][$parentId]['children'][] = $point;
             }
         }
-
-        $this->zadd('chapters', $chapterMap);
         $this->zadd('points', $pointMap);
         $this->auto_display('point', 'configlayout');
     }
@@ -98,11 +90,7 @@ class ConfigurationController extends TemplateController
 
     public function getChildrenPointByParentId() {
         $parentId = I('get.parentId', 0, 'intval');
-        if ($parentId == 0) {
-            $this->ajaxReturn(array(), 'JSON');
-        } else {
-            $childrenPoint = KeyPointBaseModel::instance()->getByParentId($parentId);
-            $this->ajaxReturn($childrenPoint, 'JSON');
-        }
+        $childrenPoint = KeyPointBaseModel::instance()->getChildrenNodeByParentId($parentId);
+        $this->ajaxReturn($childrenPoint, 'JSON');
     }
 }

@@ -1,7 +1,6 @@
 <?php
 namespace Teacher\Controller;
 
-use Constant\Constants\Chapter;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -11,14 +10,10 @@ class IndexController extends TemplateController
 {
     public function _initialize() {
         parent::_initialize();
-        $chapters = Chapter::getConstant();
-        $chapterMap = array();
-        foreach ($chapters as $chapter) {
-            if ($chapter instanceof Chapter) {
-                $chapterMap[$chapter->getId()] = $chapter->getName();
-            }
+        if (strcmp($this->action, "index")) {
+            $this->ZaddChapters();
+            $this->buildSearch();
         }
-        $this->zadd('chapters', $chapterMap);
     }
 
     public function index() {
@@ -54,7 +49,6 @@ class IndexController extends TemplateController
             'mykey' => $key,
             'mypage' => $mypage,
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numofchoose' => $numofchoose,
         );
         $this->ZaddWidgets($widgets);
@@ -79,7 +73,6 @@ class IndexController extends TemplateController
             'mykey' => $key,
             'mypage' => $mypage,
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numofjudge' => $numofjudge,
         );
         $this->ZaddWidgets($widgets);
@@ -103,7 +96,6 @@ class IndexController extends TemplateController
             'mykey' => $key,
             'mypage' => $mypage,
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numoffill' => $numoffill,
         );
         $this->ZaddWidgets($widgets);

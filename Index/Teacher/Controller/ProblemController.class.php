@@ -31,6 +31,10 @@ class ProblemController extends TemplateController
             } else {
                 $this->ZaddWidgets($widgets);
             }
+            if (!strcmp($this->action, 'add')) {
+                $this->buildSearch();
+                $this->ZaddChapters();
+            }
         } else if (isset($_POST['eid'])) {
             $this->eid = I('post.eid', 0, 'intval');
         } else {
@@ -80,7 +84,6 @@ class ProblemController extends TemplateController
             'added' => $haveadded,
             'mypage' => $mypage,
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numofchoose' => $numofchoose
         );
         $this->ZaddWidgets($widgets);
@@ -107,7 +110,6 @@ class ProblemController extends TemplateController
             'added' => $haveadded,
             'mypage' => $mypage,
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numofjudge' => $numofjudge
         );
         $this->ZaddWidgets($widgets);
@@ -134,7 +136,6 @@ class ProblemController extends TemplateController
             'added' => $haveadded,
             'mypage' => $mypage,
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numoffill' => $numoffill
         );
         $this->ZaddWidgets($widgets);
