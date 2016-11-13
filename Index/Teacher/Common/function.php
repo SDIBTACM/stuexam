@@ -36,7 +36,7 @@ function problemshow($problem, $searchsql) {
 function getproblemsearch() {
     $search = I('get.search', '');
     if ($search != '')
-        $sql = "(`creator` like '%$search%' or `point` like '%$search%')";
+        $sql = "(`creator` like '%$search%')";
     else
         $sql = "";
     $problem = I('get.problem', 0, 'intval');

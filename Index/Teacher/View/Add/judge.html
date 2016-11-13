@@ -39,10 +39,10 @@
 			<div class="col-md-8">
 			<select class='form-control js-example-basic-multiple' name="point[]" id="point" multiple="multiple">
 				<foreach name='pnt' item='p'>
-					<if condition="isset($row['point']) and in_array($p['point_id'], $row['point'])">
-					<option value="{$p['point_id']}" selected>{$p['point']}</option>
-					<else/>
-					<option value="{$p['point_id']}">{$p['point']}</option>
+					<if condition="isset($row['point']) and in_array($p['id'], $row['point'])">
+						<option value="{$p['chapter_id']}-{$p['id']}" selected>第{$p['chapter_id']}章:{$chapters[$p['chapter_id']]}-{$p['name']}</option>
+						<else/>
+						<option value="{$p['chapter_id']}-{$p['id']}">第{$p['chapter_id']}章:{$chapters[$p['chapter_id']]}-{$p['name']}</option>
 					</if>
 				</foreach>
 			</select>

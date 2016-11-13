@@ -8,6 +8,7 @@ use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\KeyPointBaseModel;
 
 class ExamService
 {
@@ -145,7 +146,23 @@ class ExamService
     }
 
     public function getExPointList() {
-        $pnt = M('ex_point')->where(array("type" => 0))->select();
+        $pnt = KeyPointBaseModel::instance()->getAllPoint();
         return $pnt;
+    }
+
+    public function saveExamPoint($pointList, $questionId, $type) {
+        $dataList = array();
+        foreach ($pointList as $pointStr) {
+            $arr = explode('-', $pointStr);
+            if (is_array($arr)) {
+                $data = array();
+                $data['question_id'] = $questionId;
+                $data['type'] = $type;
+                $data['chapter_id'] = $arr[0];
+                $data['point_id'] = $arr[1];
+                $dataList[] = $data;
+            }
+        }
+        return KeyPointBaseModel::instance()->insertDataList($dataList);
     }
 }

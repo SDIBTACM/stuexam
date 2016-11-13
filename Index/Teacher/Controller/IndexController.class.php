@@ -1,20 +1,11 @@
 <?php
 namespace Teacher\Controller;
 
-use Teacher\Service\ExamService;
 use Think\Controller;
 
 class IndexController extends TemplateController
 {
-
-    private $pointMap = array();
-
     public function _initialize() {
-        $points = ExamService::instance()->getExPointList();
-        foreach ($points as $point) {
-            $this->pointMap[$point['point_id']] = $point['point'];
-        }
-
         parent::_initialize();
     }
 
@@ -41,7 +32,7 @@ class IndexController extends TemplateController
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_choose')
-            ->field('choose_id,question,creator,point,easycount')
+            ->field('choose_id,question,creator,easycount')
             ->where($sch['sql'])
             ->order('choose_id asc')
             ->limit($mypage['sqladd'])
@@ -54,7 +45,6 @@ class IndexController extends TemplateController
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numofchoose' => $numofchoose,
-            'pointMap' => $this->pointMap
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();
@@ -68,7 +58,7 @@ class IndexController extends TemplateController
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_judge')
-            ->field('judge_id,question,creator,point,easycount')
+            ->field('judge_id,question,creator,easycount')
             ->where($sch['sql'])
             ->order('judge_id asc')
             ->limit($mypage['sqladd'])
@@ -81,7 +71,6 @@ class IndexController extends TemplateController
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numofjudge' => $numofjudge,
-            'pointMap' => $this->pointMap
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();
@@ -94,7 +83,7 @@ class IndexController extends TemplateController
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = m('ex_fill')
-            ->field('fill_id,question,creator,point,easycount,kind')
+            ->field('fill_id,question,creator,easycount,kind')
             ->where($sch['sql'])
             ->order('fill_id asc')
             ->limit($mypage['sqladd'])
@@ -107,7 +96,6 @@ class IndexController extends TemplateController
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numoffill' => $numoffill,
-            'pointMap' => $this->pointMap
         );
         $this->ZaddWidgets($widgets);
         $this->auto_display();

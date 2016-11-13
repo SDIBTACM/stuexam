@@ -65,7 +65,7 @@ class ProblemController extends TemplateController
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = M('ex_choose')->field('choose_id,question,creator,point,easycount')
+        $row = M('ex_choose')->field('choose_id,question,creator,easycount')
             ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
             ->select();
 
@@ -93,7 +93,7 @@ class ProblemController extends TemplateController
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = m('ex_judge')->field('judge_id,question,creator,point,easycount')
+        $row = m('ex_judge')->field('judge_id,question,creator,easycount')
             ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
             ->select();
 
@@ -121,7 +121,7 @@ class ProblemController extends TemplateController
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = M('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
+        $row = M('ex_fill')->field('fill_id,question,creator,easycount,kind')
             ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
             ->select();
 

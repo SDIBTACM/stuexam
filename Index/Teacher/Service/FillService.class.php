@@ -37,6 +37,7 @@ class FillService
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
         } else {
+            ddbg(I('post.'));
             $arr = FillConvert::convertFillFromPost();
             $result = FillBaseModel::instance()->updateById($fillId, $arr);
             if ($result !== false) {

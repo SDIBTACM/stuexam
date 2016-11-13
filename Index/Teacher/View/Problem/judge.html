@@ -52,7 +52,6 @@
             <th width=4%>ID</th>
             <th width=34%>题目描述</th>
             <th width=3%>创建者</th>
-            <!--<th width=8%>知识点</th>-->
             <th width=2%>难度</th>
             <th width=3%>操作</th>
         </thread>
@@ -66,7 +65,6 @@
                 </td>
                 <div class="clearfix"></div>
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
-                <!--<td>{$r['point']}</td>-->
                 <td>{$r['easycount']}</td>
                 <if condition="isset($added[$r['judge_id']]) and $added[$r['judge_id']] gt 0">
                     <td>已添加</td>

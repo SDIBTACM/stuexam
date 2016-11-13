@@ -48,6 +48,11 @@ class KeyPointBaseModel extends GeneralModel
         return $this->getDao()->select();
     }
 
+    public function insertDataList($dataList) {
+        if (empty($dataList)) return 0;
+        return $this->getDao()->addAll($dataList);
+    }
+
     public function getByChapterId($chapterId, $field = array()) {
         $where = array(
             'chapter_id' => $chapterId

@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Constant\Constants\Chapter;
 use Constant\ReqResult\Result;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
@@ -18,6 +19,16 @@ class AddController extends TemplateController
 {
     public function _initialize() {
         parent::_initialize();
+        if (IS_GET) {
+            $chapters = Chapter::getConstant();
+            $chapterMap = array();
+            foreach ($chapters as $chapter) {
+                if ($chapter instanceof Chapter) {
+                    $chapterMap[$chapter->getId()] = $chapter->getName();
+                }
+            }
+            $this->zadd('chapters', $chapterMap);
+        }
     }
 
     public function exam() {
