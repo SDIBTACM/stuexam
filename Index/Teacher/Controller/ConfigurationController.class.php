@@ -33,11 +33,25 @@ class ConfigurationController extends TemplateController
         $points = KeyPointBaseModel::instance()->getAllPoint();
         $pointMap = array();
         foreach ($points as $point) {
+            $point['children'] = array();
             $chapterId = $point['chapter_id'];
+            $pointId = $point['id'];
+            $parentId = $point['parent_id'];
             if (!isset($pointMap[$chapterId])) {
                 $pointMap[$chapterId] = array();
             }
-            $pointMap[$chapterId][] = $point;
+            if ($parentId == 0) {
+                if (!isset($pointMap[$chapterId][$pointId])) {
+                    $pointMap[$chapterId][$pointId] = $point;
+                } else {
+                    $pointMap[$chapterId][$pointId] = array_merge($point, $pointMap[$chapterId][$pointId]);
+                }
+            } else {
+                if (!isset($pointMap[$chapterId][$parentId]['children'])) {
+                    $pointMap[$chapterId][$parentId]['children'] = array();
+                }
+                $pointMap[$chapterId][$parentId]['children'][] = $point;
+            }
         }
 
         //dbg($pointMap);
@@ -51,20 +65,24 @@ class ConfigurationController extends TemplateController
     public function removePoint() {
         if (IS_AJAX) {
             $pointId = I('post.pointid', 0, 'intval');
-            $res = KeyPointBaseModel::instance()->delById($pointId);
+            KeyPointBaseModel::instance()->delById($pointId);
+            $res = KeyPointBaseModel::instance()->delByParentId($pointId);
             echo $res;
         }
     }
 
     public function addPoint() {
         $chapterId = I('post.chapterId', 0, 'intval');
+        $parentId = I('post.parentId', 0, 'intval');
         $name = I('post.name', '');
+
         if (empty($name) || empty($chapterId)) {
             $this->echoError("章节或知识点内容不能为空!");
         }
 
         $point = array(
             'chapter_id' => $chapterId,
+            'parent_id' => $parentId,
             'name' => $name
         );
         $res = KeyPointBaseModel::instance()->insertData($point);
@@ -73,5 +91,11 @@ class ConfigurationController extends TemplateController
         } else {
             redirect(U('keyPoint'));
         }
+    }
+
+    public function getParentPointByChapterId() {
+        $chapterId = I('get.chapterId', 0, 'intval');
+        $parentPoint = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);
+        $this->ajaxReturn($parentPoint, 'JSON');
     }
 }

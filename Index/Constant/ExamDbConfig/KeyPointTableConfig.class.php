@@ -16,6 +16,7 @@ class KeyPointTableConfig
     public static $TABLE_FIELD = array(
         'id' => 'int',
         'chapter_id' => 'tinyint',
-        'name' => 'varchar'
+        'name' => 'varchar',
+        'parent_id' => 'int'
     );
 }

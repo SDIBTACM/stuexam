@@ -44,6 +44,14 @@ class KeyPointBaseModel extends GeneralModel
         return self::$_instance;
     }
 
+    public function delByParentId($parentId) {
+        if ($parentId == 0) return 0;
+        $where = array(
+            'parent_id' => $parentId
+        );
+        return $this->getDao()->where($where)->delete();
+    }
+
     public function getAllPoint() {
         return $this->getDao()->select();
     }
@@ -51,6 +59,21 @@ class KeyPointBaseModel extends GeneralModel
     public function insertDataList($dataList) {
         if (empty($dataList)) return 0;
         return $this->getDao()->addAll($dataList);
+    }
+
+    public function getParentNodeByChapterId($chapterId) {
+        $where = array(
+            'chapter_id' => $chapterId,
+            'parent_id' => 0
+        );
+        return $this->queryAll($where);
+    }
+
+    public function getByParentId($parentId, $field = array()) {
+        $where = array(
+            'parent_id' => $parentId
+        );
+        return $this->queryAll($where, $field);
     }
 
     public function getByChapterId($chapterId, $field = array()) {
