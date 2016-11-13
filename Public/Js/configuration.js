@@ -5,14 +5,14 @@ $(function () {
     $("#chapterSelect").change(function () {
         var that = $(this);
         var chapterId = that.children('option:selected').val();
-        updateParentSelect(chapterId);
+        var parentSelect = $("#parentSelect");
+        updateParentSelect(chapterId, parentSelect);
     });
 });
 
 
-function updateParentSelect(chapterId) {
-    var parentSelect = $("#parentSelect");
-    parentSelect.empty().append('<option value="0" selected>请选择父级知识点</option>');
+function updateParentSelect(chapterId, that) {
+    that.empty().append('<option value="0" selected>请选择父级知识点</option>');
     if (chapterId <= 0) {
         return;
     }
@@ -23,7 +23,7 @@ function updateParentSelect(chapterId) {
         data: {"chapterId": chapterId},
         success: function (parents) {
             $.each(parents, function (index, _parent) {
-                parentSelect.append('<option value="' + _parent.id + '">' + _parent.name + '</option>');
+                that.append('<option value="' + _parent.id + '">' + _parent.name + '</option>');
             });
         },
         error: function () {
@@ -32,9 +32,8 @@ function updateParentSelect(chapterId) {
     });
 }
 
-function updateChildrenSelect(parentId) {
-    var pointSelect = $("#pointSelect");
-    pointSelect.empty().append('<option value="0" selected>请选择子级知识点</option>');
+function updateChildrenSelect(parentId, that) {
+    that.empty().append('<option value="0" selected>请选择子级知识点</option>');
     if (parentId <= 0) {
         return;
     }
@@ -44,9 +43,8 @@ function updateChildrenSelect(parentId) {
         dataType: "json",
         data: {"parentId": parentId},
         success: function (children) {
-            var pointSelect = $("#point");
             $.each(children, function (index, child) {
-                pointSelect.append('<option value="' + child.id + '">' + child.name + '</option>');
+                that.append('<option value="' + child.id + '">' + child.name + '</option>');
             });
         },
         error: function () {

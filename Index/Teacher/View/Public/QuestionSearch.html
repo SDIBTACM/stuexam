@@ -63,3 +63,13 @@
     </select>
 </div>
 <button type="submit" class="btn btn-info">点击查询</button>
+<script type="text/javascript">
+    $(function () {
+        $("#parentSelect").change(function() {
+            var that = $(this);
+            var parentId = that.children('option:selected').val();
+            var pointSelect = $("#pointSelect");
+            updateChildrenSelect(parentId, pointSelect);
+        });
+    });
+</script>
