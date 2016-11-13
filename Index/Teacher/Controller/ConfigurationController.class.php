@@ -33,11 +33,25 @@ class ConfigurationController extends TemplateController
         $points = KeyPointBaseModel::instance()->getAllPoint();
         $pointMap = array();
         foreach ($points as $point) {
+            $point['children'] = array();
             $chapterId = $point['chapter_id'];
+            $pointId = $point['id'];
+            $parentId = $point['parent_id'];
             if (!isset($pointMap[$chapterId])) {
                 $pointMap[$chapterId] = array();
             }
-            $pointMap[$chapterId][] = $point;
+            if ($parentId == 0) {
+                if (!isset($pointMap[$chapterId][$pointId])) {
+                    $pointMap[$chapterId][$pointId] = $point;
+                } else {
+                    $pointMap[$chapterId][$pointId] = array_merge($point, $pointMap[$chapterId][$pointId]);
+                }
+            } else {
+                if (!isset($pointMap[$chapterId][$parentId]['children'])) {
+                    $pointMap[$chapterId][$parentId]['children'] = array();
+                }
+                $pointMap[$chapterId][$parentId]['children'][] = $point;
+            }
         }
 
         //dbg($pointMap);

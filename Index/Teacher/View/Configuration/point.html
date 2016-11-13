@@ -29,6 +29,15 @@
                                 <a title="删除" class="pointAnchor" href="#" data-point="{$point['id']}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
+                                <ul>
+                                    <foreach name="point['children']" item="children" key="clkey">
+                                        <li>{$children['name']}
+                                            <a title="删除" class="pointAnchor" href="#" data-point="{$children['id']}">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </a>
+                                        </li>
+                                    </foreach>
+                                </ul>
                             </li>
                         </foreach>
                     </ul>

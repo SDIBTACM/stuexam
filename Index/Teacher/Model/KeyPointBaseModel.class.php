@@ -48,6 +48,13 @@ class KeyPointBaseModel extends GeneralModel
         return $this->getDao()->select();
     }
 
+    public function getByParentId($parentId, $field = array()) {
+        $where = array(
+            'parent_id' => $parentId
+        );
+        return $this->queryAll($where, $field);
+    }
+
     public function getByChapterId($chapterId, $field = array()) {
         $where = array(
             'chapter_id' => $chapterId
