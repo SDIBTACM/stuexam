@@ -65,7 +65,8 @@ class ConfigurationController extends TemplateController
     public function removePoint() {
         if (IS_AJAX) {
             $pointId = I('post.pointid', 0, 'intval');
-            $res = KeyPointBaseModel::instance()->delById($pointId);
+            KeyPointBaseModel::instance()->delById($pointId);
+            $res = KeyPointBaseModel::instance()->delByParentId($pointId);
             echo $res;
         }
     }

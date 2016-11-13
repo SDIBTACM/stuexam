@@ -44,6 +44,14 @@ class KeyPointBaseModel extends GeneralModel
         return self::$_instance;
     }
 
+    public function delByParentId($parentId) {
+        if ($parentId == 0) return 0;
+        $where = array(
+            'parent_id' => $parentId
+        );
+        return $this->getDao()->where($where)->delete();
+    }
+
     public function getAllPoint() {
         return $this->getDao()->select();
     }
