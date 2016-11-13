@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Constant\Constants\Chapter;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -10,6 +11,14 @@ class IndexController extends TemplateController
 {
     public function _initialize() {
         parent::_initialize();
+        $chapters = Chapter::getConstant();
+        $chapterMap = array();
+        foreach ($chapters as $chapter) {
+            if ($chapter instanceof Chapter) {
+                $chapterMap[$chapter->getId()] = $chapter->getName();
+            }
+        }
+        $this->zadd('chapters', $chapterMap);
     }
 
     public function index() {

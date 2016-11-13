@@ -1,0 +1,51 @@
+<div class="form-group">
+    <label class="sr-only">problem type</label>
+    <select class="form-control" name="problem">
+        <if condition="$problem eq 0">
+            <option value="0" selected>公共题库</option>
+            <else/>
+            <option value="0">公共题库</option>
+        </if>
+        <if condition="$problem eq 1">
+            <option value="1" selected>私人题库</option>
+            <else/>
+            <option value="1">私人题库</option>
+        </if>
+        <if condition="$isadmin eq true">
+            <if condition="$problem eq 2">
+                <option value="2" selected>隐藏题库</option>
+                <else/>
+                <option value="2">隐藏题库</option>
+            </if>
+        </if>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">key point</label>
+    <select class="form-control" name="chapterId" id="chapterSelect">
+        <option value="0" selected>请选择知识点对应章节</option>
+        <foreach name='chapters' item='chapter' key='index'>
+            <if condition="$Think.get.chapterId eq $index">
+                <option value="{$index}" selected>第{$index}章: {$chapter}</option>
+                <else/>
+                <option value="{$index}">第{$index}章: {$chapter}</option>
+            </if>
+        </foreach>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">parent point</label>
+    <select class="form-control" name="parentId" id="parentSelect">
+        <option value="0" selected>请选择父级知识点</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">parent point</label>
+    <select class="form-control" name="pointId" id="pointSelect">
+        <option value="0" selected>请选择子级知识点</option>
+    </select>
+</div>
+<button type="submit" class="btn btn-info">点击查询</button>

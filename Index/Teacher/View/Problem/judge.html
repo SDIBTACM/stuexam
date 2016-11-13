@@ -2,40 +2,10 @@
     <h2>添加判断题</h2>
     <include file='Public:sideheader'/>
 
-    <div class='row'>
+    <form class="form-inline text-right" role="form" method="get">
+        <include file="Public:QuestionSearch"/>
+    </form>
 
-        <div class="col-md-2">
-            <if condition="$problem eq 0">
-                <h1><input type="button" value="公共题库" class="btn btn-success"
-                           onclick="window.location.href='?problem=0'"></h1>
-                <else/>
-                <h1><input type="button" value="公共题库" class="btn btn-default"
-                           onclick="window.location.href='?problem=0'"></h1>
-            </if>
-        </div>
-
-        <div class="col-md-2">
-            <if condition="$problem eq 1">
-                <h1><input type="button" value="私人题库" class="btn btn-success"
-                           onclick="window.location.href='?problem=1'"></h1>
-                <else/>
-                <h1><input type="button" value="私人题库" class="btn btn-default"
-                           onclick="window.location.href='?problem=1'"></h1>
-            </if>
-        </div>
-
-        <if condition="$isadmin eq true">
-            <div class="col-md-2">
-                <if condition="$problem eq 2">
-                    <h1><input type="button" value="隐藏题库" class="btn btn-success"
-                               onclick="window.location.href='?problem=2'"></h1>
-                    <else/>
-                    <h1><input type="button" value="隐藏题库" class="btn btn-default"
-                               onclick="window.location.href='?problem=2'"></h1>
-                </if>
-            </div>
-        </if>
-    </div>
     <table class="table table-hover table-bordered table-condensed">
         <thread>
             <th width=4%>ID</th>

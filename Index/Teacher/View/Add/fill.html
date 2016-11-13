@@ -43,7 +43,7 @@
 
             <div class="col-md-3">
                 <select class='form-control' name="parentId" id="parentSelect">
-                    <option value="0">请选择上一级知识点</option>
+                    <option value="0">请选择父级知识点</option>
                 </select>
             </div>
         </div>
@@ -165,8 +165,6 @@
     </form>
 </div>
 <script type="text/javascript">
-    var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
-    var getChildrenNodeLink = "{:U('Teacher/Configuration/getChildrenPointByParentId')}";
     $(function () {
         $(".js-example-basic-multiple").select2();
 
