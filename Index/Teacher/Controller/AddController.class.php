@@ -13,6 +13,7 @@ use Teacher\Service\ChooseService;
 use Teacher\Service\ExamService;
 use Teacher\Service\FillService;
 use Teacher\Service\JudgeService;
+use Teacher\Service\KeyPointService;
 
 
 class AddController extends TemplateController
@@ -86,7 +87,6 @@ class AddController extends TemplateController
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
-            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $row = ChooseBaseModel::instance()->getById($id);
             if (empty($row)) {
@@ -95,7 +95,7 @@ class AddController extends TemplateController
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 $this->echoError('You have no privilege!');
             }
-            $row['point'] = explode(",", $row['point']);
+            $pnt = KeyPointService::instance()->getQuestionPoints($id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
             $this->zadd('page', $page);
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
@@ -103,13 +103,11 @@ class AddController extends TemplateController
             $this->zadd('pnt', $pnt);
             $this->auto_display();
         } else {
-            $pnt = ExamService::instance()->getExPointList();
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
             $key = set_post_key();
             $this->zadd('page', $page);
             $this->zadd('mykey', $key);
-            $this->zadd('pnt', $pnt);
             $this->zadd('problemType', $problemType);
             $this->auto_display();
         }
@@ -133,7 +131,6 @@ class AddController extends TemplateController
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
-            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $row = JudgeBaseModel::instance()->getById($id);
             if (empty($row)) {
@@ -142,7 +139,7 @@ class AddController extends TemplateController
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 $this->echoError('You have no privilege!');
             }
-            $row['point'] = explode(",", $row['point']);
+            $pnt = KeyPointService::instance()->getQuestionPoints($id, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
             $this->zadd('page', $page);
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
@@ -152,13 +149,11 @@ class AddController extends TemplateController
         } else {
 
             $page = I('get.page', 1, 'intval');
-            $pnt = ExamService::instance()->getExPointList();
             $problemType = I('get.problem', 0, 'intval');
             $key = set_post_key();
             $this->zadd('page', $page);
             $this->zadd('problemType', $problemType);
             $this->zadd('mykey', $key);
-            $this->zadd('pnt', $pnt);
             $this->auto_display();
         }
     }
@@ -179,7 +174,6 @@ class AddController extends TemplateController
             $id = I('get.id', 0, 'intval');
             $page = I('get.page', 1, 'intval');
             $problemType = I('get.problem', 0, 'intval');
-            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $row = FillBaseModel::instance()->getById($id);
             if (empty($row)) {
@@ -192,7 +186,7 @@ class AddController extends TemplateController
                 $ansrow = FillBaseModel::instance()->getFillAnswerByFillId($id);
                 $this->zadd('ansrow', $ansrow);
             }
-            $row['point'] = explode(",", $row['point']);
+            $pnt = KeyPointService::instance()->getQuestionPoints($id, FillBaseModel::FILL_PROBLEM_TYPE);
             $this->zadd('page', $page);
             $this->zadd('row', $row);
             $this->zadd('mykey', $key);
@@ -201,12 +195,10 @@ class AddController extends TemplateController
             $this->auto_display();
         } else {
             $page = I('get.page', 1, 'intval');
-            $pnt = ExamService::instance()->getExPointList();
             $key = set_post_key();
             $problemType = I('get.problem', 0, 'intval');
             $this->zadd('page', $page);
             $this->zadd('mykey', $key);
-            $this->zadd('pnt', $pnt);
             $this->zadd('problemType', $problemType);
             $this->auto_display();
         }

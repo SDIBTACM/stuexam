@@ -144,25 +144,4 @@ class ExamService
         }
         return $arr;
     }
-
-    public function getExPointList() {
-        $pnt = KeyPointBaseModel::instance()->getAllPoint();
-        return $pnt;
-    }
-
-    public function saveExamPoint($pointList, $questionId, $type) {
-        $dataList = array();
-        foreach ($pointList as $pointStr) {
-            $arr = explode('-', $pointStr);
-            if (is_array($arr)) {
-                $data = array();
-                $data['question_id'] = $questionId;
-                $data['type'] = $type;
-                $data['chapter_id'] = $arr[0];
-                $data['point_id'] = $arr[1];
-                $dataList[] = $data;
-            }
-        }
-        return KeyPointBaseModel::instance()->insertDataList($dataList);
-    }
 }

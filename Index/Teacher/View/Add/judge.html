@@ -1,107 +1,189 @@
-<css file="__PUBLIC__/Css/select2.min.css" />
+<css file="__PUBLIC__/Css/select2.min.css"/>
 <script src="__PUBLIC__/Js/select2.min.js"></script>
 
 <div class="exam_content container">
-	<if condition="isset($row['judge_id'])">
-		<h1>编辑判断题</h1>
-	<else/>
-		<h1>添加判断题</h1>
-	</if>
-	<hr>
-	<form class='form-horizontal' method="post" action="{:U('Teacher/Add/judge')}" onSubmit="return chkjudge(this)">
-		<div class="form-group">
-		  <label for="judge_des" class="control-label col-md-2">题目描述:</label>
-		  <div class="col-md-8">
-		  	<textarea id='judge_des' name="judge_des" class="form-control" rows="8">{$row['question']|default=""}</textarea>
-		  </div>
-		</div>
-		<div class="form-group">
-			<label class='col-md-2 control-label'>答案：</label>
-			<div class='col-md-7'>
-			<label class="radio-inline">
-			<if condition="isset($row['answer']) and $row['answer'] eq 'Y'">
-			  <input type="radio" name="answer" value="Y" checked> Yes
-			<else/>
-			  <input type="radio" name="answer" value="Y"> Yes
-			</if>
-			</label>
-			<label class="radio-inline">
-			<if condition="isset($row['answer']) and $row['answer'] eq 'N'">
-			  <input type="radio" name="answer" value="N" checked> No
-			<else/>
-			  <input type="radio" name="answer" value="N"> No
-			</if>
-			</label>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="point" class='col-md-2 control-label'>知识点:</label>
-			<div class="col-md-8">
-			<select class='form-control js-example-basic-multiple' name="point[]" id="point" multiple="multiple">
-				<foreach name='pnt' item='p'>
-					<if condition="isset($row['point']) and in_array($p['id'], $row['point'])">
-						<option value="{$p['chapter_id']}-{$p['id']}" selected>第{$p['chapter_id']}章:{$chapters[$p['chapter_id']]}-{$p['name']}</option>
-						<else/>
-						<option value="{$p['chapter_id']}-{$p['id']}">第{$p['chapter_id']}章:{$chapters[$p['chapter_id']]}-{$p['name']}</option>
-					</if>
-				</foreach>
-			</select>
-			</div>
-		</div>
-		<div class="form-group">
-			<label class='col-md-2 control-label' for="easycount">难度系数:</label>
-			<div class="col-md-2">
-				<select class='form-control' name="easycount" id="easycount">
-					<for start='0' end='11'>
-						<if condition="isset($row['easycount']) and $row['easycount'] eq $i">
-							<option value="{$i}" selected>{$i}</option>
-							<else/>
-							<option value="{$i}">{$i}</option>
-						</if>
-					</for>
-				</select>
-			</div>
-			<label class='col-md-1 control-label' for="isprivate">题库类型:</label>
-			<div class="col-md-2">
-				<select class='form-control' name="isprivate" id="isprivate" onchange="showmsg()">
-					<if condition="isset($row['isprivate']) and $row['isprivate'] eq 0">
-						<option value="0" selected>公共题库</option>
-						<else/>
-						<option value="0">公共题库</option>
-					</if>
-					<if condition="isset($row['isprivate']) and $row['isprivate'] eq 1">
-						<option value="1" selected>私人题库</option>
-						<else/>
-						<option value="1">私人题库</option>
-					</if>
-					<if condition="isset($row['isprivate']) and $row['isprivate'] eq 2">
-						<option value="2" selected>系统隐藏</option>
-						<else/>
-						<option value="2">系统隐藏</option>
-					</if>
-				</select>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="alert alert-warning" role="alert" id='msg' style="display:none"></div>
-		</div>
-		<if condition="isset($row['judge_id'])">
-			<input type="hidden" name="judgeid" value="{$row['judge_id']}">
-		</if>
-		<input type="hidden" name="page" value="{$page}">
-		<input type='hidden' name="postkey" value="{$mykey}">
+    <if condition="isset($row['judge_id'])">
+        <h1>编辑判断题</h1>
+        <else/>
+        <h1>添加判断题</h1>
+    </if>
+    <hr>
+    <form class='form-horizontal' method="post" action="{:U('Teacher/Add/judge')}" onSubmit="return chkjudge(this)">
+        <div class="form-group">
+            <label for="judge_des" class="control-label col-md-2">题目描述:</label>
+
+            <div class="col-md-8">
+                <textarea id='judge_des' name="judge_des" class="form-control"
+                          rows="8">{$row['question']|default=""}</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class='col-md-2 control-label'>答案：</label>
+
+            <div class='col-md-7'>
+                <label class="radio-inline">
+                    <if condition="isset($row['answer']) and $row['answer'] eq 'Y'">
+                        <input type="radio" name="answer" value="Y" checked> Yes
+                        <else/>
+                        <input type="radio" name="answer" value="Y"> Yes
+                    </if>
+                </label>
+                <label class="radio-inline">
+                    <if condition="isset($row['answer']) and $row['answer'] eq 'N'">
+                        <input type="radio" name="answer" value="N" checked> No
+                        <else/>
+                        <input type="radio" name="answer" value="N"> No
+                    </if>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class='col-md-2 control-label' for="chapterSelect">知识点(支持添加多个):</label>
+
+            <div class="col-md-3">
+                <select class='form-control' name="chapterId" id="chapterSelect">
+                    <option value="0">请选择章节</option>
+                    <foreach name='chapters' item='chapter' key='index'>
+                        <option value="{$index}">第{$index}章: {$chapter}</option>
+                    </foreach>
+                </select>
+            </div>
+
+            <label class='col-md-2 control-label' for="parentSelect"></label>
+
+            <div class="col-md-3">
+                <select class='form-control' name="parentId" id="parentSelect">
+                    <option value="0">请选择上一级知识点</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="point" class='col-md-2 control-label'></label>
+
+            <div class="col-md-8">
+                <select class='form-control js-example-basic-multiple' name="point[]" id="point" multiple="multiple">
+                    <foreach name="pnt" item="p">
+                        <option value="{$p['id']}" selected>{$p['name']}</option>
+                    </foreach>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class='col-md-2 control-label' for="easycount">难度系数:</label>
+
+            <div class="col-md-2">
+                <select class='form-control' name="easycount" id="easycount">
+                    <for start='0' end='11'>
+                        <if condition="isset($row['easycount']) and $row['easycount'] eq $i">
+                            <option value="{$i}" selected>{$i}</option>
+                            <else/>
+                            <option value="{$i}">{$i}</option>
+                        </if>
+                    </for>
+                </select>
+            </div>
+            <label class='col-md-1 control-label' for="isprivate">题库类型:</label>
+
+            <div class="col-md-2">
+                <select class='form-control' name="isprivate" id="isprivate" onchange="showmsg()">
+                    <if condition="isset($row['isprivate']) and $row['isprivate'] eq 0">
+                        <option value="0" selected>公共题库</option>
+                        <else/>
+                        <option value="0">公共题库</option>
+                    </if>
+                    <if condition="isset($row['isprivate']) and $row['isprivate'] eq 1">
+                        <option value="1" selected>私人题库</option>
+                        <else/>
+                        <option value="1">私人题库</option>
+                    </if>
+                    <if condition="isset($row['isprivate']) and $row['isprivate'] eq 2">
+                        <option value="2" selected>系统隐藏</option>
+                        <else/>
+                        <option value="2">系统隐藏</option>
+                    </if>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="alert alert-warning" role="alert" id='msg' style="display:none"></div>
+        </div>
+        <if condition="isset($row['judge_id'])">
+            <input type="hidden" name="judgeid" value="{$row['judge_id']}">
+        </if>
+        <input type="hidden" name="page" value="{$page}">
+        <input type='hidden' name="postkey" value="{$mykey}">
         <input type='hidden' name='problem' value="{$problemType}">
 
         <div class="col-md-offset-2 col-md-8">
-			<button class="btn btn-primary col-md-6" type="submit">Submit</button>
-			<if condition="isset($row['judge_id'])">
-				<button class="btn btn-danger col-md-6" type="button" onclick="javascript:history.go(-1);">Back</button>
-			<else/>
-				<button class="btn btn-danger col-md-6" type="reset">Reset</button>
-			</if>
-		</div>
-	</form>
+            <button class="btn btn-primary col-md-6" type="submit">Submit</button>
+            <if condition="isset($row['judge_id'])">
+                <button class="btn btn-danger col-md-6" type="button" onclick="javascript:history.go(-1);">Back</button>
+                <else/>
+                <button class="btn btn-danger col-md-6" type="reset">Reset</button>
+            </if>
+        </div>
+    </form>
 </div>
 <script type="text/javascript">
-	$(".js-example-basic-multiple").select2();
+    var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
+    var getChildrenNodeLink = "{:U('Teacher/Configuration/getChildrenPointByParentId')}";
+    $(function () {
+        $(".js-example-basic-multiple").select2();
+
+        $("#chapterSelect").change(function () {
+            var that = $(this);
+            var parentSelect = $("#parentSelect");
+            var chapterId = that.children('option:selected').val();
+            parentSelect.empty().append('<option value="0" selected>请选择上一级知识点</option>');
+            $.ajax({
+                url: getParentNodeLink,
+                type: "GET",
+                dataType: "json",
+                data: {"chapterId": chapterId},
+                success: function (parents) {
+                    $.each(parents, function (index, _parent) {
+                        parentSelect.append('<option value="' + _parent.id + '">' + _parent.name + '</option>');
+                    });
+                },
+                error: function () {
+                    alert("sorry,something error")
+                }
+            });
+        });
+
+        $("#parentSelect").change(function () {
+            var that = $(this);
+            var parentId = that.children('option:selected').val();
+            $("#point option:not(:selected)").remove();
+
+            var selectPointId = [];
+            $("#point option:selected").each(function (_i, _v) {
+                selectPointId.push($(_v).val());
+            });
+
+            console.log(selectPointId);
+
+            $.ajax({
+                url: getChildrenNodeLink,
+                type: "GET",
+                dataType: "json",
+                data: {"parentId": parentId},
+                success: function (children) {
+                    var pointSelect = $("#point");
+                    $.each(children, function (index, child) {
+                        if (-1 == $.inArray(child.id, selectPointId)) {
+                            pointSelect.append('<option value="' + child.id + '">' + child.name + '</option>');
+                        } else {
+                            console.log(child.id);
+                        }
+                    });
+                },
+                error: function () {
+                    alert("sorry,something error");
+                }
+            });
+        });
+    });
 </script>

@@ -54,9 +54,6 @@ class ConfigurationController extends TemplateController
             }
         }
 
-        //dbg($pointMap);
-        //dbg($chapterMap);
-
         $this->zadd('chapters', $chapterMap);
         $this->zadd('points', $pointMap);
         $this->auto_display('point', 'configlayout');
@@ -97,5 +94,15 @@ class ConfigurationController extends TemplateController
         $chapterId = I('get.chapterId', 0, 'intval');
         $parentPoint = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);
         $this->ajaxReturn($parentPoint, 'JSON');
+    }
+
+    public function getChildrenPointByParentId() {
+        $parentId = I('get.parentId', 0, 'intval');
+        if ($parentId == 0) {
+            $this->ajaxReturn(array(), 'JSON');
+        } else {
+            $childrenPoint = KeyPointBaseModel::instance()->getByParentId($parentId);
+            $this->ajaxReturn($childrenPoint, 'JSON');
+        }
     }
 }
