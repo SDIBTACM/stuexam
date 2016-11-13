@@ -51,6 +51,7 @@ class KeyPointService
             $data['type'] = $type;
             $data['chapter_id'] = $_point['chapter_id'];
             $data['point_id'] = $_point['id'];
+            $data['point_parent_id'] = $_point['parent_id'];
             $dataList[] = $data;
         }
         return QuestionPointBaseModel::instance()->insertDataList($dataList);

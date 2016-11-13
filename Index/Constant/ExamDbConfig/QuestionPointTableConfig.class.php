@@ -18,6 +18,7 @@ class QuestionPointTableConfig
         'question_id' => 'int',
         'type' => 'tinyint',
         'chapter_id' => 'tinyint',
-        'point_id' => 'int'
+        'point_id' => 'int',
+        'point_parent_id' => 'int'
     );
 }

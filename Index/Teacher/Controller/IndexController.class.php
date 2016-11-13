@@ -1,6 +1,9 @@
 <?php
 namespace Teacher\Controller;
 
+use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
 use Think\Controller;
 
 class IndexController extends TemplateController
@@ -26,7 +29,7 @@ class IndexController extends TemplateController
     }
 
     public function choose() {
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $key = set_get_key();
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_choose', $sch['sql']);
@@ -41,7 +44,6 @@ class IndexController extends TemplateController
             'row' => $row,
             'mykey' => $key,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numofchoose' => $numofchoose,
@@ -52,7 +54,7 @@ class IndexController extends TemplateController
 
     public function judge() {
 
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('judge_id', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $key = set_get_key();
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
@@ -67,7 +69,6 @@ class IndexController extends TemplateController
             'row' => $row,
             'mykey' => $key,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numofjudge' => $numofjudge,
@@ -77,12 +78,12 @@ class IndexController extends TemplateController
     }
 
     public function fill() {
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
         $key = set_get_key();
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = m('ex_fill')
+        $row = M('ex_fill')
             ->field('fill_id,question,creator,easycount,kind')
             ->where($sch['sql'])
             ->order('fill_id asc')
@@ -92,7 +93,6 @@ class IndexController extends TemplateController
             'row' => $row,
             'mykey' => $key,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numoffill' => $numoffill,

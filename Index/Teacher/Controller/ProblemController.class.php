@@ -61,7 +61,7 @@ class ProblemController extends TemplateController
 
     private function addChooseProblem() {
 
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
@@ -79,7 +79,6 @@ class ProblemController extends TemplateController
             'row' => $row,
             'added' => $haveadded,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numofchoose' => $numofchoose
@@ -89,7 +88,7 @@ class ProblemController extends TemplateController
     }
 
     private function addJudgeProblem() {
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('judge_id', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
@@ -107,7 +106,6 @@ class ProblemController extends TemplateController
             'row' => $row,
             'added' => $haveadded,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numofjudge' => $numofjudge
@@ -117,7 +115,7 @@ class ProblemController extends TemplateController
     }
 
     private function addFillProblem() {
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
@@ -135,7 +133,6 @@ class ProblemController extends TemplateController
             'row' => $row,
             'added' => $haveadded,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
             'problem' => $sch['problem'],
             'numoffill' => $numoffill
