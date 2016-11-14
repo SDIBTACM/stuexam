@@ -17,7 +17,12 @@ class ConfigurationController extends TemplateController
     public function _initialize() {
         parent::_initialize();
         if (!$this->isSuperAdmin()) {
-            $this->echoError("only admin can do this!");
+            if (!strcmp($this->action, "getparentpointbychapterid") ||
+                !strcmp($this->action, "getchildrenpointbyparentid")) {
+                // omit
+            } else {
+                $this->echoError("only admin can do this!");
+            }
         }
     }
 
