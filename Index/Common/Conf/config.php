@@ -21,5 +21,7 @@ return array(
 	'URL_CASE_INSENSITIVE'  =>  false,
 
     'ISDEBUG' => true,
-	'EXAM_VERSION' => '1.0.1'
+	'EXAM_VERSION' => '1.0.1',
+
+	'TEACHER_LIST' => array('wangjp','xiao','tanghl','191227938','yuwenli','ZhihuiLiu','xqs','xf_zh','ncx','yuliping','zhangb','azytyut','zhangfan','wbyq','sdwulxw','jxb19870205','liupq','xm105'),
 );

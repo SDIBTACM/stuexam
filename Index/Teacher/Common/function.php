@@ -15,16 +15,22 @@ function problemshow($problem, $searchsql) {
         $problem = 0;
     if (!checkAdmin(1) && $problem == 2)
         $problem = 0;
+
+    $creator = I('get.creator', '', 'htmlspecialchars');
+    $creatorSql = "1=1";
+    if (!empty($creator)) {
+        $creatorSql = "creator = '$creator'";
+    }
     if ($searchsql == "") {
         if ($problem == 0 || checkAdmin(1))
-            $prosql = "`isprivate`='$problem'";
+            $prosql = "`isprivate`='$problem' AND $creatorSql";
         else {
             $user = $_SESSION['user_id'];
             $prosql = "`isprivate`='$problem' AND `creator` like '$user'";
         }
     } else {
         if ($problem == 0 || checkAdmin(1))
-            $prosql = " AND `isprivate`='$problem'";
+            $prosql = " AND `isprivate`='$problem' AND $creatorSql";
         else {
             $user = $_SESSION['user_id'];
             $prosql = " AND `isprivate`='$problem' AND `creator` like '$user'";
