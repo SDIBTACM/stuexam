@@ -64,4 +64,22 @@ class QuestionPointBaseModel extends GeneralModel
         );
         return $this->queryAll($where, array('chapter_id', 'point_id'));
     }
+
+    public function getQuestionsPoint($questionIds, $type) {
+        if (empty($questionIds)) return array();
+
+        $where = array(
+            'question_id' => array('in', $questionIds),
+            'type' => $type
+        );
+        return $this->queryAll($where);
+    }
+
+    public function delPoint($pointId) {
+        if ($pointId == 0) return 1;
+        $where = array('point_id' => $pointId);
+        $this->getDao()->where($where)->delete();
+        $where = array('point_parent_id' => $pointId);
+        return $this->getDao()->where($where)->delete();
+    }
 }

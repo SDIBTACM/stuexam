@@ -10,6 +10,7 @@ namespace Teacher\Controller;
 
 
 use Teacher\Model\KeyPointBaseModel;
+use Teacher\Model\QuestionPointBaseModel;
 
 class ConfigurationController extends TemplateController
 {
@@ -56,6 +57,7 @@ class ConfigurationController extends TemplateController
             $pointId = I('post.pointid', 0, 'intval');
             KeyPointBaseModel::instance()->delById($pointId);
             $res = KeyPointBaseModel::instance()->delByParentId($pointId);
+            QuestionPointBaseModel::instance()->delPoint($pointId);
             echo $res;
         }
     }

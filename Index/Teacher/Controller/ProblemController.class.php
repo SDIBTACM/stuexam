@@ -10,7 +10,7 @@ use Teacher\Service\ProblemService;
 
 use Think\Controller;
 
-class ProblemController extends TemplateController
+class ProblemController extends QuestionBaseController
 {
 
     private $eid = null;
@@ -86,6 +86,13 @@ class ProblemController extends TemplateController
             'isadmin' => $isadmin,
             'numofchoose' => $numofchoose
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['choose_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display('choose');
     }
@@ -112,6 +119,13 @@ class ProblemController extends TemplateController
             'isadmin' => $isadmin,
             'numofjudge' => $numofjudge
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['judge_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display('judge');
     }
@@ -138,6 +152,13 @@ class ProblemController extends TemplateController
             'isadmin' => $isadmin,
             'numoffill' => $numoffill
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['fill_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display('fill');
     }

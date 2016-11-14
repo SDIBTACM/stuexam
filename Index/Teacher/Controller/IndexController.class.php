@@ -6,7 +6,7 @@ use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Think\Controller;
 
-class IndexController extends TemplateController
+class IndexController extends QuestionBaseController
 {
     public function _initialize() {
         parent::_initialize();
@@ -51,6 +51,13 @@ class IndexController extends TemplateController
             'isadmin' => $isadmin,
             'numofchoose' => $numofchoose,
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['choose_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display();
     }
@@ -75,6 +82,13 @@ class IndexController extends TemplateController
             'isadmin' => $isadmin,
             'numofjudge' => $numofjudge,
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['judge_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display();
     }
@@ -98,6 +112,13 @@ class IndexController extends TemplateController
             'isadmin' => $isadmin,
             'numoffill' => $numoffill,
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['fill_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display();
     }

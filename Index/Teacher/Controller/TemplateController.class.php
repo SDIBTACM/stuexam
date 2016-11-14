@@ -3,7 +3,6 @@ namespace Teacher\Controller;
 
 use Constant\Constants\Chapter;
 use Teacher\Model\ExamBaseModel;
-use Teacher\Model\KeyPointBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Think\Controller;
 
@@ -109,31 +108,5 @@ class TemplateController extends \Home\Controller\TemplateController
             }
         }
         $this->zadd('chapters', $chapterMap);
-    }
-
-    protected function buildSearch() {
-        $chapterId = I('get.chapterId', 0, 'intval');
-        $parentId = I('get.parentId', 0, 'intval');
-        $pointId = I('get.pointId', 0, 'intval');
-        $problem = I('get.problem', 0, 'intval');
-        $creator = I('get.creator', '', 'htmlspecialchars');
-
-        $this->zadd('chapterId', $chapterId);
-        $this->zadd('parentId', $parentId);
-        $this->zadd('pointId', $pointId);
-        $this->zadd('problem', $problem);
-        $this->zadd('creator', $creator);
-
-        $extraQuery = 'problem=' . $problem . '&chapterId=' . $chapterId .
-            '&parentId=' . $parentId . '&pointId=' . $pointId . '&creator=' . $creator;
-        $this->zadd('extraQuery', $extraQuery);
-
-        $parentNode = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);
-        $childrenNode = KeyPointBaseModel::instance()->getChildrenNodeByParentId($parentId);
-
-        $this->zadd('parentNode', $parentNode);
-        $this->zadd('childrenNode', $childrenNode);
-
-        $this->zadd('teacherList', C('TEACHER_LIST'));
     }
 }

@@ -1,5 +1,5 @@
 <?php
 return array(
-    'cutlen' => 40
+    'cutlen' => 20
 );
 
