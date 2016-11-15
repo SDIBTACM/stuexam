@@ -72,7 +72,7 @@ class QuestionPointBaseModel extends GeneralModel
             'question_id' => array('in', $questionIds),
             'type' => $type
         );
-        return $this->queryAll($where);
+        return $this->queryAll($where, array(), array('id asc'));
     }
 
     public function delPoint($pointId) {
