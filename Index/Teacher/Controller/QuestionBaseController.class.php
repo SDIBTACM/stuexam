@@ -63,12 +63,13 @@ class QuestionBaseController extends TemplateController
 
         foreach ($questionPoints as $questionPoint) {
             if (!isset($questionPointMap[$questionPoint['question_id']])) {
-                $questionPointMap[$questionPoint['question_id']] = array(
-                    'chapter' => $questionPoint['chapter_id'],
-                    'parent_point' => $pointMap[$questionPoint['point_parent_id']],
-                    'point' => $pointMap[$questionPoint['point_id']]
-                );
+                $questionPointMap[$questionPoint['question_id']] = array();
             }
+            $questionPointMap[$questionPoint['question_id']][] = array(
+                'chapter' => $questionPoint['chapter_id'],
+                'parent_point' => $pointMap[$questionPoint['point_parent_id']],
+                'point' => $pointMap[$questionPoint['point_id']]
+            );
         }
         $this->zadd('questionPointMap', $questionPointMap);
     }

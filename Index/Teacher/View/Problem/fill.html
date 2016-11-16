@@ -1,3 +1,8 @@
+<style>
+    .table tbody tr td {
+        vertical-align: middle;
+    }
+</style>
 <div class="container exam_content">
     <h2>添加填空题</h2>
     <include file='Public:sideheader'/>
@@ -26,9 +31,23 @@
                        data-trigger="focus" data-content="{$r['question']}">展开>></a>
                 </td>
                 <div class="clearfix"></div>
-                <td><label class="label alert-danger">{$questionPointMap[$r['fill_id']]['chapter']}</label></td>
-                <td><label class="label alert-info">{$questionPointMap[$r['fill_id']]['parent_point']}</label></td>
-                <td><label class="label alert-info">{$questionPointMap[$r['fill_id']]['point']}</label></td>
+
+                <td>
+                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
+                        <label class="label alert-danger">{$questionPoint['chapter']}</label><br/>
+                    </foreach>
+                </td>
+                <td>
+                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
+                        <label class="label alert-info">{$questionPoint['parent_point']}</label><br/>
+                    </foreach>
+                </td>
+                <td>
+                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
+                        <label class="label alert-info">{$questionPoint['point']}</label><br/>
+                    </foreach>
+                </td>
+
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
                 <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
                 <if condition="$r['kind'] eq 1">
