@@ -89,6 +89,21 @@ class ConfigurationController extends TemplateController
         }
     }
 
+    public function updatePointDescById() {
+        $pointId = I('post.pointid', 0, 'intval');
+        $name = I('post.name', '');
+        if ($pointId < 0 || empty($name)) {
+            echo 1;
+        }
+
+        $res = KeyPointBaseModel::instance()->updateById($pointId, array('name' => $name));
+        if (empty($res)) {
+            echo 0;
+        } else {
+            echo 1;
+        }
+    }
+
     public function getParentPointByChapterId() {
         $chapterId = I('get.chapterId', 0, 'intval');
         $parentPoint = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);
