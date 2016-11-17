@@ -44,6 +44,9 @@ class ExtraController extends TemplateController
         // 获取第二页做的题目数量
         $userEnProblemSolved = $this->getEnglish2ndPageSolved($userIds);
 
+        // 获取本周做的题数
+        $weekProblemSolved = $this->getRecentWeekSolved($userIds);
+
         foreach ($students as &$student) {
             $_userId = $student['user_id'];
             $englishNum = isset($userEnProblemSolved[$_userId]) ? intval($userEnProblemSolved[$_userId]) : 0;
@@ -51,6 +54,7 @@ class ExtraController extends TemplateController
             $student['chineseNum'] = $chineseNum;
             $student['englishNum'] = $englishNum;
             $student['person'] = empty($student['seatnum']) ? self::$DEFAULTRATE : $student['seatnum'];
+            $student['week'] = isset($weekProblemSolved[$_userId]) ? $weekProblemSolved[$_userId] : 0;
             $score = $chineseNum * $this->scorePercent['chinese']
                 + $englishNum * $this->scorePercent['english']
                 + $student['person'] * $this->scorePercent['person'];
@@ -111,5 +115,20 @@ class ExtraController extends TemplateController
             $userEnProblemSolved[$solved['user_id']] = $solved['num'];
         }
         return $userEnProblemSolved;
+    }
+
+    private function getRecentWeekSolved($userIds) {
+        $userStr = implode('\',\'', $userIds);
+        $userStr = '\'' . $userStr . '\'';
+        $monday = mktime(0, 0, 0, date('m'), date('d') - (date('w') + 6) % 7, date('Y'));
+        $mondayStr = strftime("%Y-%m-%d", $monday);
+        $sql = "select count(distinct problem_id) as solved, user_id ".
+            "from solution where user_id in ($userStr) and result = 4 and in_date>= '$mondayStr' group by user_id";
+        $weekSolved = M()->query($sql);
+        $userWeekSolved = array();
+        foreach ($weekSolved as $_week) {
+            $userWeekSolved[$_week['user_id']] = $_week['solved'];
+        }
+        return $userWeekSolved;
     }
 }
