@@ -70,7 +70,7 @@ class ProgramController extends QuestionController
         $inarr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
         $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
         $pright = AnswerModel::instance()->getRightProgramCount($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
-        $inarr['programsum'] = $pright * $allscore['programscore'];
+        $inarr['programsum'] = intval($pright * $allscore['programscore']);
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
         StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);

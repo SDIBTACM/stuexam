@@ -175,16 +175,16 @@ class AnswerModel
         $questionIdStr = implode('\',\'', $questionIds);
         $questionIdStr = '\'' . $questionIdStr . '\'';
 
-        $query = "select max(pass_rate) from solution where problem_id in ($questionIdStr) and " .
+        $query = "select max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
                 "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
         $data = M()->query($query);
 
         $count = 0;
         foreach ($data as $d) {
-            if ($d['pass_rate'] >= 0.98) {
+            if ($d['rate'] >= 0.98) {
                 $count = $count + 1;
             } else {
-                $count = $count + $d['pass_rate'];
+                $count = $count + $d['rate'];
             }
         }
         return $count;
