@@ -153,14 +153,16 @@ class ProgramController extends QuestionController
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
 
-        $row_cnt = M('solution')//->where($where)->find();
-        ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)->find();
+        $row_cnt = M('solution')
+            ->field('result')
+            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
+            ->find();
         if (!empty($row_cnt)) {
-            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4);
+            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
             echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
             $trow = M('solution')
-                ->field('result')
+                ->field(array('result', 'pass_rate'))
                 ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
                 ->order('solution_id desc')
                 ->find();
@@ -168,9 +170,7 @@ class ProgramController extends QuestionController
                 echo "<font color='green' size='5px'>未提交</font>";
             } else {
                 $ans = $trow['result'];
-                if ($ans == 4) {
-                    ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
-                }
+                ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
                 $colorarr = C('judge_color');
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
@@ -189,7 +189,7 @@ class ProgramController extends QuestionController
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
             ->count();
         if ($row_cnt) {
-            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
+            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
             $this->echoError(4);
         } else {
             $this->echoError(-1);

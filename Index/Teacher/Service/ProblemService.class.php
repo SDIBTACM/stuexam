@@ -81,7 +81,7 @@ class ProblemService
         return $ans;
     }
 
-    public function syncProgramAnswer($userId, $eid, $pid, $answer) {
+    public function syncProgramAnswer($userId, $eid, $pid, $answer, $passRate) {
         $dao = M('ex_stuanswer');
         $where = array(
             'user_id' => $userId,
@@ -90,12 +90,30 @@ class ProblemService
             'question_id' => $pid,
             'answer_id' => 1
         );
+
         $field = array('answer');
         $res = $dao->field($field)->where($where)->find();
+        // 如果沒有保存
         if (empty($res)) {
-            $where['answer'] = $answer;
+            if ($answer != 4) {
+                $where['answer'] = strval($passRate);
+            } else {
+                $where['answer'] = strval($answer);
+            }
             $dao->add($where);
         } else {
+            $_ans = $res['answer'];
+            if (strcmp($_ans, "4") != 0) {
+                $data = array();
+                if ($answer == 4) {
+                    $data['answer'] = "4";
+                } else if ($passRate > doubleval($_ans)) {
+                    $data['answer'] = strval($passRate);
+                }
+                if (!empty($data)) {
+                    $dao->where($where)->data($data)->save();
+                }
+            }
         }
     }
 
