@@ -158,10 +158,10 @@ class ProgramController extends QuestionController
             ->field('result')
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
             ->find();
-        Log::record("userId: $userId updresult: $row_cnt");
+        Log::record("updresult method, userId: $userId , hasResult4: $row_cnt");
         if (!empty($row_cnt)) {
             $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
-            Log::record("userId: $userId, sync res: $_res");
+            Log::record("updresult method, userId: $userId, sync answer res: $_res");
             echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
             $trow = M('solution')
@@ -174,7 +174,7 @@ class ProgramController extends QuestionController
             } else {
                 $ans = $trow['result'];
                 $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
-                Log::record("userId: $userId, sync res: $_res");
+                Log::record("updresult method, userId: $userId, sync answer res: $_res");
                 $colorarr = C('judge_color');
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
@@ -192,10 +192,10 @@ class ProgramController extends QuestionController
         $row_cnt = M('solution')
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
             ->count();
-        Log::record("userId: $userId programAnswer: $row_cnt");
+        Log::record("programSave method, userId: $userId , programAnswer: $row_cnt");
         if ($row_cnt) {
             $res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
-            Log::record("userId: $userId, sync res: $res");
+            Log::record("programSave method, userId: $userId, sync answer res: $res");
             $this->echoError(4);
         } else {
             $this->echoError(-1);
