@@ -9,5 +9,8 @@ return array(
 	'OJ_APPENDCODE'		=>	true,
 	'OJ_DATA'			=>	"/home/judge/data",
 	'EXTEND_PREFIX'		=>  "exam_",
-	'EXTEND_LIMIT'		=>  6
+	'EXTEND_LIMIT'		=>  6,
+
+	'LOG_RECORD'		=>  true,
+
 );

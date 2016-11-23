@@ -101,7 +101,7 @@ class ProblemService
             } else {
                 $where['answer'] = strval($answer);
             }
-            $dao->add($where);
+            return $dao->add($where);
         } else {
             $_ans = $res['answer'];
             if (strcmp($_ans, "4") != 0) {
@@ -112,10 +112,11 @@ class ProblemService
                     $data['answer'] = strval($passRate);
                 }
                 if (!empty($data)) {
-                    $dao->where($where)->data($data)->save();
+                    return $dao->where($where)->data($data)->save();
                 }
             }
         }
+        return 0;
     }
 
     public function doRejudgeProgramByExamIdAndUserId($eid, $userId, $programScore, $start_timeC, $end_timeC) {

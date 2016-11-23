@@ -13,6 +13,7 @@ use Home\Model\AnswerModel;
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
+use Think\Log;
 
 class ProgramController extends QuestionController
 {
@@ -157,8 +158,10 @@ class ProgramController extends QuestionController
             ->field('result')
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
             ->find();
+        Log::record("userId: $userId updresult: $row_cnt");
         if (!empty($row_cnt)) {
-            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
+            $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
+            Log::record("userId: $userId, sync res: $_res");
             echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
             $trow = M('solution')
@@ -170,7 +173,8 @@ class ProgramController extends QuestionController
                 echo "<font color='green' size='5px'>未提交</font>";
             } else {
                 $ans = $trow['result'];
-                ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
+                $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
+                Log::record("userId: $userId, sync res: $_res");
                 $colorarr = C('judge_color');
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
@@ -188,8 +192,10 @@ class ProgramController extends QuestionController
         $row_cnt = M('solution')
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
             ->count();
+        Log::record("userId: $userId programAnswer: $row_cnt");
         if ($row_cnt) {
-            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
+            $res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
+            Log::record("userId: $userId, sync res: $res");
             $this->echoError(4);
         } else {
             $this->echoError(-1);
