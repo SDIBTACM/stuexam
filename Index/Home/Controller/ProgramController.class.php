@@ -179,6 +179,9 @@ class ProgramController extends QuestionController
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
                 $result = $resultarr[$ans];
+                if ($ans == 6 && $trow['pass_rate'] * 100 == 0) {
+                    $result = "答案错误了, 一个都不对";
+                }
                 echo "<font color=$color size='3px'>$result</font>";
             }
         }
