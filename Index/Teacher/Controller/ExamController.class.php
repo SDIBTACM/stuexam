@@ -197,10 +197,11 @@ class ExamController extends TemplateController
             'exam_id' => $this->eid,
             'type' => 4,
             'answer_id' => 1,
-            'answer' => 4
+//            'answer' => 4
         );
-        $field = array('user_id', 'question_id');
+        $field = array('user_id', 'question_id', 'answer');
         $programRank = M('ex_stuanswer')->field($field)->where($where)->select();
+        dbg($programRank);
         $userRank = array();
         $users = array();
         $unames = array();
@@ -216,7 +217,7 @@ class ExamController extends TemplateController
         }
 
         foreach ($programRank as $p) {
-            $userRank[$p['user_id']][$p['question_id']] = 4;
+            $userRank[$p['user_id']][$p['question_id']] = $p['answer'];
         }
 
         $userIds_chunk = array_chunk($users, 50);
