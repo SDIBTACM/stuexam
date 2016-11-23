@@ -95,7 +95,7 @@ class ExamController extends QuestionController
         $inarr['choosesum'] = $cright * $allscore['choosescore'];
         $inarr['judgesum'] = $jright * $allscore['judgescore'];
         $inarr['fillsum'] = $fscore;
-        $inarr['programsum'] = $pright * $allscore['programscore'];
+        $inarr['programsum'] = round($pright * $allscore['programscore']);
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
         M('ex_student')->add($inarr);
         $this->success('试卷已成功提交！', U("Home/Index/score"), 3);
