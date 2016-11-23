@@ -3,7 +3,7 @@ return array(
 	//'配置项'=>'配置值'
 	'judge_color'		=>	array("gray","gray","orange","orange","green","red","red","red","red","red","red","#004488","#004488"),
 	'judge_result'		=>	array('正在努力的判题中...','Pending Rejudging','Compiling','正在努力的判题中...',
-								'天啦噜,你真是太厉害了,对了!','格式错误了,你离正确不远啦~','sad, 部分答案错误了, 快再查查吧~','哎呀,时间超限了','我的天哪,居然内存超限了',
+								'厉害了我的同学, 答对了!','格式错误了,你离正确不远啦~','sad, 部分答案错误了, 快再查查吧~','哎呀,时间超限了','我的天哪,居然内存超限了',
 								'输出超限,它输出的都停不下来了~','运行错误,真是个棘手的问题','编译错误,快去找找你的编译器在哪儿','Compile OK'),
 	'language_ext'		=>	array( "c", "cc", "pas", "java" ),
 	'OJ_APPENDCODE'		=>	true,

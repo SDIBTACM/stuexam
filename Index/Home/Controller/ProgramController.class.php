@@ -98,7 +98,7 @@ class ProgramController extends QuestionController
         // for medium extends
         $source = "";
         for ($extendsIndex = 1; $extendsIndex <= $extendsLimit; $extendsIndex++) {
-            $fileName = $filePrefix . $extendsIndex .'.' . $ext;
+            $fileName = $filePrefix . $extendsIndex .'.c';
             $postName = 'code' . $id . '_' . $extendsIndex;
             if (file_exists($fileName)) {
                 if (isset($_POST[$postName])) {
@@ -170,7 +170,7 @@ class ProgramController extends QuestionController
                 ->order('solution_id desc')
                 ->find();
             if (empty($trow)) {
-                echo "<font color='green' size='5px'>未提交</font>";
+                echo "<font color='green' size='3px'>未提交</font>";
             } else {
                 $ans = $trow['result'];
                 $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
@@ -179,7 +179,7 @@ class ProgramController extends QuestionController
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
                 $result = $resultarr[$ans];
-                echo "<font color=$color size='5px'>$result</font>";
+                echo "<font color=$color size='3px'>$result</font>";
             }
         }
     }
