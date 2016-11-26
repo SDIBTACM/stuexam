@@ -5,6 +5,7 @@ use Home\Model\AnswerModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
+use Think\Log;
 
 class ProblemService
 {
@@ -83,6 +84,7 @@ class ProblemService
     }
 
     public function syncProgramAnswer($userId, $eid, $pid, $answer, $passRate) {
+        Log::record("userId: $userId, eid: $eid, pid: $pid, answer:$answer, passRate:$passRate");
         $dao = M('ex_stuanswer');
         $where = array(
             'user_id' => $userId,
@@ -96,6 +98,7 @@ class ProblemService
         $res = $dao->field($field)->where($where)->find();
         // 如果沒有保存
         if (empty($res)) {
+            Log::record("empty record need to add");
             if ($answer != 4) {
                 $where['answer'] = strval($passRate);
             } else {
@@ -103,6 +106,7 @@ class ProblemService
             }
             return $dao->add($where);
         } else {
+            Log::record("need to update");
             $_ans = $res['answer'];
             if (strcmp($_ans, "4") != 0) {
                 $data = array();
@@ -116,7 +120,7 @@ class ProblemService
                 }
             }
         }
-        return 0;
+        return 1;
     }
 
     public function doRejudgeProgramByExamIdAndUserId($eid, $userId, $programScore, $start_timeC, $end_timeC) {

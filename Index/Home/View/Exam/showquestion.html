@@ -301,7 +301,7 @@
                     url: saveprogram,
                     type: "POST",
                     dataType: "html",
-                    data: 'eid=' + eid + '&pid=' + pid,
+                    data: 'eid=' + eid + '&pid=' + pid + '&sid=' + Math.random(),
                     success: function (data) {
                         if (data == 4) {
                             $("#" + panel).data('accepted', 1).html("此题你已正确!");//slideUp("slow", function(){$(this).remove();});
