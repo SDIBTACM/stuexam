@@ -1,0 +1,90 @@
+<div class="form-group">
+    <label class="sr-only">key point</label>
+    <select class="form-control" name="chapterId" id="chapterSelect">
+        <option value="0" selected>请选择章节</option>
+        <foreach name='chapters' item='chapter' key='index'>
+            <if condition="$chapterId eq $index">
+                <option value="{$index}" selected>第{$index}章: {$chapter}</option>
+                <else/>
+                <option value="{$index}">第{$index}章: {$chapter}</option>
+            </if>
+        </foreach>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">parent point</label>
+    <select class="form-control" name="parentId" id="parentSelect">
+        <option value="0">请选择父级知识点</option>
+        <foreach name="parentNode" item="node">
+            <if condition="$node['id'] eq $parentId">
+                <option value="{$node['id']}" selected>{$node['name']}</option>
+                <else/>
+                <option value="{$node['id']}">{$node['name']}</option>
+            </if>
+        </foreach>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">parent point</label>
+    <select class="form-control" name="pointId" id="pointSelect">
+        <option value="0">请选择子级知识点</option>
+        <foreach name="childrenNode" item="node">
+            <if condition="$node['id'] eq $pointId">
+                <option value="{$node['id']}" selected>{$node['name']}</option>
+                <else/>
+                <option value="{$node['id']}">{$node['name']}</option>
+            </if>
+        </foreach>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">creator list</label>
+    <select class="form-control" name="creator">
+        <option value="">请选择创建者</option>
+        <foreach name="teacherList" item="teacher">
+            <if condition="$creator eq $teacher">
+                <option value="{$teacher}" selected>{$teacher}</option>
+                <else/>
+                <option value="{$teacher}">{$teacher}</option>
+            </if>
+        </foreach>
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="sr-only">problem type</label>
+    <select class="form-control" name="problem">
+        <if condition="$problem eq 0">
+            <option value="0" selected>公共题库</option>
+            <else/>
+            <option value="0">公共题库</option>
+        </if>
+        <if condition="$problem eq 1">
+            <option value="1" selected>私人题库</option>
+            <else/>
+            <option value="1">私人题库</option>
+        </if>
+        <if condition="$isadmin eq true">
+            <if condition="$problem eq 2">
+                <option value="2" selected>隐藏题库</option>
+                <else/>
+                <option value="2">隐藏题库</option>
+            </if>
+        </if>
+    </select>
+</div>
+
+<button type="submit" class="btn btn-info">点击查询</button>
+<script type="text/javascript">
+    $(function () {
+        $("#parentSelect").change(function() {
+            var that = $(this);
+            var parentId = that.children('option:selected').val();
+            var pointSelect = $("#pointSelect");
+            updateChildrenSelect(parentId, pointSelect);
+        });
+    });
+</script>

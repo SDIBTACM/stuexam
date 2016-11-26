@@ -40,6 +40,10 @@ class ChooseService
             $arr = ChooseConvert::convertChooseFromPost();
             $result = ChooseBaseModel::instance()->updateById($chooseid, $arr);
             if ($result !== false) {
+                $pointIds = I('post.point', array());
+                KeyPointService::instance()->saveExamPoint(
+                    $pointIds, $chooseid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+                );
                 $reqResult->setMessage("选择题修改成功!");
                 $reqResult->setData("choose");
             } else {
@@ -57,6 +61,10 @@ class ChooseService
         $arr['addtime'] = date('Y-m-d H:i:s');
         $lastId = ChooseBaseModel::instance()->insertData($arr);
         if ($lastId) {
+            $pointIds = I('post.point', array());
+            KeyPointService::instance()->saveExamPoint(
+                $pointIds, $lastId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+            );
             $reqResult->setMessage("选择题添加成功!");
             $reqResult->setData("choose");
         } else {

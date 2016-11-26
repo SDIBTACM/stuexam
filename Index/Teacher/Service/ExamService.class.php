@@ -8,6 +8,7 @@ use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\KeyPointBaseModel;
 
 class ExamService
 {
@@ -142,10 +143,5 @@ class ExamService
             }
         }
         return $arr;
-    }
-
-    public function getExPointList() {
-        $pnt = M('ex_point')->where(array("type" => 0))->select();
-        return $pnt;
     }
 }

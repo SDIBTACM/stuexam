@@ -10,7 +10,7 @@ use Teacher\Service\ProblemService;
 
 use Think\Controller;
 
-class ProblemController extends TemplateController
+class ProblemController extends QuestionBaseController
 {
 
     private $eid = null;
@@ -30,6 +30,10 @@ class ProblemController extends TemplateController
                 $this->echoError('You have no privilege of this exam~');
             } else {
                 $this->ZaddWidgets($widgets);
+            }
+            if (!strcmp($this->action, 'add')) {
+                $this->buildSearch();
+                $this->ZaddChapters();
             }
         } else if (isset($_POST['eid'])) {
             $this->eid = I('post.eid', 0, 'intval');
@@ -61,11 +65,11 @@ class ProblemController extends TemplateController
 
     private function addChooseProblem() {
 
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = M('ex_choose')->field('choose_id,question,creator,point,easycount')
+        $row = M('ex_choose')->field('choose_id,question,creator,easycount')
             ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
             ->select();
 
@@ -79,21 +83,26 @@ class ProblemController extends TemplateController
             'row' => $row,
             'added' => $haveadded,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numofchoose' => $numofchoose
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['choose_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display('choose');
     }
 
     private function addJudgeProblem() {
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('judge_id', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = m('ex_judge')->field('judge_id,question,creator,point,easycount')
+        $row = m('ex_judge')->field('judge_id,question,creator,easycount')
             ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
             ->select();
 
@@ -107,21 +116,26 @@ class ProblemController extends TemplateController
             'row' => $row,
             'added' => $haveadded,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numofjudge' => $numofjudge
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['judge_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display('judge');
     }
 
     private function addFillProblem() {
-        $sch = getproblemsearch();
+        $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
         $isadmin = $this->isSuperAdmin();
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
-        $row = M('ex_fill')->field('fill_id,question,creator,point,easycount,kind')
+        $row = M('ex_fill')->field('fill_id,question,creator,easycount,kind')
             ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
             ->select();
 
@@ -135,11 +149,16 @@ class ProblemController extends TemplateController
             'row' => $row,
             'added' => $haveadded,
             'mypage' => $mypage,
-            'search' => $sch['search'],
             'isadmin' => $isadmin,
-            'problem' => $sch['problem'],
             'numoffill' => $numoffill
         );
+
+        $questionIds = array();
+        foreach($row as $r) {
+            $questionIds[] = $r['fill_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);
+
         $this->ZaddWidgets($widgets);
         $this->auto_display('fill');
     }

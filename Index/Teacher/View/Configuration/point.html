@@ -14,7 +14,7 @@
         <div class="form-group">
             <label class="sr-only">parent point</label>
             <select class="form-control" name="parentId" id="parentSelect">
-                <option value="0" selected>请选择上一级知识点关联</option>
+                <option value="0" selected>请选择父级知识点</option>
             </select>
         </div>
         <div class="form-group">
@@ -35,11 +35,17 @@
                                 <a title="删除" class="pointAnchor" href="#" data-point="{$point['id']}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
+                                <a title="修改" class="pointModify" href="#" data-point="{$point['id']}">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </a>
                                 <ul>
                                     <foreach name="point['children']" item="children" key="clkey">
                                         <li>{$children['name']}
                                             <a title="删除" class="pointAnchor" href="#" data-point="{$children['id']}">
                                                 <span class="glyphicon glyphicon-remove"></span>
+                                            </a>
+                                            <a title="修改" class="pointModify" href="#" data-point="{$children['id']}">
+                                                <span class="glyphicon glyphicon-edit"></span>
                                             </a>
                                         </li>
                                     </foreach>
@@ -55,9 +61,14 @@
 <script type="text/javascript">
     var removePointLink = "{:U('Teacher/Configuration/removePoint')}";
     var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
+    var changePointDescLink = "{:U('Teacher/Configuration/updatePointDescById')}";
     $(function () {
         $(".pointAnchor").click(function () {
             var that = $(this);
+            var res = confirm("确定要删除嘛?");
+            if (!res) {
+                return;
+            }
             var pointId = that.data('point');
             $.ajax({
                 url: removePointLink,
@@ -72,20 +83,21 @@
                 }
             });
         });
-        $("#chapterSelect").change(function(){
+        $(".pointModify").click(function () {
             var that = $(this);
-            var parentSelect = $("#parentSelect");
-            var chapterId = that.children('option:selected').val();
-            parentSelect.empty().append('<option value="0" selected>请选择上一级知识点关联</option>');
+            var pointId = that.data('point');
+            var res = prompt("请输入要修改成的值", "");
             $.ajax({
-                url : getParentNodeLink,
-                type: "GET",
-                dataType: "json",
-                data: {"chapterId":chapterId},
-                success: function (parents) {
-                    $.each(parents, function(index, _parent) {
-                        parentSelect.append('<option value="'+_parent.id+'">'+ _parent.name +'</option>');
-                    });
+                url: changePointDescLink,
+                type: "POST",
+                dataType: "html",
+                data: "pointid=" + pointId + "&name=" + res + "&sid=" + Math.random(),
+                success: function (r) {
+                    if (r == 1) {
+                        history.go(0);
+                    } else {
+                        alert("更改失败");
+                    }
                 },
                 error: function () {
                     alert("sorry,something error")

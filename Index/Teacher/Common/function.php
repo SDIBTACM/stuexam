@@ -15,16 +15,22 @@ function problemshow($problem, $searchsql) {
         $problem = 0;
     if (!checkAdmin(1) && $problem == 2)
         $problem = 0;
+
+    $creator = I('get.creator', '', 'htmlspecialchars');
+    $creatorSql = "1=1";
+    if (!empty($creator)) {
+        $creatorSql = "creator = '$creator'";
+    }
     if ($searchsql == "") {
         if ($problem == 0 || checkAdmin(1))
-            $prosql = "`isprivate`='$problem'";
+            $prosql = "`isprivate`='$problem' AND $creatorSql";
         else {
             $user = $_SESSION['user_id'];
             $prosql = "`isprivate`='$problem' AND `creator` like '$user'";
         }
     } else {
         if ($problem == 0 || checkAdmin(1))
-            $prosql = " AND `isprivate`='$problem'";
+            $prosql = " AND `isprivate`='$problem' AND $creatorSql";
         else {
             $user = $_SESSION['user_id'];
             $prosql = " AND `isprivate`='$problem' AND `creator` like '$user'";
@@ -33,18 +39,26 @@ function problemshow($problem, $searchsql) {
     return $prosql;
 }
 
-function getproblemsearch() {
-    $search = I('get.search', '');
-    if ($search != '')
-        $sql = "(`creator` like '%$search%' or `point` like '%$search%')";
-    else
-        $sql = "";
+function getproblemsearch($idKey, $problemType) {
+    $sql = "";
+    $chapterId = I('get.chapterId', 0, 'intval');
+    $parentId = I('get.parentId', 0, 'intval');
+    $pointId = I('get.pointId', 0, 'intval');
+
+    if ($pointId > 0) {
+        $sql = "$idKey in (select question_id from ex_question_point where type = $problemType and point_id = $pointId)";
+    } else if ($parentId > 0) {
+        $sql = "$idKey in (select question_id from ex_question_point where type = $problemType and point_parent_id = $parentId)";
+    } else if ($chapterId > 0) {
+        $sql = "$idKey in (select question_id from ex_question_point where type = $problemType and chapter_id = $chapterId)";
+    }
+
     $problem = I('get.problem', 0, 'intval');
     $prosql = problemshow($problem, $sql);
     $sql .= $prosql;
-    return array('search' => $search,
-        'problem' => $problem,
-        'sql' => $sql);
+    return array(
+        'sql' => $sql
+    );
 }
 
 function set_get_key() {

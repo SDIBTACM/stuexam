@@ -5,6 +5,8 @@ use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\ExamBaseModel;
+use Teacher\Model\QuestionBaseModel;
+use Teacher\Model\QuestionPointBaseModel;
 use Think\Controller;
 
 class DelController extends TemplateController
@@ -48,6 +50,7 @@ class DelController extends TemplateController
             M()->execute($sql);
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=1";
             M()->execute($sql);
+            QuestionPointBaseModel::instance()->delByQuestion($this->id, 1);
             $this->success("选择题删除成功", U("Teacher/Index/choose", array('page' => $this->page)), 2);
         }
     }
@@ -62,6 +65,7 @@ class DelController extends TemplateController
             M()->execute($sql);
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=2";
             M()->execute($sql);
+            QuestionPointBaseModel::instance()->delByQuestion($this->id, 2);
             $this->success("判断题删除成功", U("Teacher/Index/judge", array('page' => $this->page)), 2);
         }
     }
@@ -78,6 +82,7 @@ class DelController extends TemplateController
             M()->execute($sql);
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=3";
             M()->execute($sql);
+            QuestionPointBaseModel::instance()->delByQuestion($this->id, 3);
             $this->success("填空题删除成功", U("Teacher/Index/fill", array('page' => $this->page)), 2);
         }
     }

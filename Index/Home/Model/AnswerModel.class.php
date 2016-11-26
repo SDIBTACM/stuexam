@@ -6,6 +6,7 @@ use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\QuestionBaseModel;
+use Teacher\Service\ProblemService;
 
 class AnswerModel
 {
@@ -163,10 +164,29 @@ class AnswerModel
     }
 
     public function getRightProgramCount($user_id, $eid, $start_timeC, $end_timeC) {
-        $query = "SELECT distinct `question_id`,`result` FROM `exp_question`,`solution` WHERE `exam_id`='$eid' AND `type`='4' AND `result`='4'
-		AND `in_date`>'$start_timeC' AND `in_date`<'$end_timeC' AND `user_id`='" . $user_id . "' AND `exp_question`.`question_id`=`solution`.`problem_id`";
-        $row = M()->query($query);
-        $row_cnt = count($row);
-        return $row_cnt;
+        $questionArr = QuestionBaseModel::instance()->getQuestionIds4ExamByType($eid, ProblemService::PROGRAM_PROBLEM_TYPE);
+        $questionIds = array();
+        foreach($questionArr as $_q) {
+            $questionIds[] = $_q['question_id'];
+        }
+        if (empty($questionIds)) {
+            return 0;
+        }
+        $questionIdStr = implode('\',\'', $questionIds);
+        $questionIdStr = '\'' . $questionIdStr . '\'';
+
+        $query = "select max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
+                "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
+        $data = M()->query($query);
+
+        $count = 0;
+        foreach ($data as $d) {
+            if ($d['rate'] >= 0.98) {
+                $count = $count + 1;
+            } else {
+                $count = $count + $d['rate'];
+            }
+        }
+        return $count;
     }
 }

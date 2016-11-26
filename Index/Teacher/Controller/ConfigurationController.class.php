@@ -9,26 +9,26 @@
 namespace Teacher\Controller;
 
 
-use Constant\Constants\Chapter;
 use Teacher\Model\KeyPointBaseModel;
+use Teacher\Model\QuestionPointBaseModel;
 
 class ConfigurationController extends TemplateController
 {
     public function _initialize() {
         parent::_initialize();
         if (!$this->isSuperAdmin()) {
-            $this->echoError("only admin can do this!");
+            if (!strcmp($this->action, "getparentpointbychapterid") ||
+                !strcmp($this->action, "getchildrenpointbyparentid")) {
+                // omit
+            } else {
+                $this->echoError("only admin can do this!");
+            }
         }
     }
 
     public function keyPoint() {
-        $chapters = Chapter::getConstant();
-        $chapterMap = array();
-        foreach ($chapters as $chapter) {
-            if ($chapter instanceof Chapter) {
-                $chapterMap[$chapter->getId()] = $chapter->getName();
-            }
-        }
+
+        $this->ZaddChapters();
 
         $points = KeyPointBaseModel::instance()->getAllPoint();
         $pointMap = array();
@@ -53,11 +53,6 @@ class ConfigurationController extends TemplateController
                 $pointMap[$chapterId][$parentId]['children'][] = $point;
             }
         }
-
-        //dbg($pointMap);
-        //dbg($chapterMap);
-
-        $this->zadd('chapters', $chapterMap);
         $this->zadd('points', $pointMap);
         $this->auto_display('point', 'configlayout');
     }
@@ -67,6 +62,7 @@ class ConfigurationController extends TemplateController
             $pointId = I('post.pointid', 0, 'intval');
             KeyPointBaseModel::instance()->delById($pointId);
             $res = KeyPointBaseModel::instance()->delByParentId($pointId);
+            QuestionPointBaseModel::instance()->delPoint($pointId);
             echo $res;
         }
     }
@@ -93,9 +89,30 @@ class ConfigurationController extends TemplateController
         }
     }
 
+    public function updatePointDescById() {
+        $pointId = I('post.pointid', 0, 'intval');
+        $name = I('post.name', '');
+        if ($pointId < 0 || empty($name)) {
+            echo 1;
+        }
+
+        $res = KeyPointBaseModel::instance()->updateById($pointId, array('name' => $name));
+        if (empty($res)) {
+            echo 0;
+        } else {
+            echo 1;
+        }
+    }
+
     public function getParentPointByChapterId() {
         $chapterId = I('get.chapterId', 0, 'intval');
         $parentPoint = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);
         $this->ajaxReturn($parentPoint, 'JSON');
+    }
+
+    public function getChildrenPointByParentId() {
+        $parentId = I('get.parentId', 0, 'intval');
+        $childrenPoint = KeyPointBaseModel::instance()->getChildrenNodeByParentId($parentId);
+        $this->ajaxReturn($childrenPoint, 'JSON');
     }
 }

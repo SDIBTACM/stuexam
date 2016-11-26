@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Constant\Constants\Chapter;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Think\Controller;
@@ -96,5 +97,16 @@ class TemplateController extends \Home\Controller\TemplateController
             }
         }
         return 1;
+    }
+
+    protected function ZaddChapters() {
+        $chapters = Chapter::getConstant();
+        $chapterMap = array();
+        foreach ($chapters as $chapter) {
+            if ($chapter instanceof Chapter) {
+                $chapterMap[$chapter->getId()] = $chapter->getName();
+            }
+        }
+        $this->zadd('chapters', $chapterMap);
     }
 }

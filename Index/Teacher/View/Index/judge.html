@@ -1,60 +1,30 @@
+<style>
+    .table tbody tr td {
+        vertical-align: middle;
+    }
+</style>
 <div class="container exam_content">
-    <!--<form class='form-inline'>-->
-    <!--<input type="hidden" name="page" value="{$mypage['page']}">-->
-    <!--<input type="hidden" name="problem" value="{$problem}">-->
-
-    <!--<div class="form-group">-->
-    <!--<input type="text" class="form-control input-lg search-input" id="search" name='search' value="{$search}"-->
-    <!--placeholder="查询创建者或考试名称">-->
-    <!--</div>-->
-    <!--<button type="submit" class="btn btn-default btn-lg">Search</button>-->
-    <!--</form>-->
     <div class='row'>
         <div class="col-md-3"><h2>判断题库总览</h2></div>
-        <div class='col-md-1'>
-            <h2><a href="{:U('Teacher/Add/judge',array('page'=>$mypage['page']))}" class='btn btn-info'>添加判断题</a></h2>
-        </div>
-
-        <div class="col-md-2">
-            <if condition="$problem eq 0">
-                <h2><input type="button" value="公共题库" class="btn btn-success"
-                           onclick="window.location.href='?problem=0'"></h2>
-                <else/>
-                <h2><input type="button" value="公共题库" class="btn btn-default"
-                           onclick="window.location.href='?problem=0'"></h2>
-            </if>
-        </div>
-
-        <div class="col-md-1">
-            <if condition="$problem eq 1">
-                <h2><input type="button" value="私人题库" class="btn btn-success"
-                           onclick="window.location.href='?problem=1'"></h2>
-                <else/>
-                <h2><input type="button" value="私人题库" class="btn btn-default"
-                           onclick="window.location.href='?problem=1'"></h2>
-            </if>
-        </div>
-
-        <if condition="$isadmin eq true">
-            <div class="col-md-2">
-                <if condition="$problem eq 2">
-                    <h2><input type="button" value="隐藏题库" class="btn btn-success"
-                               onclick="window.location.href='?problem=2'"></h2>
-                    <else/>
-                    <h2><input type="button" value="隐藏题库" class="btn btn-default"
-                               onclick="window.location.href='?problem=2'"></h2>
-                </if>
-            </div>
-        </if>
     </div>
+
+    <form class="form-inline text-right" role="form" method="get">
+        <div class='form-group pull-left'>
+            <a href="{:U('Teacher/Add/judge',array('page'=>$mypage['page']))}" class='btn btn-info form-control'>添加判断题</a>
+        </div>
+        <include file="Public:QuestionSearch"/>
+    </form>
+
     <table class="table table-hover table-bordered table-condensed">
         <thread>
-            <th width=4%>ID</th>
-            <th width=34%>题目描述</th>
-            <th width=4%>创建者</th>
-            <!--<th width=8%>知识点</th>-->
-            <th width=3%>难度</th>
-            <th width=3% colspan="2">操作</th>
+            <th>ID</th>
+            <th>题目描述</th>
+            <th>所属章</th>
+            <th>一级知识点</th>
+            <th>二级知识点</th>
+            <th>创建者</th>
+            <th>所属题库</th>
+            <th colspan="2">操作</th>
         </thread>
         <tbody>
         <foreach name='row' item='r' key='k'>
@@ -69,14 +39,30 @@
                     </button>
                 </td>
                 <div class="clearfix"></div>
+
+                <td>
+                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
+                        <label class="label alert-danger">{$questionPoint['chapter']}</label><br/>
+                    </foreach>
+                </td>
+                <td>
+                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
+                        <label class="label alert-info">{$questionPoint['parent_point']}</label><br/>
+                    </foreach>
+                </td>
+                <td>
+                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
+                        <label class="label alert-info">{$questionPoint['point']}</label><br/>
+                    </foreach>
+                </td>
+
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
-                <!--<td>{$pointMap[$r['point']]}</td>-->
-                <td>{$r['easycount']}</td>
+                <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
                 <td><a title="删除"
                        href="javascript:suredo('{:U('Teacher/Del/judge',array('id'=>$r['judge_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color: peru"></span>
                 </a></td>
-                <td><a title="编辑"
+                <td><a title="编辑" target="_blank"
                        href="{:U('Teacher/Add/judge',array('id'=>$r['judge_id'],'page'=>$mypage['page'],'problem' => $problem))}">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 </a></td>
@@ -84,9 +70,9 @@
         </foreach>
         </tbody>
     </table>
-    {$mypage|showpagelast=###,U("Teacher/Index/judge"),"search=$search&problem=$problem"}
+    {$mypage|showpagelast=###,U("Teacher/Index/judge"),"$extraQuery"}
 </div>
-<script>
+<script type="text/javascript">
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 //	$('[data-toggle="popover"]').popover();

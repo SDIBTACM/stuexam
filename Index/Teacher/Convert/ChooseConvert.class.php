@@ -19,7 +19,6 @@ class ChooseConvert
         $arr['bms'] = test_input($_POST['bms']);
         $arr['cms'] = test_input($_POST['cms']);
         $arr['dms'] = test_input($_POST['dms']);
-        $arr['point'] = implode(",", $_POST['point']);
         $arr['answer'] = $_POST['answer'];
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);

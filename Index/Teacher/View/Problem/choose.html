@@ -1,59 +1,25 @@
+<style>
+    .table tbody tr td {
+        vertical-align: middle;
+    }
+</style>
 <div class="container exam_content">
     <h2>添加选择题</h2>
     <include file='Public:sideheader'/>
-
-    <form class='form-inline'>
-        <input type="hidden" name="page" value="{$mypage['page']}">
-        <input type="hidden" name="problem" value="{$problem}">
-        <input type="hidden" name="eid" id="examid" value="{$eid}">
-
-        <div class="form-group">
-            <input type="text" class="form-control input-lg search-input" id="search" name='search' value="{$search}"
-                   placeholder="查询创建者或考试名称">
-        </div>
-        <button type="submit" class="btn btn-default btn-lg">Search</button>
+    <input type="hidden" name="eid" id="examid" value="{$eid}">
+    <form class="form-inline text-right" role="form" method="get">
+        <include file="Public:QuestionSearch"/>
     </form>
-    <div class='row'>
-        <div class="col-md-2">
-            <if condition="$problem eq 0">
-                <h1><input type="button" value="公共题库" class="btn btn-success"
-                           onclick="window.location.href='?problem=0'"></h1>
-                <else/>
-                <h1><input type="button" value="公共题库" class="btn btn-default"
-                           onclick="window.location.href='?problem=0'"></h1>
-            </if>
-        </div>
-
-        <div class="col-md-2">
-            <if condition="$problem eq 1">
-                <h1><input type="button" value="私人题库" class="btn btn-success"
-                           onclick="window.location.href='?problem=1'"></h1>
-                <else/>
-                <h1><input type="button" value="私人题库" class="btn btn-default"
-                           onclick="window.location.href='?problem=1'"></h1>
-            </if>
-        </div>
-
-        <if condition="$isadmin eq true">
-            <div class="col-md-2">
-                <if condition="$problem eq 2">
-                    <h1><input type="button" value="隐藏题库" class="btn btn-success"
-                               onclick="window.location.href='?problem=2'"></h1>
-                    <else/>
-                    <h1><input type="button" value="隐藏题库" class="btn btn-default"
-                               onclick="window.location.href='?problem=2'"></h1>
-                </if>
-            </div>
-        </if>
-    </div>
     <table class="table table-hover table-bordered table-condensed">
         <thread>
-            <th width=4%>ID</th>
-            <th width=34%>题目描述</th>
-            <th width=3%>创建者</th>
-            <!--<th width=8%>知识点</th>-->
-            <th width=2%>难度</th>
-            <th width=3%>操作</th>
+            <th>ID</th>
+            <th>题目描述</th>
+            <th>所属章</th>
+            <th>一级知识点</th>
+            <th>二级知识点</th>
+            <th>创建者</th>
+            <th>所属题库</th>
+            <th>操作</th>
         </thread>
         <tbody>
         <foreach name='row' item='r' key='k'>
@@ -64,9 +30,25 @@
                        data-trigger="focus" data-content="{$r['question']}">展开>></a>
                 </td>
                 <div class="clearfix"></div>
+
+                <td>
+                    <foreach name="questionPointMap[$r['choose_id']]" item="questionPoint">
+                        <label class="label alert-danger">{$questionPoint['chapter']}</label><br/>
+                    </foreach>
+                </td>
+                <td>
+                    <foreach name="questionPointMap[$r['choose_id']]" item="questionPoint">
+                        <label class="label alert-info">{$questionPoint['parent_point']}</label><br/>
+                    </foreach>
+                </td>
+                <td>
+                    <foreach name="questionPointMap[$r['choose_id']]" item="questionPoint">
+                        <label class="label alert-info">{$questionPoint['point']}</label><br/>
+                    </foreach>
+                </td>
+
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
-                <!--<td>{$r['point']}</td>-->
-                <td>{$r['easycount']}</td>
+                <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
                 <if condition="isset($added[$r['choose_id']]) and $added[$r['choose_id']] gt 0">
                     <td>已添加</td>
                     <else/>
@@ -78,7 +60,7 @@
         </foreach>
         </tbody>
     </table>
-    {$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"search=$search&problem=$problem"}
+    {$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
 </div>
 <script type="text/javascript">
     var addtoexamurl = "{:U('Teacher/Problem/addpte')}";

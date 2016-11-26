@@ -7,7 +7,6 @@
  */
 
 namespace Community\Controller;
-use Constant\Constants\Chapter;
 
 /**
  * 本控制器主要用于一些特殊情况下要显示的页面, just for fun
@@ -30,17 +29,6 @@ class ExtraController extends TemplateController
         'chinese' => 1,
         'person'  => 2
     );
-
-    public function jiaying() {
-        $chapters = Chapter::getConstant();
-        dbg($chapters);
-
-        $chapter = Chapter::getById(3);
-        dbg($chapter);
-
-        $priorities = Chapter::getIdBiggerPriority(3);
-        dbg($priorities);
-    }
 
     public function rank() {
         // 获取所有注册的学生

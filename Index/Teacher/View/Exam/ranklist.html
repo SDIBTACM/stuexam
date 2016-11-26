@@ -1,46 +1,54 @@
 <style>
     .problemac {
         background-color: #81D881;
+        color: #0a6b00;
     }
-    .problemac span {
-        color:green;
+
+    .problemwa {
+        background-color: #cc0042;
+        color: white;
     }
+
 </style>
 <div class="container exam_content">
     <h2>编程排名</h2>
-    <include file='Public:sideheader' />
+    <include file='Public:sideheader'/>
 
     <table class="table-bordered table table-bordered">
         <thead>
-            <th width="3%">ID</th>
-            <th width="5%">学号</th>
-            <th width="7%">姓名</th>
-            <th width="5%">题数</th>
-            <foreach name="programIds" item="pid">
-                <th width="6%">{$pid['question_id']}</th>
-            </foreach>
+        <th width="3%">ID</th>
+        <th width="5%">学号</th>
+        <th width="7%">姓名</th>
+        <th width="5%">题数</th>
+        <foreach name="programIds" item="pid">
+            <th width="6%">{$pid['question_id']}</th>
+        </foreach>
         </thead>
         <tbody>
-            <foreach name="userIds" item="userId" key="k">
-                <tr>
-                    <td>{$k + 1}</td>
-                    <td>{$userId}</td>
-                    <td>{$unames[ $userId ]|cutstring=###,12}</td>
-                    <td>{$programCount[$userId]}</td>
-                    <foreach name="programIds" item="pid">
-                        <if condition="isset($userRank[ $userId ][ $pid['question_id'] ])">
+        <foreach name="userIds" item="userId" key="k">
+            <tr>
+                <td>{$k + 1}</td>
+                <td>{$userId}</td>
+                <td>{$unames[ $userId ]|cutstring=###,12}</td>
+                <td>{$programCount[$userId]}</td>
+                <foreach name="programIds" item="pid">
+                    <if condition="isset($userRank[ $userId ][ $pid['question_id'] ])">
+                        <if condition="$userRank[ $userId ][ $pid['question_id'] ] eq 4">
                             <td class="problemac">Accept</td>
-                        <else />
-                            <td></td>
+                            <else/>
+                            <td class="problemwa">{$userRank[ $userId ][ $pid['question_id'] ] * 100}%</td>
                         </if>
-                    </foreach>
-                </tr>
-            </foreach>
+                        <else/>
+                        <td></td>
+                    </if>
+                </foreach>
+            </tr>
+        </foreach>
         </tbody>
     </table>
 </div>
 <script type="text/javascript">
-    $(function(){
+    $(function () {
         $("#exam_ranklist").addClass('active');
     });
 </script>

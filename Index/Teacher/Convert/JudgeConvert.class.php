@@ -16,7 +16,6 @@ class JudgeConvert
 
         $arr['question'] = test_input($_POST['judge_des']);
         $arr['answer'] = $_POST['answer'];
-        $arr['point'] = implode(",", $_POST['point']);
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);
 

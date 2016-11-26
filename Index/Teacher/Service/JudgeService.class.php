@@ -40,6 +40,10 @@ class JudgeService
             $arr = JudgeConvert::convertJudgeFromPost();
             $result = JudgeBaseModel::instance()->updateById($judgeid, $arr);
             if ($result !== false) {
+                $pointIds = I('post.point', array());
+                KeyPointService::instance()->saveExamPoint(
+                    $pointIds, $judgeid, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+                );
                 $reqResult->setMessage("判断题修改成功!");
                 $reqResult->setData("judge");
             } else {
@@ -57,6 +61,10 @@ class JudgeService
         $arr['addtime'] = date('Y-m-d H:i:s');
         $lastId = JudgeBaseModel::instance()->insertData($arr);
         if ($lastId) {
+            $pointIds = I('post.point', array());
+            KeyPointService::instance()->saveExamPoint(
+                $pointIds, $lastId, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+            );
             $reqResult->setMessage("判断题添加成功!");
             $reqResult->setData("judge");
         } else {

@@ -13,6 +13,7 @@ use Home\Model\AnswerModel;
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
+use Think\Log;
 
 class ProgramController extends QuestionController
 {
@@ -70,7 +71,7 @@ class ProgramController extends QuestionController
         $inarr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
         $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
         $pright = AnswerModel::instance()->getRightProgramCount($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
-        $inarr['programsum'] = $pright * $allscore['programscore'];
+        $inarr['programsum'] = round($pright * $allscore['programscore']);
         $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
         StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inarr);
@@ -97,7 +98,7 @@ class ProgramController extends QuestionController
         // for medium extends
         $source = "";
         for ($extendsIndex = 1; $extendsIndex <= $extendsLimit; $extendsIndex++) {
-            $fileName = $filePrefix . $extendsIndex .'.' . $ext;
+            $fileName = $filePrefix . $extendsIndex .'.c';
             $postName = 'code' . $id . '_' . $extendsIndex;
             if (file_exists($fileName)) {
                 if (isset($_POST[$postName])) {
@@ -152,30 +153,56 @@ class ProgramController extends QuestionController
         $userId = $this->userInfo['user_id'];
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
-
-        $row_cnt = M('solution')//->where($where)->find();
-        ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)->find();
+        $where = array(
+            'problem_id' => $id,
+            'user_id' => $userId,
+            'result' => 4,
+            'in_date' => array(array('gt', $start_timeC), array('lt', $end_timeC))
+        );
+        $row_cnt = M('solution')
+            ->field('result')
+            ->where($where)
+            ->find();
         if (!empty($row_cnt)) {
-            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4);
-            echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
+            Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: " . json_encode($row_cnt));
+            $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
+            Log::record("updresult method, trace 2, userId: $userId, problemId: $id, sync answer res: $_res");
+            if ($_res > 0) {
+                echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
+            } else {
+                echo "<font color='blue' size='3px'>不知道发生了什么, 请刷新页面重试哦~~</font>";
+            }
         } else {
+            Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: null");
+            $where = array(
+                'problem_id' => $id,
+                'user_id' => $userId,
+                'in_date' => array(array('gt', $start_timeC), array('lt', $end_timeC))
+            );
             $trow = M('solution')
-                ->field('result')
-                ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
+                ->field(array('result', 'pass_rate'))
+                ->where($where)
                 ->order('solution_id desc')
                 ->find();
             if (empty($trow)) {
-                echo "<font color='green' size='5px'>未提交</font>";
+                Log::record("updresult method, trace 3, userId: $userId, problemId: $id, solution: null");
+                echo "<font color='green' size='3px'>未提交</font>";
             } else {
+                Log::record("updresult method, trace 3, userId: $userId, problemId: $id, solution: " . json_encode($trow));
                 $ans = $trow['result'];
-                if ($ans == 4) {
-                    ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans);
+                $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
+                Log::record("updresult method, trace 4, userId: $userId, problemId: $id, sync answer res: $_res");
+                if ($_res < 0) {
+                    $this->echoError("<font color='blue' size='3px'>不知道发生了什么,请刷新页面重试~</font>");
                 }
                 $colorarr = C('judge_color');
                 $resultarr = C('judge_result');
                 $color = $colorarr[$ans];
                 $result = $resultarr[$ans];
-                echo "<font color=$color size='5px'>$result</font>";
+                if ($ans == 6 && $trow['pass_rate'] * 100 == 0) {
+                    $result = "答案错误了, 一个都不对";
+                }
+                echo "<font color=$color size='3px'>$result</font>";
             }
         }
     }
@@ -185,13 +212,23 @@ class ProgramController extends QuestionController
         $userId = $this->userInfo['user_id'];
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
+        $where = array(
+            'problem_id' => $pid,
+            'user_id' => $userId,
+            'result' => 4,
+            'in_date' => array(array('gt', $start_timeC), array('lt', $end_timeC))
+        );
         $row_cnt = M('solution')
-            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
-            ->count();
-        if ($row_cnt) {
-            ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4);
+            ->field(array('result'))
+            ->where($where)
+            ->find();
+        if (!empty($row_cnt)) {
+            Log::record("programSave method, trace 1, userId: $userId , problemId: $pid, programAnswer: " . json_encode($row_cnt));
+            $res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
+            Log::record("programSave method, trace 2, userId: $userId, problemId: $pid, sync answer res: $res");
             $this->echoError(4);
         } else {
+            Log::record("programSave method, trace 1, userId: $userId , problemId: $pid, programAnswer: null");
             $this->echoError(-1);
         }
     }

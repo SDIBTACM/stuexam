@@ -1,9 +1,11 @@
 <?php
 namespace Teacher\Service;
 
+use Home\Model\AnswerModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
+use Think\Log;
 
 class ProblemService
 {
@@ -81,7 +83,8 @@ class ProblemService
         return $ans;
     }
 
-    public function syncProgramAnswer($userId, $eid, $pid, $answer) {
+    public function syncProgramAnswer($userId, $eid, $pid, $answer, $passRate) {
+        Log::record("userId: $userId, eid: $eid, pid: $pid, answer:$answer, passRate:$passRate");
         $dao = M('ex_stuanswer');
         $where = array(
             'user_id' => $userId,
@@ -90,21 +93,39 @@ class ProblemService
             'question_id' => $pid,
             'answer_id' => 1
         );
+
         $field = array('answer');
         $res = $dao->field($field)->where($where)->find();
+        // 如果沒有保存
         if (empty($res)) {
-            $where['answer'] = $answer;
-            $dao->add($where);
+            Log::record("empty record need to add");
+            if ($answer != 4) {
+                $where['answer'] = strval($passRate);
+            } else {
+                $where['answer'] = strval($answer);
+            }
+            return $dao->add($where);
         } else {
+            Log::record("need to update");
+            $_ans = $res['answer'];
+            if (strcmp($_ans, "4") != 0) {
+                $data = array();
+                if ($answer == 4) {
+                    $data['answer'] = "4";
+                } else if ($passRate > doubleval($_ans)) {
+                    $data['answer'] = strval($passRate);
+                }
+                if (!empty($data)) {
+                    return $dao->where($where)->data($data)->save();
+                }
+            }
         }
+        return 1;
     }
 
     public function doRejudgeProgramByExamIdAndUserId($eid, $userId, $programScore, $start_timeC, $end_timeC) {
-        $query = "SELECT distinct `question_id`,`result` FROM `exp_question`,`solution` WHERE `exam_id`='$eid' AND `type`='4' AND `result`='4'
-		AND `in_date`>'$start_timeC' AND `in_date`<'$end_timeC' AND `user_id`='" . $userId . "' AND `exp_question`.`question_id`=`solution`.`problem_id`";
-        $row = M()->query($query);
-        $row_cnt = count($row);
-        $programsum = $row_cnt * $programScore;
+        $row_cnt = AnswerModel::instance()->getRightProgramCount($userId, $eid, $start_timeC, $end_timeC);
+        $programsum = round($row_cnt * $programScore);
         //$program over
         return $programsum;
     }

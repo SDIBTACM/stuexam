@@ -56,24 +56,33 @@ class KeyPointBaseModel extends GeneralModel
         return $this->getDao()->select();
     }
 
-    public function getParentNodeByChapterId($chapterId) {
+    public function getByIds($ids) {
+        if (empty($ids)) {
+            return array();
+        }
         $where = array(
-            'chapter_id' => $chapterId,
+            'id' => array('in', $ids)
+        );
+        return $this->queryAll($where);
+    }
+
+    public function getParentNodeByChapterId($chapterId) {
+        if (intval($chapterId) <= 0) {
+            return array();
+        }
+        $where = array(
+            'chapter_id' => intval($chapterId),
             'parent_id' => 0
         );
         return $this->queryAll($where);
     }
 
-    public function getByParentId($parentId, $field = array()) {
+    public function getChildrenNodeByParentId($parentId, $field = array()) {
+        if (intval($parentId) <= 0) {
+            return array();
+        }
         $where = array(
-            'parent_id' => $parentId
-        );
-        return $this->queryAll($where, $field);
-    }
-
-    public function getByChapterId($chapterId, $field = array()) {
-        $where = array(
-            'chapter_id' => $chapterId
+            'parent_id' => intval($parentId)
         );
         return $this->queryAll($where, $field);
     }

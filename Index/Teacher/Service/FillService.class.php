@@ -50,6 +50,11 @@ class FillService
                 if ($arr['answernum']) {
                     M('fill_answer')->addAll($ins);
                 }
+
+                $pointIds = I('post.point', array());
+                KeyPointService::instance()->saveExamPoint(
+                    $pointIds, $fillId, FillBaseModel::FILL_PROBLEM_TYPE
+                );
                 $reqResult->setMessage("填空题修改成功!");
                 $reqResult->setData("fill");
             } else {
@@ -74,6 +79,11 @@ class FillService
                 $arr2['answer'] = $answer;
                 M('fill_answer')->add($arr2);
             }
+
+            $pointIds = I('post.point', array());
+            KeyPointService::instance()->saveExamPoint(
+                $pointIds, $fillId, FillBaseModel::FILL_PROBLEM_TYPE
+            );
             $reqResult->setMessage("填空题添加成功!");
             $reqResult->setData("fill");
         } else {

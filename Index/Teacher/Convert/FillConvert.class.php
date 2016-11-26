@@ -15,7 +15,6 @@ class FillConvert
         $arr = array();
 
         $arr['question'] = test_input($_POST['fill_des']);
-        $arr['point'] = implode(",", $_POST['point']);
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['answernum'] = intval($_POST['numanswer']);
         $arr['kind'] = intval($_POST['kind']);
