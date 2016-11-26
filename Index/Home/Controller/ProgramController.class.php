@@ -158,15 +158,21 @@ class ProgramController extends QuestionController
             ->field('result')
             ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
             ->find();
-        Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: $row_cnt");
         if (!empty($row_cnt)) {
+            Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: " . json_encode($row_cnt));
             $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
             Log::record("updresult method, trace 2, userId: $userId, problemId: $id, sync answer res: $_res");
             echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
         } else {
+            Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: null");
+            $where = array(
+                'problem_id' => $id,
+                'user_id' => $userId,
+                'in_date' => array(array('gt', $start_timeC), array('lt', $end_timeC))
+            );
             $trow = M('solution')
                 ->field(array('result', 'pass_rate'))
-                ->where("problem_id=%d and user_id='%s' and in_date>'$start_timeC' and in_date<'$end_timeC'", $id, $userId)
+                ->where($where)
                 ->order('solution_id desc')
                 ->find();
             Log::record("updresult method, trace 3, userId: $userId, problemId: $id, solution: $trow");
@@ -193,11 +199,18 @@ class ProgramController extends QuestionController
         $userId = $this->userInfo['user_id'];
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
+        $where = array(
+            'problem_id' => $pid,
+            'user_id' => $userId,
+            'result' => 4,
+            'in_date' => array(array('gt', $start_timeC), array('lt', $end_timeC))
+        );
         $row_cnt = M('solution')
-            ->where("problem_id=%d and user_id='%s' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'", $pid, $userId)
-            ->count();
-        Log::record("programSave method, trace 1, userId: $userId , problemId: $pid, programAnswer: $row_cnt");
-        if ($row_cnt) {
+            ->field(array('result'))
+            ->where($where)
+            ->find();
+        Log::record("programSave method, trace 1, userId: $userId , problemId: $pid, programAnswer: " . json_encode($row_cnt));
+        if (!empty($row_cnt)) {
             $res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
             Log::record("programSave method, trace 2, userId: $userId, problemId: $pid, sync answer res: $res");
             $this->echoError(4);
