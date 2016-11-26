@@ -201,7 +201,6 @@ class ExamController extends TemplateController
         );
         $field = array('user_id', 'question_id', 'answer');
         $programRank = M('ex_stuanswer')->field($field)->where($where)->select();
-        dbg($programRank);
         $userRank = array();
         $users = array();
         $unames = array();
