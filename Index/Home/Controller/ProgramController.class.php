@@ -149,6 +149,7 @@ class ProgramController extends QuestionController
     }
 
     public function updresult() {
+        sleep(1);
         $id = intval($_GET['id']);
         $userId = $this->userInfo['user_id'];
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
