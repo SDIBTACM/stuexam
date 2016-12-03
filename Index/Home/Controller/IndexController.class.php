@@ -1,8 +1,6 @@
 <?php
 namespace Home\Controller;
 
-use Home\Model\ExamadminModel;
-
 use Teacher\Model\ExamBaseModel;
 
 class IndexController extends TemplateController
@@ -68,34 +66,6 @@ class IndexController extends TemplateController
         $score = M()->query($query);
         $this->zadd('score', $score);
         $this->zadd('row', $row);
-        $this->auto_display();
-    }
-
-    public function about() {
-        $eid = I('get.eid', 0, 'intval');
-        if (empty($eid)) {
-            $this->echoError('No Such Exam');
-            return;
-        }
-        $user_id = $this->userInfo['user_id'];
-        $row = ExamadminModel::instance()->checkExamPrivilege($eid, $user_id);
-        if (!is_array($row)) {
-            if ($row == 0) {
-                $this->echoError('You have no privilege!');
-            } else if ($row == -1) {
-                $this->echoError('No Such Exam');
-            } else if ($row == -2) {
-                $this->echoError('Do not login in diff machine,Please Contact administrator');
-            }
-        }
-        $isruning = ExamadminModel::instance()->getExamRunningStatus($row['start_time'], $row['end_time']);
-
-        $name = M('users')->field('nick')->where("user_id='%s'", $user_id)->find();
-
-        $this->zadd('isruning', $isruning);
-        $this->zadd('row', $row);
-        $this->zadd('name', $name['nick']);
-
         $this->auto_display();
     }
 }

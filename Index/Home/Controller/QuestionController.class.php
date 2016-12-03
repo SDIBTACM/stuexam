@@ -109,7 +109,7 @@ class QuestionController extends TemplateController
     protected function initExamQuestionCount() {
         $this->chooseCount = QuestionBaseModel::instance()->getQuestionCntByType(
             $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $this->judgeCount =  QuestionBaseModel::instance()->getQuestionCntByType(
+        $this->judgeCount = QuestionBaseModel::instance()->getQuestionCntByType(
             $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $this->fillCount = QuestionBaseModel::instance()->getQuestionCntByType(
             $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
@@ -137,8 +137,8 @@ class QuestionController extends TemplateController
         $this->initExamUserScore();
 
         $chooseOk = !($this->chooseCount > 0 && $this->chooseSumScore == -1);
-        $judgeOk  = !($this->judgeCount > 0 && $this->judgeSumScore == -1);
-        $fillOk   = !($this->fillCount > 0 && $this->fillSumScore == -1);
+        $judgeOk = !($this->judgeCount > 0 && $this->judgeSumScore == -1);
+        $fillOk = !($this->fillCount > 0 && $this->fillSumScore == -1);
         $programOk = !($this->programCount > 0 && $this->programSumScore == -1);
 
         $needFix = ($chooseOk && $judgeOk && $fillOk && $programOk);
@@ -172,16 +172,16 @@ class QuestionController extends TemplateController
 
         $allScore = array(
             'choosesum' => $this->chooseSumScore,
-            'judgesum'  => $this->judgeSumScore,
-            'fillsum'   => $this->fillSumScore,
-            'programsum'=> $this->programSumScore
+            'judgesum' => $this->judgeSumScore,
+            'fillsum' => $this->fillSumScore,
+            'programsum' => $this->programSumScore
         );
 
         $allProblemNum = array(
             'choosenum' => $this->chooseCount,
-            'judgenum'  => $this->judgeCount,
-            'fillnum'   => $this->fillCount,
-            'programnum'=> $this->programCount
+            'judgenum' => $this->judgeCount,
+            'fillnum' => $this->fillCount,
+            'programnum' => $this->programCount
         );
 
         $this->zadd('name', $name['nick']);
@@ -191,12 +191,7 @@ class QuestionController extends TemplateController
         $this->zadd('userScore', $allScore);
         $this->zadd('allNum', $allProblemNum);
 
-        $exam_version = C('EXAM_VERSION');
-        if ($exam_version == '1.0.1') {
-            $this->auto_display('Index:navigation');
-        } else {
-            $this->auto_display('Index:about');
-        }
+        $this->auto_display('Index:navigation');
     }
 
     public function getLeftTime() {
