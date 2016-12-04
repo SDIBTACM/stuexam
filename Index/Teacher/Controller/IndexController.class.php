@@ -20,6 +20,12 @@ class IndexController extends QuestionBaseController
         $sql = getexamsearch($this->userInfo['user_id']);
         $key = set_get_key();
         $mypage = splitpage('exam', $sql);
+        $creator = I('get.creator', '', 'htmlspecialchars');
+        if (empty($creator)) {
+            $extraQuery = "";
+        } else {
+            $extraQuery = "creator=$creator";
+        }
         $row = M('exam')
             ->field('exam_id,title,start_time,end_time,creator')
             ->where($sql)
@@ -29,6 +35,9 @@ class IndexController extends QuestionBaseController
         $this->zadd('row', $row);
         $this->zadd('mypage', $mypage);
         $this->zadd('mykey', $key);
+        $this->zadd('teacherList', C('TEACHER_LIST'));
+        $this->zadd("creator", $creator);
+        $this->zadd("extraQuery", $extraQuery);
         $this->auto_display();
     }
 

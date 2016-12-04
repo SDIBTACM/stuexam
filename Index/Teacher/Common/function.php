@@ -7,6 +7,11 @@ function getexamsearch($userId) {
     } else {
         $sql = "`visible`='Y'";
     }
+
+    $creator = I('get.creator', '', 'htmlspecialchars');
+    if (!empty($creator)) {
+        $sql = $sql .  " AND creator = '$creator'";
+    }
     return $sql;
 }
 
