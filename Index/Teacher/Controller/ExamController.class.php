@@ -189,13 +189,14 @@ class ExamController extends TemplateController
         );
         $programIds = QuestionBaseModel::instance()->queryData($query, array('question_id'));
 
-        echo json_encode($this->getEachProgramAvgScore($programIds, $sqladd));
+        $programAvgScore = $this->getEachProgramAvgScore($programIds, $sqladd);
 
         $this->zadd('totalnum', $totalnum);
         $this->zadd('row', $row[0]);
         $this->zadd('fd', $fd);
         $this->zadd('student', $student);
         $this->zadd("programIds", $programIds);
+        $this->zadd("programAvgScore", $programAvgScore);
 
         $this->auto_display();
     }
