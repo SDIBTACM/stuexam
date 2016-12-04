@@ -189,7 +189,7 @@ class ExamController extends TemplateController
         );
         $programIds = QuestionBaseModel::instance()->queryData($query, array('question_id'));
 
-        $programAvgScore = $this->getEachProgramAvgScore($programIds, $sqladd);
+        $programAvgScore = $this->getEachProgramAvgScore($programIds, $totalnum, $sqladd);
 
         $this->zadd('totalnum', $totalnum);
         $this->zadd('row', $row[0]);
@@ -270,23 +270,26 @@ class ExamController extends TemplateController
         }
     }
 
-    private function getEachProgramAvgScore($programIds, $sqladd) {
+    private function getEachProgramAvgScore($programIds, $personCnt, $sqladd) {
 
         $examId = $this->eid;
         $ans = array();
 
         foreach($programIds as $_programId) {
+
             $programId = $_programId['question_id'];
+
+            if ($personCnt == 0) {
+                $ans[$programId] = 0;
+                continue;
+            }
+
             $allScore = ExamService::instance()->getBaseScoreByExamId($examId);
             $examBase = ExamBaseModel::instance()->getById($examId);
             $sTime = $examBase['start_time'];
             $eTime = $examBase['end_time'];
 
             $programScore = $allScore['programscore'];
-
-            $sql = "select count(1) as cnt from ex_privilege where rightstr='e$examId' $sqladd";
-            $res = M()->query($sql);
-            $personCnt = $res[0]['cnt'];
 
             $sql = "select (sum(rate) * $programScore / $personCnt) as r from (" .
                 "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
@@ -297,7 +300,7 @@ class ExamController extends TemplateController
             if (empty($res)) {
                 $ans[$programId] = 0;
             } else {
-                $ans[$programId] = $res[0]['r'];
+                $ans[$programId] = isset($res[0]['r']) ? $res[0]['r'] : 0;
             }
         }
         return $ans;
