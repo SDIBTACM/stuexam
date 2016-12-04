@@ -182,10 +182,20 @@ class ExamController extends TemplateController
         $fd[] = M('ex_student')->where("score>=80 and score<90 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=90 and score<=100 and exam_id=$this->eid $sqladd")->count();
 
+        $query = array(
+            'exam_id' => $this->eid,
+            'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
+            'order' => 'exp_qid'
+        );
+        $programIds = QuestionBaseModel::instance()->queryData($query, array('question_id'));
+
+        echo json_encode($this->getEachProgramAvgScore($programIds, $sqladd));
+
         $this->zadd('totalnum', $totalnum);
         $this->zadd('row', $row[0]);
         $this->zadd('fd', $fd);
         $this->zadd('student', $student);
+        $this->zadd("programIds", $programIds);
 
         $this->auto_display();
     }
@@ -259,28 +269,36 @@ class ExamController extends TemplateController
         }
     }
 
-    private function getEachProgramAvgScore($examId, $problemId, $sqladd) {
-        $allScore = ExamService::instance()->getBaseScoreByExamId($examId);
-        $examBase = ExamBaseModel::instance()->getById($examId);
-        $sTime = $examBase['start_time'];
-        $eTime = $examBase['end_time'];
+    private function getEachProgramAvgScore($programIds, $sqladd) {
 
-        $programScore = $allScore['programscore'];
+        $examId = $this->eid;
+        $ans = array();
 
-        $sql = "select count(1) as cnt from ex_privilege where rightstr='e$examId' $sqladd";
-        $res = M()->query($sql);
-        $personCnt = $res['cnt'];
+        foreach($programIds as $_programId) {
+            $programId = $_programId['question_id'];
+            $allScore = ExamService::instance()->getBaseScoreByExamId($examId);
+            $examBase = ExamBaseModel::instance()->getById($examId);
+            $sTime = $examBase['start_time'];
+            $eTime = $examBase['end_time'];
 
+            $programScore = $allScore['programscore'];
 
-        $sql = "select sum(rate) * $programScore / $personCnt from (" .
-            "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
-            "where problem_id=$problemId and pass_rate > 0 and " .
-            "in_date>='$sTime' and in_date<='$eTime' $sqladd group by user_id" .
-            ") t";
+            $sql = "select count(1) as cnt from ex_privilege where rightstr='e$examId' $sqladd";
+            $res = M()->query($sql);
+            $personCnt = $res[0]['cnt'];
 
-        var_dump($sql);
-        $res = M()->query($sql);
-
-        var_dump($res);
+            $sql = "select (sum(rate) * $programScore / $personCnt) as r from (" .
+                "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
+                "where problem_id=$programId and pass_rate > 0 and " .
+                "in_date>='$sTime' and in_date<='$eTime' $sqladd group by user_id" .
+                ") t";
+            $res = M()->query($sql);
+            if (empty($res)) {
+                $ans[$programId] = 0;
+            } else {
+                $ans[$programId] = $res[0]['r'];
+            }
+        }
+        return $ans;
     }
 }
