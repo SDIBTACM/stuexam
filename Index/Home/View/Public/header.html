@@ -40,7 +40,7 @@
             </ul>
             <!-- first ul end -->
             <ul class="nav navbar-nav navbar-right">
-                <li class='active'><a href="javascript:void(0);" id='nowdate'></a></li>
+                <!--<li class='active'><a href="javascript:void(0);" id='nowdate'></a></li>-->
                 <li><a href="javascript:;">欢迎您： {$Think.session.user_id}</a></li>
             </ul>
             <!-- the second ul end -->
@@ -51,7 +51,6 @@
 </div>
 <!-- navbar end -->
 <js file="__PUBLIC__/Js/jquery-1.11.2.min.js"/>
-<js file="__PUBLIC__/Js/Home.min.js"/>
 <script>
     $(function () {
         var url = window.location.href;
@@ -61,7 +60,5 @@
         else {
             $("#indexnavindex").addClass('active');
         }
-        clock();
     });
-    var diff = new Date("<?=date('Y/m/d H:i:s')?>").getTime() - new Date().getTime();
 </script>

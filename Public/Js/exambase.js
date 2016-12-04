@@ -1,8 +1,12 @@
 /**
  * Created by jiaying on 15/11/14.
  */
+var isalert = false;
+var runtimes = 0;
+
 $(function () {
-    $(".upd-stuprogram").click(function(){
+
+    $(".upd-stuprogram").click(function () {
         var eid = $("#examid").val();
         var pid = $(this).data('pid');
         var panel = "collapseExample" + pid;
@@ -24,10 +28,10 @@ $(function () {
             });
         }
     });
-    $("#savePaper").click(function(){
+    $("#savePaper").click(function () {
         if (questionType == 1) {
             savePaper(chooseSaveUrl, "chooseExam");
-        }  else if (questionType == 2) {
+        } else if (questionType == 2) {
             savePaper(judgeSaveUrl, "judgeExam");
         } else if (questionType == 3) {
             savePaper(fillSaveUrl, "fillExam");
@@ -35,7 +39,7 @@ $(function () {
             $("#saveover").html("编程题无需保存");
         }
     });
-    $(".submitcode").click(function() {
+    $(".submitcode").click(function () {
         var pid = $(this).data('programid');
         var data = $("#codeForm" + pid).serialize();
         data = data + "&id=" + pid + "&eid=" + $("#examid").val();
@@ -52,7 +56,7 @@ $(function () {
             }
         });
     });
-    $(".updateresult").click(function(){
+    $(".updateresult").click(function () {
         var pid = $(this).data('proid');
         var eid = $("#examid").val();
         var span = "span" + pid;
@@ -60,25 +64,8 @@ $(function () {
     });
     antiCheat();
     GetRTime();
+    setInterval("GetRTime()", 1000);
 });
-
-function _submitCodeNew(spanId, codeId, languageId, pid, eid) {
-    var source = $("#" + codeId).val();
-    var language = $("#" + languageId).val();
-    var r = mychecksource(source, language);
-    r && $.ajax({
-        url: codesubmiturl,
-        data: "language=" + language + "&id=" + pid + "&eid=" + eid + "&source=" + encodeURIComponent(source),
-        type: "POST",
-        dataType: "html",
-        success: function (data) {
-            $("#" + spanId).html(data);
-        },
-        error: function () {
-            alert("something error when you submit")
-        }
-    });
-}
 
 function submitChoosePaper() {
     $("#chooseExam").submit();
@@ -112,19 +99,22 @@ function examFormSubmit() {
 }
 
 function savePaper(saveUrl, formId) {
+    var that = $("#saveover");
     $.ajax({
         url: saveUrl,
         type: "POST",
         dataType: "html",
         data: $("#" + formId).serialize(),
-        success: function(e) {
-            console.log(e);
-            0 < e ? ($("#saveover").html("[已保存]"), setTimeout(function() {
+        success: function (e) {
+            0 < e ? (that.html("[已保存]"), setTimeout(function () {
                 $("#saveover").html("")
-            }, 6e3)) : $("#saveover").html("[保存失败]");
-            if (e > 0) { left = e * 1000;runtimes = 0;}
+            }, 6e3)) : that.html("[保存失败]");
+            if (e > 0) {
+                left = e * 1000;
+                runtimes = 0;
+            }
         },
-        error: function() {
+        error: function () {
             alert("something error when you save")
         }
     });
@@ -140,7 +130,7 @@ function antiCheat() {
                 alert("当前设置不允许使用F5刷新键");
                 return false;
             }
-            if( (event.ctrlKey) && (event.keyCode == 83) ) {
+            if ((event.ctrlKey) && (event.keyCode == 83)) {
                 event.returnValue = false;
                 return false;
             }
@@ -164,8 +154,6 @@ function antiCheat() {
     }
 }
 
-var isalert = false;
-var runtimes = 0;
 function GetRTime() {
     var nMS = left - runtimes * 1000;
     if (nMS > 0) {
@@ -215,6 +203,5 @@ function GetRTime() {
             runtimes = 0;
         }
         runtimes++;
-        setTimeout("GetRTime()", 1000);
     }
 }
