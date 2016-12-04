@@ -6,6 +6,8 @@ var runtimes = 0;
 
 $(function () {
 
+    setInterval("GetRTime()", 1000);
+
     $(".upd-stuprogram").click(function () {
         var eid = $("#examid").val();
         var pid = $(this).data('pid');
@@ -28,6 +30,7 @@ $(function () {
             });
         }
     });
+
     $("#savePaper").click(function () {
         if (questionType == 1) {
             savePaper(chooseSaveUrl, "chooseExam");
@@ -39,6 +42,7 @@ $(function () {
             $("#saveover").html("编程题无需保存");
         }
     });
+
     $(".submitcode").click(function () {
         var pid = $(this).data('programid');
         var data = $("#codeForm" + pid).serialize();
@@ -56,15 +60,15 @@ $(function () {
             }
         });
     });
+
     $(".updateresult").click(function () {
         var pid = $(this).data('proid');
         var eid = $("#examid").val();
         var span = "span" + pid;
         updateresult(this, span, pid, eid);
     });
+
     antiCheat();
-    GetRTime();
-    setInterval("GetRTime()", 1000);
 });
 
 function submitChoosePaper() {

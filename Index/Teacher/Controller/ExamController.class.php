@@ -2,6 +2,7 @@
 namespace Teacher\Controller;
 
 use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\ExamBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
@@ -256,5 +257,30 @@ class ExamController extends TemplateController
             $this->zadd('mykey', $key);
             $this->auto_display();
         }
+    }
+
+    private function getEachProgramAvgScore($examId, $problemId, $sqladd) {
+        $allScore = ExamService::instance()->getBaseScoreByExamId($examId);
+        $examBase = ExamBaseModel::instance()->getById($examId);
+        $sTime = $examBase['start_time'];
+        $eTime = $examBase['end_time'];
+
+        $programScore = $allScore['programscore'];
+
+        $sql = "select count(1) as cnt from ex_privilege where rightstr='e$examId' $sqladd";
+        $res = M()->query($sql);
+        $personCnt = $res['cnt'];
+
+
+        $sql = "select sum(rate) * $programScore / $personCnt from (" .
+            "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
+            "where problem_id=$problemId and pass_rate > 0 and " .
+            "in_date>='$sTime' and in_date<='$eTime' $sqladd group by user_id" .
+            ") t";
+
+        var_dump($sql);
+        $res = M()->query($sql);
+
+        var_dump($res);
     }
 }
