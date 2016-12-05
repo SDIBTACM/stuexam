@@ -224,12 +224,13 @@ class ExamController extends TemplateController
         $acCount = M()->query($query);
         foreach($acCount as $ac) {
             $programCount[$ac['user_id']] = $ac['cnt'];
-            $users[] = $ac['user_id'];
         }
 
         foreach ($programRank as $p) {
             $userRank[$p['user_id']][$p['question_id']] = $p['answer'];
+            $users[] = $p['user_id'];
         }
+        $users = array_unique($users);
 
         $userIds_chunk = array_chunk($users, 50);
         foreach ($userIds_chunk as $_userIds) {
