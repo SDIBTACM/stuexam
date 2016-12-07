@@ -65,11 +65,33 @@ $(function () {
         var pid = $(this).data('proid');
         var eid = $("#examid").val();
         var span = "span" + pid;
-        updateresult(this, span, pid, eid);
+        updateResult(this, span, pid, eid);
     });
 
     antiCheat();
 });
+
+function updateResult(e, spanId, problemId, examId) {
+    var that = $(e);
+    that.attr("disabled", true);
+    that.html("Loading Now...");
+    $.ajax({
+        url : updresulturl,
+        type: "GET",
+        dataType: "html",
+        data: "id=" + problemId + "&eid=" + examId + "&sid=" + Math.random(),
+        success: function (e) {
+            $("#" + spanId).html(e);
+        },
+        error: function () {
+            alert("something error when you submit")
+        }
+    });
+    setTimeout(function () {
+        that.attr("disabled", false);
+        that.html("点击刷新结果");
+    }, 4e3);
+}
 
 function submitChoosePaper() {
     $("#chooseExam").submit();
