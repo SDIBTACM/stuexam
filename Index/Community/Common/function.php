@@ -6,37 +6,6 @@
  * Datetime: 9/28/16 21:29
  */
 
-function formatTime($unixTime) {
-    $showTime = date('Y', $unixTime) . "年" . date('n', $unixTime) . "月" . date('j', $unixTime) . "日";
-
-    if (date('Y', $unixTime) == date('Y')) {
-        $showTime = date('n', $unixTime) . "月" . date('j', $unixTime) . "日 " . date('H:i', $unixTime);
-
-        if (date('n.j', $unixTime) == date('n.j')) {
-            $timeDifference = time() - $unixTime + 1;
-
-            if ($timeDifference < 30) {
-                return "刚刚";
-            }
-            if ($timeDifference >= 30 && $timeDifference < 60) {
-                return $timeDifference . "秒前";
-            }
-            if ($timeDifference >= 60 && $timeDifference < 3600) {
-                return floor($timeDifference / 60) . "分钟前";
-            }
-            return date('H:i', $unixTime);
-        }
-        if (date('n.j', ($unixTime + 86400)) == date('n.j')) {
-            return "昨天 " . date('H:i', $unixTime);
-        }
-    }
-    return $showTime;
-}
-
-function getVal($value, $default = '') {
-    return isset($value) ? $value : $default;
-}
-
 function myMultiSort($arrays, $sort_key, $sort_order = SORT_ASC, $sort_type = SORT_NUMERIC) {
     if (is_array($arrays)) {
         foreach ($arrays as $array) {
@@ -51,4 +20,43 @@ function myMultiSort($arrays, $sort_key, $sort_order = SORT_ASC, $sort_type = SO
     }
     array_multisort($key_arrays, $sort_order, $sort_type, $arrays);
     return $arrays;
+}
+
+//判断数据是否为null
+function checkNull($data) {
+    if (is_array($data)) {
+        foreach ($data as $key => $value) {
+            if ($value && !is_array($value)) {
+                return false;
+            }
+            if (!checkNull($value)) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        if (!$data) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+//验证节点
+function nodeValidate($node) {
+    $nodes = M('node')->getField('node_name', true);
+    if (!in_array($node, $nodes)) {
+        return false;
+    }
+    return true;
+}
+
+//验证分类
+function catValidate($catName) {
+    $categorys = M('category')->getField('cat_name', true);
+    if (!in_array($catName, $categorys)) {
+        return false;
+    }
+    return true;
 }
