@@ -29,7 +29,6 @@ class NodeModel extends GeneralModel
     }
 
     protected function getTableName() {
-        // TODO: Implement getTableName() method.
         return "node";
     }
 
@@ -38,43 +37,38 @@ class NodeModel extends GeneralModel
     }
 
     protected function getPrimaryId() {
-        // TODO: Implement getPrimaryId() method.
+        return 'id';
     }
 
     public function getHotNodes() {
-        $nodes = $this->getDao()->field('node_name')->order('hits desc')->limit(10)->select();
-        return $nodes;
+        $where = array(
+            'id' => array('gt', 0),
+            'order' => 'hits desc',
+            'limit' => 10
+        );
+        return $this->queryData($where, array('node_name'));
     }
 
     /**
      * 获取全部节点
      */
     public function getAllNodes() {
-        $nodes = $this->getDao()->field('id,node_name')->select();
-        return $nodes;
+        return $this->queryAll(array('id' => array('gt', 0)), array('id','node_name'));
     }
 
     /**
      * 根据分类名获取节点
      */
-    public function getNodeByCatName($categoryId) {
-        $nodes = $this->getDao()->field('node_name')
-            ->where(array('cid' => $categoryId))
-            ->select();
-        return $nodes;
+    public function getNodeByCatId($categoryId) {
+        return $this->queryAll(array('cid' => $categoryId), array('node_name'));
     }
 
     /**
      * 获取节信息
-     * @param  [type] $node [description]
-     * @return [type]       [description]
      */
-    public function getNodeInfo($node) {
-        $data = $this->getDao()
-            ->field('id,desc,logo_path,topic_num,desc')
-            ->where(array('node_name' => $node))
-            ->find();
-        return $data;
+    public function getNodeInfo($nodeName) {
+        return $this->queryAll(array('node_name' => $nodeName),
+            array('id', 'desc', 'logo_path', 'topic_num', 'desc'));
     }
 
     /**

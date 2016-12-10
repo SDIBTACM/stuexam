@@ -20,24 +20,19 @@ class CommentController extends TemplateController
             if (!TopicModel::instance()->checkTid($data['tid'])) {
                 $this->ajaxReturn('no');
             }
-            $data['content'] = I('post.content', '', 'trim');
-            if ($data['content'] == '') {
+            $data['content'] = I('post.content', '', 'trim,htmlspecialchars');
+            if (empty($data['content'])) {
                 $this->ajaxReturn('no');
             }
             $data['publish_time'] = date('Y-m-d H:i:s', time());
-            $data['uid'] = session('uid');
-            switch (I('post.type', '', 'intval')) {
+            $data['uid'] = $this->userInfo['uid'];
+            $data['to_uid'] = I('post.toUid', 0, 'intval');
+            switch (I('post.type', 0, 'intval')) {
                 case 0:                //评论
-                    $dta['type'] = '评论';
+                    $data['type'] = '评论';
                     break;
                 case 1:                //回复
                     $data['type'] = '回复';
-                    $reply_data['to_uid'] = I('post.toUid', '', 'intval');
-                    $reply_data['from_uid'] = session('uid');
-                    $reply_data['tid'] = $data['tid'];
-                    $reply_data['create_time'] = $data['publish_time'];
-                    $reply_data['is_read'] = '否';
-                    // $this->ajaxReturn(json_encode($reply_data));
                     break;
                 default:
                     $this->ajaxReturn('no');
@@ -45,9 +40,6 @@ class CommentController extends TemplateController
             }
             if (M('Comment')->add($data)) {
                 $this->trigger($Topic, $data);
-                if ($data['type'] == '回复') {
-                    $this->notify($reply_data);
-                }
                 $this->ajaxReturn('yes');
             } else {
                 $this->ajaxReturn('no');
@@ -57,26 +49,12 @@ class CommentController extends TemplateController
 
     /**
      * 触发更新
-     * @param  [type] $tid   [description]
-     * @param  [type] $Topic [description]
-     * @return [type]        [description]
      */
     public function trigger($Topic, $data) {
         M('siteinfo')->where(['id' => 1])->setInc('comment_num');
         $Topic->where(['id' => $data['tid']])->setInc('comments');
-        $Topic->last_comment_user = session('user');
+        $Topic->last_comment_user = $this->userInfo['user_id'];
         $Topic->last_comment_time = $data['publish_time'];
         $Topic->where(['id' => $data['tid']])->save();
-    }
-
-    /**
-     * 回复提醒
-     * @param  [type] $data 未读回复信息
-     * @return [type]       [description]
-     */
-    public function notify($reply_data) {
-        if (!M('reply')->add($reply_data)) {
-            $this->ajaxReturn('no');
-        }
     }
 }

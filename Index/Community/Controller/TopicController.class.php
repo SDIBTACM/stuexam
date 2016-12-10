@@ -33,7 +33,7 @@ class TopicController extends TemplateController
             $data['content'] = I('post.content', '', 'trim');
             $data['node_id'] = I('post.node_id', '', 'intval');
             $data['cat_id'] = NodeModel::instance()->getCatIdByNodeId($data['node_id']);
-            $data['uid'] = session('uid');
+            $data['uid'] = $this->userInfo['uid'];
             if (TopicModel::instance()->addTopic($data)) {
                 $this->success('发布主题成功', U("Index/index"));
             } else {

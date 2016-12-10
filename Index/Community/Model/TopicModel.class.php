@@ -50,7 +50,7 @@ class TopicModel extends GeneralModel
     }
 
     protected function getPrimaryId() {
-        // TODO: Implement getPrimaryId() method.
+        return 'id';
     }
 
     /**
@@ -76,9 +76,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 追加主题内容
-     * @param  [type] $tid     [description]
-     * @param  [type] $content [description]
-     * @return [type]          [description]
      */
     public function appendContent($tid, $content) {
         $originContent = $this->getDao()->where(array('id' => $tid))->getField('content');
@@ -91,8 +88,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 检查所属节点值
-     * @param  [type] $nodeId [description]
-     * @return [type]         [description]
      */
     function checkNodeId($nodeId) {
         $nodeIds = M('node')->getField('id', true);
@@ -104,7 +99,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 获取当前时间
-     * @return [type] [description]
      */
     function getTime() {
         return date('Y-m-d H:i:s', time());
@@ -112,8 +106,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 检查content字符长度
-     * @param  [type] $content [description]
-     * @return [type]          [description]
      */
     function checkLength_c($content) {
         if (mb_strlen($content) > 2000) {
@@ -124,8 +116,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 检查title字符长度
-     * @param  [type] $title [description]
-     * @return [type]        [description]
      */
     function checkLength_t($title) {
         if (mb_strlen($title) > 120) {
@@ -136,8 +126,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 根据tid获取主题详情
-     * @param   $tid [description]
-     * @return [type]      [description]
      */
     public function getDataById($tid) {
         $topicInfo = $this
@@ -162,13 +150,9 @@ class TopicModel extends GeneralModel
      */
     public function getTopicByTid($tid) {
         if (is_array($tid)) {
-            $sql = 'discuss_topic.id IN( ';
-            $tid_last = array_pop($tid);
-            foreach ($tid as $t) {
-
-                $sql .= "$t,";
-            }
-            $sql .= $tid_last . ')';
+            $tidStr = implode('\',\'', $tid);
+            $tidStr = '\'' . $tidStr . '\'';
+            $sql = 'airex_topic.id IN(' . $tidStr . ')';
             $topics['lists'] = $this
                 ->getDao()
                 ->where($sql)
@@ -302,7 +286,6 @@ class TopicModel extends GeneralModel
 
     /**
      * 触发更新
-     * @return [type] [description]
      */
     public function addTrigger($nodeId) {
         if (!M('node')->where(array('id' => $nodeId))->setInc('topic_num')) {
@@ -316,35 +299,28 @@ class TopicModel extends GeneralModel
 
     /**
      * 根据tid获取字段信息
-     * @param  [type] $tid    [description]
-     * @param  [type] $fields [description]
-     * @return [type]         [description]
      */
     public function getFieldByTid($tid, $fields) {
         if (is_array($fields)) {
             $fields = implode(',', $fields);
         }
-        $result = $this->where(array('id' => $tid))
+        $result = $this->getDao()
+            ->where(array('id' => $tid))
             ->field($fields)
-            ->select()[0];
+            ->find();
         return $result;
     }
 
     /**
      * 收藏主题
-     * @param int @tid
-     * @return bool
      */
     public function collectTopic($tid) {
-        $col_topic = M('col_topic');
         $uid = I('session.uid');
-        $data['uid'] = $uid;
-        $data['tid'] = $tid;
-        if ($col_topic->data($data)->add()) {
-            $User = M('user');
-            $User->where('id=' . $uid)->setInc('topics', 1);
+        if (CollectionModel::instance()->collect($uid, $tid, CollectionModel::topicCollectionType)) {
+            UserModel::instance()->incTopics($uid);
             return true;
         }
+        return false;
     }
 
     /**
@@ -353,21 +329,16 @@ class TopicModel extends GeneralModel
      * @return bool
      */
     public function removeColTopic($tid) {
-        $userID = I('session.uid');
-        $col_topic = M('col_topic');
-        $data['uid'] = $userID;
-        $data['tid'] = $tid;
-        if ($col_topic->where('uid=' . $userID . ' AND tid=' . $tid)->delete()) {
-            $User = M('User');
-            $User->where('id=' . $userID)->setDec('topics', 1);
+        $uid = I('session.uid');
+        if (CollectionModel::instance()->cancelCollect($uid, $tid, CollectionModel::topicCollectionType)) {
+            UserModel::instance()->decTopics($uid);
             return true;
         }
+        return false;
     }
 
     /**
      * 通过用户ID取得用户收藏的主题
-     * @param int uid
-     * @return array coltopic
      */
     public function getColtopicByID($uid) {
         $col_topic = M('col_topic');

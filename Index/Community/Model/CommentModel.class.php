@@ -38,7 +38,7 @@ class CommentModel extends GeneralModel
     }
 
     protected function getPrimaryId() {
-        // TODO: Implement getPrimaryId() method.
+        return 'id';
     }
 
     /**
@@ -71,5 +71,9 @@ class CommentModel extends GeneralModel
             ->limit('0,' . $limit)
             ->select();
         return $comments;
+    }
+
+    public function getReplyCountByToUid($toUid) {
+        return $this->getDao()->where(array('to_uid' => $toUid, 'is_read' => '否', 'type' => '回复'))->count();
     }
 }

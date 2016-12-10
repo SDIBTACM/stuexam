@@ -35,7 +35,7 @@ class IndexController extends TemplateController
         }
 
         $categories = DiscussCategory::getAllCategoryName();  //获取导航栏分类
-        $nodes = NodeModel::instance()->getNodeByCatName($categoryId);      //根据分类获取节点
+        $nodes = NodeModel::instance()->getNodeByCatId($categoryId);      //根据分类获取节点
         $topics = TopicModel::instance()->getTopicsByCat($categoryId);      //根据分类获取文章
         $this->assign('categories', $categories);
         $this->assign('nodes', $nodes);

@@ -16,9 +16,18 @@ class TemplateController extends \Home\Controller\TemplateController
 {
     public function _initialize() {
         parent::_initialize();
+        $this->initDiscussLoginUser();
     }
 
-    public function showSidebar($mode) {
+    private function initDiscussLoginUser() {
+        $uid = session('uid');
+        if (empty($uid)) {
+
+        }
+        $this->userInfo['uid'] = $uid;
+    }
+
+    public function showSidebar($mode = '') {
         $sidebar['userInfo'] = UserModel::instance()->getSidebarUserInfo();//用户信息
         if ($mode == 'all') {
             $sidebar['hotNodes'] = NodeModel::instance()->getHotNodes();//热门节点

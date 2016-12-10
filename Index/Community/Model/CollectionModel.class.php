@@ -14,6 +14,9 @@ class CollectionModel extends GeneralModel
 {
     private static $_instance = null;
 
+    const nodeCollectionType = 1;
+    const topicCollectionType = 2;
+
     private function __construct() {
     }
 
@@ -53,4 +56,21 @@ class CollectionModel extends GeneralModel
         }
     }
 
+    public function collect($uid, $followId, $type) {
+        $data = array(
+            'uid' => $uid,
+            'follow_id' => $followId,
+            'type' => $type
+        );
+        return $this->insertData($data);
+    }
+
+    public function cancelCollect($uid, $followId, $type) {
+        $where = array(
+            'uid' => $uid,
+            'follow_id' => $followId,
+            'type' => $type
+        );
+        $this->getDao()->where($where)->delete();
+    }
 }
