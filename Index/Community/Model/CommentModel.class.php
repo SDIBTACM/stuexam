@@ -13,12 +13,24 @@ use Teacher\Model\GeneralModel;
 
 class CommentModel extends GeneralModel
 {
-    protected function getDao() {
-        // TODO: Implement getDao() method.
+
+    private static $_instance = null;
+
+    private function __construct() {
+    }
+
+    private function __clone() {
+    }
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
     }
 
     protected function getTableName() {
-        // TODO: Implement getTableName() method.
+        return "comment";
     }
 
     protected function getTableFields() {
@@ -36,6 +48,7 @@ class CommentModel extends GeneralModel
      */
     public function getCommentByTid($tid) {
         $commentInfo = $this
+            ->getDao()
             ->where(array('tid' => $tid))
             ->field('user_name,content,publish_time,imgpath,discuss_comment.id as cid,u.id as cuid')
             ->join('discuss_user as u on u.id = discuss_comment.uid')

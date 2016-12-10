@@ -9,13 +9,15 @@
 namespace Community\Controller;
 
 
+use Community\Model\TopicModel;
+
 class CommentController extends TemplateController
 {
     public function add() {
         if (IS_AJAX) {
             $data['tid'] = I('post.tid', '', 'intval');
             $Topic = D('Topic');
-            if (!$Topic->checkTid($data['tid'])) {
+            if (!TopicModel::instance()->checkTid($data['tid'])) {
                 $this->ajaxReturn('no');
             }
             $data['content'] = I('post.content', '', 'trim');

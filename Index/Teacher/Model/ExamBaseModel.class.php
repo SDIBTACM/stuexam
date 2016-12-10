@@ -26,10 +26,6 @@ class ExamBaseModel extends GeneralModel
     private function __clone() {
     }
 
-    protected function getDao() {
-        return M($this->getTableName());
-    }
-
     protected function getTableName() {
         return ExamTableConfig::TABLE_NAME;
     }

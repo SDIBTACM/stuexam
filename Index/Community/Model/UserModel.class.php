@@ -13,12 +13,23 @@ use Teacher\Model\GeneralModel;
 
 class UserModel extends GeneralModel
 {
-    protected function getDao() {
-        // TODO: Implement getDao() method.
+    private static $_instance = null;
+
+    private function __construct() {
+    }
+
+    private function __clone() {
+    }
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
     }
 
     protected function getTableName() {
-        // TODO: Implement getTableName() method.
+        return "user";
     }
 
     protected function getTableFields() {
@@ -29,4 +40,13 @@ class UserModel extends GeneralModel
         // TODO: Implement getPrimaryId() method.
     }
 
+    public function getSidebarUserInfo() {
+        $uid = session('uid');
+        $data = $this->getDao()->where(array('id' => $uid))
+            ->field('imgpath,attentions,topics,wealth,nodes')
+            ->select()[0];
+        $data['notifications'] = M('reply')->where(array('to_uid' => $uid, 'is_read' => '否'))
+            ->count();
+        return $data;
+    }
 }

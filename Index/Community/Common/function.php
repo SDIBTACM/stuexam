@@ -51,12 +51,3 @@ function nodeValidate($node) {
     }
     return true;
 }
-
-//验证分类
-function catValidate($catName) {
-    $categorys = M('category')->getField('cat_name', true);
-    if (!in_array($catName, $categorys)) {
-        return false;
-    }
-    return true;
-}

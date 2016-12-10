@@ -12,12 +12,23 @@ use Teacher\Model\GeneralModel;
 
 class CollectionModel extends GeneralModel
 {
-    protected function getDao() {
-        // TODO: Implement getDao() method.
+    private static $_instance = null;
+
+    private function __construct() {
+    }
+
+    private function __clone() {
+    }
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
     }
 
     protected function getTableName() {
-        // TODO: Implement getTableName() method.
+        return "collection";
     }
 
     protected function getTableFields() {
@@ -26,6 +37,20 @@ class CollectionModel extends GeneralModel
 
     protected function getPrimaryId() {
         // TODO: Implement getPrimaryId() method.
+    }
+
+    public function isCollected($uid, $followId, $type) {
+        $where = array(
+            'uid' => $uid,
+            'follow_id' => $followId,
+            'type' => $type
+        );
+        $flag = $this->queryOne($where, array('id'));
+        if (empty($flag)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

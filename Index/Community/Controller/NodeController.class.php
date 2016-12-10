@@ -9,13 +9,13 @@
 namespace Community\Controller;
 
 
+use Community\Model\NodeModel;
+use Community\Model\TopicModel;
+
 class NodeController extends TemplateController
 {
-    public $Node;
-
     function __construct() {
         parent::__construct();
-        $this->Node = D('node');
     }
 
     /**
@@ -26,11 +26,10 @@ class NodeController extends TemplateController
         if (!nodeValidate($node)) {
             $this->error('传输参数错误');
         }
-        $nodeInfo = $this->Node->getNodeInfo($node);
-        $topics = D('Topic')->getTopicsByNode($node);
+        $nodeInfo = NodeModel::instance()->getNodeInfo($node);
+        $topics = TopicModel::instance()->getTopicsByNode($node);
         $this->assign('nodeInfo', $nodeInfo);
         $this->assign('topics', $topics);
-        //var_dump($topics);
         $this->assign('node', $node);
         $this->showSidebar('all');//展示侧边栏
         $this->display('Topic/node');

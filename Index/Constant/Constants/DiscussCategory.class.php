@@ -67,4 +67,13 @@ class DiscussCategory
         }
         return null;
     }
+
+    public static function getAllCategoryName() {
+        self::initConstant();
+        $name = array();
+        foreach (self::$category as $res) {
+            $name[] = $res->getName();
+        }
+        return $name;
+    }
 }

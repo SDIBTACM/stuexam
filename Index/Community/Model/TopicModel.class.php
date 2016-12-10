@@ -9,9 +9,10 @@
 namespace Community\Model;
 
 
+use Teacher\Model\GeneralModel;
 use Think\Model;
 
-class TopicModel extends Model
+class TopicModel extends GeneralModel
 {
     protected $_validate = array(
         array('title', 'require', '主题标题不能为空.', 1),
@@ -25,23 +26,49 @@ class TopicModel extends Model
         array('publish_time', 'getTime', 1, 'callback'),
     );
 
+    private static $_instance = null;
+
+    private function __construct() {
+    }
+
+    private function __clone() {
+    }
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
+    }
+
+    protected function getTableName() {
+        return "topic";
+    }
+
+    protected function getTableFields() {
+        // TODO: Implement getTableFields() method.
+    }
+
+    protected function getPrimaryId() {
+        // TODO: Implement getPrimaryId() method.
+    }
+
     /**
      * 添加主题
-     * @param [type] $data [description]
      */
     public function addTopic($data) {
-        if ($this->create($data)) {
-            $this->startTrans();
-            if ($this->add()) {
+        if ($this->getDao()->create($data)) {
+            $this->getDao()->startTrans();
+            if ($this->getDao()->add()) {
                 if ($this->addTrigger($data['node_id'])) {
-                    $this->commit();
+                    $this->getDao()->commit();
                     return true;
                 } else {
-                    $this->rollback();
+                    $this->getDao()->rollback();
                     return false;
                 }
             } else {
-                $this->rollback();
+                $this->getDao()->rollback();
                 return false;
             }
         }
@@ -54,9 +81,9 @@ class TopicModel extends Model
      * @return [type]          [description]
      */
     public function appendContent($tid, $content) {
-        $originContent = $this->where(array('id' => $tid))->getField('content');
+        $originContent = $this->getDao()->where(array('id' => $tid))->getField('content');
         $newContent = $originContent . '<span class=\'append\'><hr><p class=\'small\' style=\'background-color:#F0F0F0\'>' . $content . '</p></span>';
-        if ($this->where(array('id' => $tid))->setField('content', $newContent)) {
+        if ($this->getDao()->where(array('id' => $tid))->setField('content', $newContent)) {
             return true;
         }
         return false;
@@ -114,13 +141,13 @@ class TopicModel extends Model
      */
     public function getDataById($tid) {
         $topicInfo = $this
+            ->getDao()
             ->where(array('discuss_topic.id' => $tid))
             ->join('discuss_node as n on n.id = discuss_topic.node_id')
             ->field('title,content,publish_time,user_name,discuss_topic.hits as hits,collections,comments,node_name,imgpath,last_comment_time')
             ->join('discuss_user as u on u.id = discuss_topic.uid')
             ->select()[0];
-        $col_topic = M('col_topic');
-        if ($col_topic->where('uid=' . I('session.uid') . ' AND tid=' . $tid)->find()) {
+        if (CollectionModel::instance()->isCollected(session('uid'), $tid, 2)) {
             $topicInfo['collected'] = 1;
         } else {
             $topicInfo['collected'] = 0;
@@ -143,6 +170,7 @@ class TopicModel extends Model
             }
             $sql .= $tid_last . ')';
             $topics['lists'] = $this
+                ->getDao()
                 ->where($sql)
                 ->join('discuss_node as n on n.id = discuss_topic.node_id')
                 ->join('discuss_user as u on u.id = discuss_topic.uid')
@@ -152,6 +180,7 @@ class TopicModel extends Model
             return $topics;
         } else {
             $topics['lists'] = $this
+                ->getDao()
                 ->where(array('discuss_topic.id' => $tid))
                 ->join('discuss_node as n on n.id = discuss_topic.node_id')
                 ->join('discuss_user as u on u.id = discuss_topic.uid')
@@ -164,11 +193,9 @@ class TopicModel extends Model
 
     /**
      * 检查tid是否存在
-     * @param  [type] $tid [description]
-     * @return [type]      [description]
      */
     public function checkTid($tid) {
-        $tids = $this->getField('id', true);
+        $tids = $this->getDao()->getField('id', true);
         if (!in_array($tid, $tids)) {
             return false;
         }
@@ -180,19 +207,13 @@ class TopicModel extends Model
      * @param  [type] $cat [description]
      * @return [type]      [description]
      */
-    public function getTopicsByCat($catName) {
-        if ($catName == null) {
-            $catName = M('category')->getField('cat_name');
-        }
+    public function getTopicsByCat($categoryId) {
         $p = I('get.p') ? I('get.p') : 0;
-        $count = M('category as c')->where(array('cat_name' => $catName))
-            ->join('discuss_topic as t on t.cat_id = c.id')
-            ->count();
+        $count = $this->getDao()->where(array('cat_id' => $categoryId))->count();
         $limit = C('PAGE_SIZE');
         $Page = new \Think\Page($count, $limit);
         //获取分页数据
-        $topics['lists'] = M('category as c')->where(array('cat_name' => $catName))
-            ->join('discuss_topic as t on t.cat_id = c.id')
+        $topics['lists'] = M('topic as t')->where(array('cat_id' => $categoryId))
             ->join('discuss_user as u on u.id = t.uid')
             ->field('publish_time,title,imgpath,comments,user_name,node_name,t.id
 												as tid,t.hits as hits,last_comment_user,last_comment_time')
@@ -351,7 +372,6 @@ class TopicModel extends Model
     public function getColtopicByID($uid) {
         $col_topic = M('col_topic');
         $coltopic = $col_topic->where('uid=' . $uid)->getField('tid', TRUE);
-        //var_dump($coltopic);exit;
         return $coltopic;
     }
 }
