@@ -90,4 +90,12 @@ class NodeModel extends GeneralModel
             ->getField('node_name');
         return $node;
     }
+
+    public function incTopicNum($nodeId) {
+        return $this->getDao()->where(array('id' => $nodeId))->setInc('topic_num');
+    }
+
+    public function decTopicNum($nodeId) {
+        return $this->getDao()->where(array('id' => $nodeId))->setDec('topic_num');
+    }
 }

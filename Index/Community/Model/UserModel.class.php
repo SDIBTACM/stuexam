@@ -40,11 +40,9 @@ class UserModel extends GeneralModel
         return 'id';
     }
 
-    public function getSidebarUserInfo() {
-        $uid = session('uid');
-        $data = $this->getDao()->where(array('id' => $uid))
-            ->field('imgpath,attentions,topics,wealth,nodes')
-            ->find();
+    public function getSidebarUserInfo($uid) {
+        $data = $this->queryOne(array('id' => $uid),
+            array('imgpath', 'attentions', 'topics', 'wealth', 'nodes'));
         $data['notifications'] = CommentModel::instance()->getReplyCountByToUid($uid);
         return $data;
     }
@@ -79,55 +77,49 @@ class UserModel extends GeneralModel
      * 用户信息页 获取用户信息
      * @return array 获取的用户数据
      */
-    public function getUserInfo($member) {
-        $username = $member;
+    public function getUserInfo($username, $loginUserId) {
         $data = $this->getDao()->where(array('user_name' => $username))
             ->field('id,url,resume,user_name,imgpath,gender,create_time')
             ->find();
         if ($data) {
             $attention = M('attention');
-            if (I('session.uid')) {
-                if ($attention->where('uid=' . I('session.uid') . ' AND atten_uid=' . $data['id'])->find()) {
-                    $data['attention'] = 1;
-                } else {
-                    $data['attention'] = 0;
-                }
+            if ($attention->where('uid=' . $loginUserId . ' AND atten_uid=' . $data['id'])->find()) {
+                $data['attention'] = 1;
+            } else {
+                $data['attention'] = 0;
             }
-            return $data;
+        } else {
+            $data['attention'] = 0;
         }
-
+        return $data;
     }
 
     /**
      * 添加用户特别关注
-     * @param int targetUserID [要关注的用户ID]
-     * @return array 获取的用户数据
      */
-    public function addAttention($targetUserID) {
-        $userID = I('session.uid');
+    public function addAttention($targetUserId, $loginUserId) {
         $attention = M('attention');
-        $data['uid'] = $userID;
-        $data['atten_uid'] = $targetUserID;
+        $data['uid'] = $loginUserId;
+        $data['atten_uid'] = $targetUserId;
         if ($attention->data($data)->add()) {
-            $this->getDao()->where('id=' . $userID)->setInc('attentions', 1);
+            $this->getDao()->where('id=' . $loginUserId)->setInc('attentions', 1);
             return true;
         }
+        return false;
     }
 
     /**
      * 取消用户特别关注
-     * @param int targetUserID [要关注的用户ID]
-     * @return array 获取的用户数据
      */
-    public function removeAttention($targetUserID) {
-        $userID = I('session.uid');
+    public function removeAttention($targetUserId, $loginUserId) {
         $attention = M('attention');
-        $data['uid'] = $userID;
-        $data['atten_uid'] = $targetUserID;
-        if ($attention->where('uid=' . $userID . ' AND atten_uid=' . $targetUserID)->delete()) {
-            $this->getDao()->where('id=' . $userID)->setDec('attentions', 1);
+        $data['uid'] = $loginUserId;
+        $data['atten_uid'] = $targetUserId;
+        if ($attention->where('uid=' . $loginUserId . ' AND atten_uid=' . $targetUserId)->delete()) {
+            $this->getDao()->where('id=' . $loginUserId)->setDec('attentions', 1);
             return true;
         }
+        return false;
     }
 
     /**
@@ -135,8 +127,7 @@ class UserModel extends GeneralModel
      * @param
      * @return array [特别关注的用户UID数组]
      */
-    public function getUserAttentions() {
-        $uid = I('session.uid');
+    public function getUserAttentions($uid) {
         $attention = M('attention');
         $attentions = $attention->where('uid=' . $uid)->getField('atten_uid', TRUE);
         return $attentions;
@@ -155,16 +146,32 @@ class UserModel extends GeneralModel
         return $data;
     }
 
-    /**
-     * 检查性别是否合法
-     * @return boolean
-     */
-    public function checkGender($gender) {
-        $gender_arr = array('男', '女', '保密');
-        if (in_array($gender, $gender_arr)) {
-            return true;
+    public function incSiteInfoKey($key) {
+        $name = 'site_' . $key;
+        $value = F($name);
+        if (empty($value)) {
+            F($name, 1);
         } else {
-            return false;
+            F($name, $value + 1);
         }
+    }
+
+    public function decSiteInfoKey($key) {
+        $name = 'site_' . $key;
+        $value = F($name);
+        if (!empty($value)) {
+            F($name, $value - 1);
+        }
+    }
+
+    public function getSiteInfo() {
+        $keyList = array(
+            'comment_num', 'topic_num', 'member_num'
+        );
+        $values = array();
+        foreach ($keyList as $key) {
+            $values[$key] = intval(F('site_' . $key));
+        }
+        return $values;
     }
 }

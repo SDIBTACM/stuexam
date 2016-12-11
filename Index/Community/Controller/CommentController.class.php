@@ -9,18 +9,19 @@
 namespace Community\Controller;
 
 
+use Community\Model\CommentModel;
 use Community\Model\TopicModel;
+use Community\Model\UserModel;
 
 class CommentController extends TemplateController
 {
     public function add() {
         if (IS_AJAX) {
             $data['tid'] = I('post.tid', '', 'intval');
-            $Topic = D('Topic');
             if (!TopicModel::instance()->checkTid($data['tid'])) {
                 $this->ajaxReturn('no');
             }
-            $data['content'] = I('post.content', '', 'trim,htmlspecialchars');
+            $data['content'] = I('post.content', '', 'trim');
             if (empty($data['content'])) {
                 $this->ajaxReturn('no');
             }
@@ -38,23 +39,26 @@ class CommentController extends TemplateController
                     $this->ajaxReturn('no');
                     break;
             }
-            if (M('Comment')->add($data)) {
-                $this->trigger($Topic, $data);
+            if (CommentModel::instance()->insertData($data)) {
+                $this->trigger($data['tid'], $data['publish_time']);
                 $this->ajaxReturn('yes');
             } else {
                 $this->ajaxReturn('no');
             }
+        } else {
+            $this->ajaxReturn('no');
         }
     }
 
     /**
      * 触发更新
      */
-    public function trigger($Topic, $data) {
-        M('siteinfo')->where(['id' => 1])->setInc('comment_num');
-        $Topic->where(['id' => $data['tid']])->setInc('comments');
-        $Topic->last_comment_user = $this->userInfo['user_id'];
-        $Topic->last_comment_time = $data['publish_time'];
-        $Topic->where(['id' => $data['tid']])->save();
+    public function trigger($tid, $last_comment_time) {
+        UserModel::instance()->incSiteInfoKey('comment_num');
+        TopicModel::instance()->incComments($tid);
+        TopicModel::instance()->updateById($tid, array(
+            'last_comment_user' => $this->userInfo['user_id'],
+            'last_comment_time' => $last_comment_time
+        ));
     }
 }

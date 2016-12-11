@@ -28,10 +28,10 @@ class TemplateController extends \Home\Controller\TemplateController
     }
 
     public function showSidebar($mode = '') {
-        $sidebar['userInfo'] = UserModel::instance()->getSidebarUserInfo();//用户信息
+        $sidebar['userInfo'] = UserModel::instance()->getSidebarUserInfo($this->userInfo['uid']);//用户信息
         if ($mode == 'all') {
             $sidebar['hotNodes'] = NodeModel::instance()->getHotNodes();//热门节点
-            //$sidebar['siteInfo'] = D('Index')->getSiteInfo();// TODO 站点信息
+            $sidebar['siteInfo'] = UserModel::instance()->getSiteInfo();// 站点信息
         }
         $this->assign('sidebar', $sidebar);
     }

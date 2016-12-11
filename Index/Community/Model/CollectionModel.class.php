@@ -39,7 +39,7 @@ class CollectionModel extends GeneralModel
     }
 
     protected function getPrimaryId() {
-        // TODO: Implement getPrimaryId() method.
+        return 'id';
     }
 
     public function isCollected($uid, $followId, $type) {
@@ -71,6 +71,14 @@ class CollectionModel extends GeneralModel
             'follow_id' => $followId,
             'type' => $type
         );
-        $this->getDao()->where($where)->delete();
+        return $this->getDao()->where($where)->delete();
+    }
+
+    public function getCollection($uid, $type) {
+        $where = array(
+            'uid' => $uid,
+            'type' => $type
+        );
+        return $this->getDao()->where($where)->getField('follow_id', TRUE);
     }
 }

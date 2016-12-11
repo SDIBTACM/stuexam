@@ -9,23 +9,12 @@
 namespace Community\Model;
 
 
+use Constant\ReqResult\Result;
 use Teacher\Model\GeneralModel;
 use Think\Model;
 
 class TopicModel extends GeneralModel
 {
-    protected $_validate = array(
-        array('title', 'require', '主题标题不能为空.', 1),
-        array('title', 'checkLength_t', '标题不要超过120个字符', 1, 'callback'),
-        array('content', 'checkLength_c', '话题内容不要超过2000个字符', 1, 'callback'),
-        array('node_id', 'checkNodeId', '请不要修改node值.', 1, 'callback'),
-    );
-
-    //自动完成
-    protected $_auto = array(
-        array('publish_time', 'getTime', 1, 'callback'),
-    );
-
     private static $_instance = null;
 
     private function __construct() {
@@ -57,21 +46,42 @@ class TopicModel extends GeneralModel
      * 添加主题
      */
     public function addTopic($data) {
-        if ($this->getDao()->create($data)) {
-            $this->getDao()->startTrans();
-            if ($this->getDao()->add()) {
-                if ($this->addTrigger($data['node_id'])) {
-                    $this->getDao()->commit();
-                    return true;
-                } else {
-                    $this->getDao()->rollback();
-                    return false;
-                }
+        $result = $this->checkInvalidTopicData($data);
+        if ($result->getStatus()) {
+            $data['publish_time'] = date('Y-m-d H:i:s', time());
+            $this->insertData($data);
+            if ($this->addTrigger($data['node_id'])) {
+                return $result;
             } else {
-                $this->getDao()->rollback();
-                return false;
+                return new Result(false, "节点更新失败~");
             }
+        } else {
+            return $result;
         }
+    }
+
+    private function checkInvalidTopicData($data) {
+        if (empty($data['title'])) {
+            return new Result(false, "主题标题不能为空");
+        }
+
+        $titleLength = mb_strlen($data['title']);
+        if ($titleLength > 120) {
+            return new Result(false, "标题不要超过120个字符");
+        }
+
+        $contentLength = mb_strlen($data['content']);
+        if ($contentLength > 2000) {
+            return new Result(false, "话题内容不要超过2000个字符");
+        }
+
+        $nodeId = $data['node_id'];
+        $data = NodeModel::instance()->getById($nodeId);
+        if (empty($data)) {
+            return new Result(false, "请不要随意修改节点的值");
+        }
+
+        return new Result(true);
     }
 
     /**
@@ -87,44 +97,6 @@ class TopicModel extends GeneralModel
     }
 
     /**
-     * 检查所属节点值
-     */
-    function checkNodeId($nodeId) {
-        $nodeIds = M('node')->getField('id', true);
-        if (!in_array($nodeId, $nodeIds)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 获取当前时间
-     */
-    function getTime() {
-        return date('Y-m-d H:i:s', time());
-    }
-
-    /**
-     * 检查content字符长度
-     */
-    function checkLength_c($content) {
-        if (mb_strlen($content) > 2000) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 检查title字符长度
-     */
-    function checkLength_t($title) {
-        if (mb_strlen($title) > 120) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * 根据tid获取主题详情
      */
     public function getDataById($tid) {
@@ -134,8 +106,8 @@ class TopicModel extends GeneralModel
             ->join('discuss_node as n on n.id = discuss_topic.node_id')
             ->field('title,content,publish_time,user_name,discuss_topic.hits as hits,collections,comments,node_name,imgpath,last_comment_time')
             ->join('discuss_user as u on u.id = discuss_topic.uid')
-            ->select()[0];
-        if (CollectionModel::instance()->isCollected(session('uid'), $tid, 2)) {
+            ->find();
+        if (CollectionModel::instance()->isCollected(session('uid'), $tid, CollectionModel::topicCollectionType)) {
             $topicInfo['collected'] = 1;
         } else {
             $topicInfo['collected'] = 0;
@@ -148,42 +120,30 @@ class TopicModel extends GeneralModel
      * @param [int or array] tid
      * @return array topics
      */
-    public function getTopicByTid($tid) {
-        if (is_array($tid)) {
-            $tidStr = implode('\',\'', $tid);
-            $tidStr = '\'' . $tidStr . '\'';
-            $sql = 'airex_topic.id IN(' . $tidStr . ')';
-            $topics['lists'] = $this
-                ->getDao()
-                ->where($sql)
-                ->join('discuss_node as n on n.id = discuss_topic.node_id')
-                ->join('discuss_user as u on u.id = discuss_topic.uid')
-                ->field('publish_time,title,imgpath,discuss_topic.id as tid,comments,node_name,user_name,last_comment_user')
-                ->order('discuss_topic.publish_time desc')
-                ->select();
-            return $topics;
-        } else {
-            $topics['lists'] = $this
-                ->getDao()
-                ->where(array('discuss_topic.id' => $tid))
-                ->join('discuss_node as n on n.id = discuss_topic.node_id')
-                ->join('discuss_user as u on u.id = discuss_topic.uid')
-                ->field('publish_time,title,imgpath,discuss_topic.id as tid,comments,node_name,user_name,last_comment_user')
-                ->order('discuss_topic.publish_time desc')
-                ->select();
-            return $topics;
+    public function getTopicByTids($tids) {
+        if (empty($tids)) {
+            return array();
         }
+        $tidStr = implode('\',\'', $tids);
+        $tidStr = '\'' . $tidStr . '\'';
+        $sql = 'discuss_topic.id IN(' . $tidStr . ')';
+        $topics['lists'] = $this
+            ->getDao()
+            ->where($sql)
+            ->join('discuss_node as n on n.id = discuss_topic.node_id')
+            ->join('discuss_user as u on u.id = discuss_topic.uid')
+            ->field('publish_time,title,imgpath,discuss_topic.id as tid,comments,node_name,user_name,last_comment_user')
+            ->order('discuss_topic.publish_time desc')
+            ->select();
+        return $topics;
     }
 
     /**
      * 检查tid是否存在
      */
     public function checkTid($tid) {
-        $tids = $this->getDao()->getField('id', true);
-        if (!in_array($tid, $tids)) {
-            return false;
-        }
-        return true;
+        $data = $this->queryOne(array('id' => $tid), array('id'));
+        return !empty($data);
     }
 
     /**
@@ -261,39 +221,32 @@ class TopicModel extends GeneralModel
 
     /**
      * 根据用户ID获取主题
-     * @param  array $uid [description]
-     * @return [type]           [description]
      */
-    public function getTopicsByUserID($uid) {
-        if (!empty($uid)) {
-            $sql = 'uid=';
-            $uid_last = array_pop($uid);
-            foreach ($uid as $u) {
-                $sql .= $u . ' OR uid=';
-            }
-            $sql .= $uid_last;
-            $topics['lists'] = M('Topic as t')->where($sql)
-                ->join('discuss_user as u on u.id = uid')
-                ->join('discuss_node as n on n.id = node_id')
-                ->field('publish_time,title,u.imgpath as imgpath,comments,n.node_name as
-										node_name,u.user_name as user_name,t.id as tid,last_comment_user')
-                ->order('publish_time desc')
-                ->select();
-            return $topics;
+    public function getTopicsByUserIds($uids) {
+        if (empty($uids)) {
+            return array();
         }
+        $uidStr = implode('\',\'', $uids);
+        $uidStr = '\'' . $uidStr . '\'';
+        $sql = 'uid IN(' . $uidStr . ')';
+        $topics['lists'] = M('Topic as t')->where($sql)
+            ->join('discuss_user as u on u.id = uid')
+            ->join('discuss_node as n on n.id = node_id')
+            ->field('publish_time,title,u.imgpath as imgpath,comments,n.node_name as
+										node_name,u.user_name as user_name,t.id as tid,last_comment_user')
+            ->order('publish_time desc')
+            ->select();
+        return $topics;
     }
-
 
     /**
      * 触发更新
      */
     public function addTrigger($nodeId) {
-        if (!M('node')->where(array('id' => $nodeId))->setInc('topic_num')) {
+        if (!NodeModel::instance()->incTopicNum($nodeId)) {
             return false;
         }
-        if (!M('siteinfo')->where('id=1')->setInc('topic_num')) {
-            return false;
-        }
+        UserModel::instance()->incSiteInfoKey('topic_num');
         return true;
     }
 
@@ -314,8 +267,7 @@ class TopicModel extends GeneralModel
     /**
      * 收藏主题
      */
-    public function collectTopic($tid) {
-        $uid = I('session.uid');
+    public function collectTopic($tid, $uid) {
         if (CollectionModel::instance()->collect($uid, $tid, CollectionModel::topicCollectionType)) {
             UserModel::instance()->incTopics($uid);
             return true;
@@ -325,11 +277,8 @@ class TopicModel extends GeneralModel
 
     /**
      * 取消收藏主题
-     * @param int @tid
-     * @return bool
      */
-    public function removeColTopic($tid) {
-        $uid = I('session.uid');
+    public function removeColTopic($tid, $uid) {
         if (CollectionModel::instance()->cancelCollect($uid, $tid, CollectionModel::topicCollectionType)) {
             UserModel::instance()->decTopics($uid);
             return true;
@@ -340,9 +289,16 @@ class TopicModel extends GeneralModel
     /**
      * 通过用户ID取得用户收藏的主题
      */
-    public function getColtopicByID($uid) {
-        $col_topic = M('col_topic');
-        $coltopic = $col_topic->where('uid=' . $uid)->getField('tid', TRUE);
-        return $coltopic;
+    public function getColTopicByUid($uid) {
+        return CollectionModel::instance()->getCollection($uid,
+            CollectionModel::topicCollectionType);
+    }
+
+    public function incComments($tid) {
+        return $this->getDao()->where(array('id' => $tid))->setInc('comments', 1);
+    }
+
+    public function decComments($tid) {
+        return $this->getDao()->where(array('id' => $tid))->setDec('comments', 1);
     }
 }

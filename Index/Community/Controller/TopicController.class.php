@@ -55,7 +55,7 @@ class TopicController extends TemplateController
     public function detail() {
         $tid = I('get.tid', '', 'intval');
         if (!TopicModel::instance()->checkTid($tid)) {
-            $this->error('传输参数错误');
+            $this->error('不存在该主题');
         }
         $topicInfo = TopicModel::instance()->getDataById($tid);        //根据tid获取详情
         $commentInfo = CommentModel::instance()->getCommentByTid($tid);    //根据tid获取评论
@@ -79,7 +79,7 @@ class TopicController extends TemplateController
                 $this->error('不要修改tid值');
             }
             if (!TopicModel::instance()->appendContent($tid, $content)) {
-                $this->error($this->Topic->getError());
+                $this->error("添加附言失败~");
             }
             $this->success('追加信息成功!', U('Topic/detail', array('tid' => I('get.tid'))));
         } else {
@@ -100,7 +100,7 @@ class TopicController extends TemplateController
         } else {
             $tid = I('post.tid');
             if ($tid) {
-                if (TopicModel::instance()->collectTopic($tid)) {
+                if (TopicModel::instance()->collectTopic($tid, $this->userInfo['uid'])) {
                     //成功
                     $this->ajaxReturn('1');
                 } else {
@@ -122,7 +122,7 @@ class TopicController extends TemplateController
         } else {
             $tid = I('post.tid');
             if ($tid) {
-                if (TopicModel::instance()->removeColTopic($tid)) {
+                if (TopicModel::instance()->removeColTopic($tid, $this->userInfo['uid'])) {
                     //成功
                     $this->ajaxReturn('1');
                 } else {
