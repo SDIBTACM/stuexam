@@ -21,7 +21,7 @@ class CommentController extends TemplateController
             if (!TopicModel::instance()->checkTid($data['tid'])) {
                 $this->ajaxReturn('no');
             }
-            $data['content'] = I('post.content', '', 'trim');
+            $data['content'] = I('post.content', '', 'trim,htmlspecialchars');
             if (empty($data['content'])) {
                 $this->ajaxReturn('no');
             }
@@ -32,7 +32,13 @@ class CommentController extends TemplateController
                 case 0:                //评论
                     $data['type'] = '评论';
                     break;
-                case 1:                //回复
+                case 1:            //回复
+                    $_toUser = UserModel::instance()->getById($data['to_uid'], array('user_name'));
+                    $toUser = $_toUser['user_name'];
+                    $userUrl = U('Community/User/info', array('member' => $toUser));
+                    $link = "<a href='$userUrl' title=''>@{$toUser}</a>: ";
+
+                    $data['content'] = $link . $data['content'];
                     $data['type'] = '回复';
                     break;
                 default:

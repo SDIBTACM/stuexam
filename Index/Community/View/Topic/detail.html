@@ -227,14 +227,6 @@
                         if (content == '') {
                             return false;
                         }
-                        //使用长度截取拼接字符串
-                        // var length = "{:U('User/info/')}".length;
-                        // var subUrlStr = "{:U('User/info/')}".substring(0,length-5);
-                        // var urlStr = subUrlStr+'/'+toUser+'.html';
-
-                        //字符串替换
-                        var urlStr = "{:U('User/info/')}".replace('info', 'info/member/' + toUser);
-                        content = '<a href="' + urlStr + '" title="">@' + toUser + '</a>: ' + content;
                         $.post('{:U("Comment/add")}', {
                             toUid: toUid,
                             content: content,

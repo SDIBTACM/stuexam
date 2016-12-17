@@ -80,7 +80,6 @@ class TopicModel extends GeneralModel
         if (empty($data)) {
             return new Result(false, "请不要随意修改节点的值");
         }
-
         return new Result(true);
     }
 
