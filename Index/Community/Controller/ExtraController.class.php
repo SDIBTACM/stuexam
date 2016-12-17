@@ -85,7 +85,7 @@ class ExtraController extends TemplateController
 
     private function getAllSignUpStudent() {
         // contest id is 1753
-        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = 1753";
+        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = 1753 and ispending=0";
         $students = M()->query($sql);
         return $students;
     }
