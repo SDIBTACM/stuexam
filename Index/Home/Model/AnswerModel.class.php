@@ -188,7 +188,7 @@ class AnswerModel
         }
 
         $otherIds = array_diff($questionIds, $rightIds);
-        if (count($otherIds) == 0) {
+        if (empty($otherIds)) {
             return $count;
         }
         $otherIdStr = implode('\',\'', $otherIds);
