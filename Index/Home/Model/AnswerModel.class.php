@@ -175,11 +175,29 @@ class AnswerModel
         $questionIdStr = implode('\',\'', $questionIds);
         $questionIdStr = '\'' . $questionIdStr . '\'';
 
+        $count = 0;
+
+        // oj的pass_rate对于正确的时候不准, 添加这个作为容错处理
+        $rightProgramQuery = "select problem_id from solution where problem_id in ($questionIdStr) and " .
+            "user_id='$user_id' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'";
+        $rightIdAns = M()->query($rightProgramQuery);
+        $rightIds = array();
+        foreach ($rightIdAns as $p) {
+            $rightIds[] = $p['problem_id'];
+            $count = $count + 1;
+        }
+
+        $otherIds = array_diff($questionIds, $rightIds);
+        if (count($otherIds) == 0) {
+            return $count;
+        }
+        $otherIdStr = implode('\',\'', $otherIds);
+        $questionIdStr = '\'' . $otherIdStr . '\'';
+
         $query = "select max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
                 "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
         $data = M()->query($query);
 
-        $count = 0;
         foreach ($data as $d) {
             if ($d['rate'] >= 0.98) {
                 $count = $count + 1;
