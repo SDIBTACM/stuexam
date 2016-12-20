@@ -178,7 +178,7 @@ class AnswerModel
         $count = 0;
 
         // oj的pass_rate对于正确的时候不准, 添加这个作为容错处理
-        $rightProgramQuery = "select problem_id from solution where problem_id in ($questionIdStr) and " .
+        $rightProgramQuery = "select distinct(problem_id) as problem_id from solution where problem_id in ($questionIdStr) and " .
             "user_id='$user_id' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'";
         $rightIdAns = M()->query($rightProgramQuery);
         $rightIds = array();
