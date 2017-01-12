@@ -297,8 +297,10 @@ class ExamController extends TemplateController
             $sql = "select (sum(rate) * $programScore / $personCnt) as r from (" .
                 "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
                 "where problem_id=$programId and pass_rate > 0 and " .
-                "in_date>='$sTime' and in_date<='$eTime' $sqladd group by user_id" .
+                "in_date>='$sTime' and in_date<='$eTime' and user_id in (select user_id from ex_privilege where rightstr='e$examId') " .
+                "$sqladd group by user_id" .
                 ") t";
+
             $res = M()->query($sql);
             if (empty($res)) {
                 $ans[$programId] = 0;
