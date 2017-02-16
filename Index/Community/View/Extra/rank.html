@@ -77,13 +77,11 @@
         </thread>
         <tbody>
         <foreach name='students' item='student' key='index'>
-                <if condition="$student['chineseNum'] egt 150 and $student['englishNum'] egt 47">
-                    <tr class="alert-warning">
-                        <else/>
-                    <tr class="alert-info">
-                    </if>
-                    <else/>
+            <if condition="$student['chineseNum'] egt 150 and $student['englishNum'] egt 47">
+                <tr class="alert-warning">
+            <else/>
                 <tr>
+            </if>
             <if condition="$student['chineseNum'] egt 150 and $student['englishNum'] egt 47">
                 <td class="alert-warning"><span class="glyphicon glyphicon-fire"></span></td>
                 <else/>
