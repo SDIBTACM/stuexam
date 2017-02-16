@@ -46,57 +46,19 @@
                     <td>序号</td>
                     <td>账号</td>
                     <td>姓名</td>
-                    <td>班级</td>
+                    <td>院部</td>
+                    <td>专业</td>
                 </tr>
             </thead>
-            <tr>
-                <td>1.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=jk16171207">jk16171207</a></td>
-                <td>何子健</td>
-                <td>计科162</td>
-            </tr>
-            <tr>
-                <td>2.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=sz16229">sz16229</a></td>
-                <td>谭泽浩</td>
-                <td>数字162</td>
-            </tr>
-            <tr>
-                <td>3.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=wl16174132">wl16174132</a></td>
-                <td>赵福星</td>
-                <td>网络161</td>
-            </tr>
-            <tr>
-                <td>4.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=jk16171112">jk16171112</a></td>
-                <td>李杰</td>
-                <td>计科161</td>
-            </tr>
-            <tr>
-                <td>5.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=jk16171223">jk16171223</a></td>
-                <td>孙振壮</td>
-                <td>计科162</td>
-            </tr>
-            <tr>
-                <td>6.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=wl16174112">wl16174112</a></td>
-                <td>郭杨程</td>
-                <td>网络161</td>
-            </tr>
-            <tr>
-                <td>7.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=jk16171120">jk16171120</a></td>
-                <td>栾兆威</td>
-                <td>计科161</td>
-            </tr>
-            <tr>
-                <td>8.</td>
-                <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user=jk16171209">jk16171209</a></td>
-                <td>胡黎明</td>
-                <td>计科162</td>
-            </tr>
+            <foreach name="acceptUsers" item="acUser" key="index">
+                <tr>
+                    <td>{$index + 1}</td>
+                    <td><a href="http://acm.sdibt.edu.cn/JudgeOnline/userinfo.php?user={$acUser['user_id']}">{$acUser['user_id']}</a></td>
+                    <td>{$acUser['name']}</td>
+                    <td>{$acUser['studepartment']</td>
+                    <td>{$acUser['stumajor']}</td>
+                </tr>
+            </foreach>
         </table>
         <strong>注意!</strong> <br/>1. 为鼓励程序媛们, 女生的base比男生多0.05; <br/>2. 平时表现分跟本周做题数相挂钩<br/>
         3. 总得分 = 中文 * 1 + 英文 * 7 + 平时表现 * 2
@@ -115,7 +77,6 @@
         </thread>
         <tbody>
         <foreach name='students' item='student' key='index'>
-            <if condition="$student['rank'] lt 6">
                 <if condition="$student['chineseNum'] egt 150 and $student['englishNum'] egt 47">
                     <tr class="alert-warning">
                         <else/>
@@ -123,7 +84,6 @@
                     </if>
                     <else/>
                 <tr>
-            </if>
             <if condition="$student['chineseNum'] egt 150 and $student['englishNum'] egt 47">
                 <td class="alert-warning"><span class="glyphicon glyphicon-fire"></span></td>
                 <else/>

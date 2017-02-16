@@ -38,6 +38,9 @@ class ExtraController extends TemplateController
             $userIds[] = $_student['user_id'];
         }
 
+        // 获取所有通过的学生
+        $allUserAccept = $this->getAllAcceptStudent();
+
         // 获取这些学生所有答对的题的个数
         $userAllSolved = $this->getUserSolved($userIds);
 
@@ -80,7 +83,14 @@ class ExtraController extends TemplateController
         unset($student);
 
         $this->zadd("students", $students);
+        $this->zadd("acceptUsers", $allUserAccept);
         $this->auto_display(null, false);
+    }
+
+    private function getAllAcceptStudent() {
+        $sql = "select user_id, sturealname as `name`,studepartment,stumajor from contestreg where contest_id = 1753 and ispending=1 order by seatnum asc";
+        $students = M()->query($sql);
+        return $students;
     }
 
     private function getAllSignUpStudent() {
