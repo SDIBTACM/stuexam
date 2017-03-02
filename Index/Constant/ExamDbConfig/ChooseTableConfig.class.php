@@ -21,7 +21,6 @@ class ChooseTableConfig
         'cms' => 'varchar',
         'dms' => 'varchar',
         'answer' => 'char',
-        'point' => 'varchar',
         'addtime' => 'datetime',
         'creator' => 'varchar',
         'easycount' => 'tinyint',

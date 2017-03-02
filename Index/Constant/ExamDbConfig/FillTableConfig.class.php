@@ -17,7 +17,6 @@ class FillTableConfig
         'fill_id' => 'int',
         'question' => 'text',
         'answernum' => 'tinyint',
-        'point' => 'varchar',
         'addtime' => 'datetime',
         'creator' => 'varchar',
         'easycount' => 'tinyint',

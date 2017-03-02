@@ -17,7 +17,6 @@ class JudgeTableConfig
         'judge_id' => 'int',
         'question' => 'text',
         'answer' => 'char',
-        'point' => 'varchar',
         'addtime' => 'datetime',
         'creator' => 'varchar',
         'easycount' => 'tinyint',
