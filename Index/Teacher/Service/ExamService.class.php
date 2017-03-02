@@ -67,7 +67,7 @@ class ExamService
         return $reqResult;
     }
 
-    public function addUsers2Exam($eid) {
+    public function addUsers2Exam($eid, $ulist) {
         if ($eid <= 0) {
             return false;
         }
@@ -76,7 +76,7 @@ class ExamService
         foreach ($userPrivilegeList as $_privilege) {
             $userIdMap[$_privilege['user_id']] = $_privilege['extrainfo'];
         }
-        $_pieces = explode("\n", trim($_POST['ulist']));
+        $_pieces = explode("\n", $ulist);
         if (count($_pieces) > 0 && strlen($_pieces[0]) > 0) {
             for ($i = 0; $i < count($_pieces); $i++) {
                 $_pieces[$i] = trim($_pieces[$i]);

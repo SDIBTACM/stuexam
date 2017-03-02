@@ -80,7 +80,8 @@ class ExamController extends TemplateController
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
-                $flag = ExamService::instance()->addUsers2Exam($eid);
+                $ulist = trim($_POST['ulist']);
+                $flag = ExamService::instance()->addUsers2Exam($eid, $ulist);
                 if ($flag === true) {
                     $this->success('考生添加成功', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
                 } else {

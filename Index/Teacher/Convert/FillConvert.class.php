@@ -19,6 +19,7 @@ class FillConvert
         $arr['answernum'] = intval($_POST['numanswer']);
         $arr['kind'] = intval($_POST['kind']);
         $arr['isprivate'] = intval($_POST['isprivate']);
+        $arr['question_type'] = intval($_POST['questionType']);
 
         return $arr;
     }

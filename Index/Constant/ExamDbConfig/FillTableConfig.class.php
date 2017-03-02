@@ -21,6 +21,7 @@ class FillTableConfig
         'creator' => 'varchar',
         'easycount' => 'tinyint',
         'kind' => 'tinyint',
-        'isprivate' => 'tinyint'
+        'isprivate' => 'tinyint',
+        'question_type' => 'tinyint'
     );
 }

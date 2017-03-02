@@ -25,15 +25,17 @@ class QuestionBaseController extends TemplateController
         $pointId = I('get.pointId', 0, 'intval');
         $problem = I('get.problem', 0, 'intval');
         $creator = I('get.creator', '', 'htmlspecialchars');
+        $questionType = I('get.questionType', 0, 'intval');
 
         $this->zadd('chapterId', $chapterId);
         $this->zadd('parentId', $parentId);
         $this->zadd('pointId', $pointId);
         $this->zadd('problem', $problem);
         $this->zadd('creator', $creator);
+        $this->zadd('questionType', $questionType);
 
         $extraQuery = 'problem=' . $problem . '&chapterId=' . $chapterId .
-            '&parentId=' . $parentId . '&pointId=' . $pointId . '&creator=' . $creator;
+            '&parentId=' . $parentId . '&pointId=' . $pointId . '&creator=' . $creator . '&questionType='.$questionType;
         $this->zadd('extraQuery', $extraQuery);
 
         $parentNode = KeyPointBaseModel::instance()->getParentNodeByChapterId($chapterId);

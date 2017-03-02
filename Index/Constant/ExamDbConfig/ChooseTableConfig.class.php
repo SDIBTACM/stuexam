@@ -24,6 +24,7 @@ class ChooseTableConfig
         'addtime' => 'datetime',
         'creator' => 'varchar',
         'easycount' => 'tinyint',
-        'isprivate' => 'tinyint'
+        'isprivate' => 'tinyint',
+        'question_type' => 'tinyint',
     );
 }

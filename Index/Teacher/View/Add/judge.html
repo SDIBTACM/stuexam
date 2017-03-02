@@ -84,8 +84,29 @@
                     </for>
                 </select>
             </div>
-            <label class='col-md-1 control-label' for="isprivate">题库类型:</label>
 
+            <label class='col-md-1 control-label' for="questionType">版本:</label>
+            <div class="col-md-2">
+                <select class='form-control' name="questionType" id="questionType">
+                    <if condition="isset($row['question_type']) and $row['question_type'] eq 0">
+                        <option value="0" selected>旧版</option>
+                        <else/>
+                        <option value="0">旧版</option>
+                    </if>
+                    <if condition="isset($row['question_type']) and $row['question_type'] eq 1">
+                        <option value="1" selected>新版-非考试</option>
+                        <else/>
+                        <option value="1">新版-非考试</option>
+                    </if>
+                    <if condition="isset($row['question_type']) and $row['question_type'] eq 2">
+                        <option value="2" selected>新版-考试</option>
+                        <else/>
+                        <option value="2">新版-考试</option>
+                    </if>
+                </select>
+            </div>
+
+            <label class='col-md-1 control-label' for="isprivate">所属题库:</label>
             <div class="col-md-2">
                 <select class='form-control' name="isprivate" id="isprivate" onchange="showmsg()">
                     <if condition="isset($row['isprivate']) and $row['isprivate'] eq 0">

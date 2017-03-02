@@ -10,57 +10,48 @@ function getexamsearch($userId) {
 
     $creator = I('get.creator', '', 'htmlspecialchars');
     if (!empty($creator)) {
-        $sql = $sql .  " AND creator = '$creator'";
+        $sql = $sql . " AND creator = '$creator'";
     }
     return $sql;
 }
 
-function problemshow($problem, $searchsql) {
-    if ($problem < 0 || $problem > 2)
-        $problem = 0;
-    if (!checkAdmin(1) && $problem == 2)
-        $problem = 0;
-
-    $creator = I('get.creator', '', 'htmlspecialchars');
-    $creatorSql = "1=1";
-    if (!empty($creator)) {
-        $creatorSql = "creator = '$creator'";
-    }
-    if ($searchsql == "") {
-        if ($problem == 0 || checkAdmin(1))
-            $prosql = "`isprivate`='$problem' AND $creatorSql";
-        else {
-            $user = $_SESSION['user_id'];
-            $prosql = "`isprivate`='$problem' AND `creator` like '$user'";
-        }
-    } else {
-        if ($problem == 0 || checkAdmin(1))
-            $prosql = " AND `isprivate`='$problem' AND $creatorSql";
-        else {
-            $user = $_SESSION['user_id'];
-            $prosql = " AND `isprivate`='$problem' AND `creator` like '$user'";
-        }
-    }
-    return $prosql;
-}
-
 function getproblemsearch($idKey, $problemType) {
-    $sql = "";
     $chapterId = I('get.chapterId', 0, 'intval');
     $parentId = I('get.parentId', 0, 'intval');
     $pointId = I('get.pointId', 0, 'intval');
 
+    // 查询知识点
     if ($pointId > 0) {
         $sql = "$idKey in (select question_id from ex_question_point where type = $problemType and point_id = $pointId)";
     } else if ($parentId > 0) {
         $sql = "$idKey in (select question_id from ex_question_point where type = $problemType and point_parent_id = $parentId)";
     } else if ($chapterId > 0) {
         $sql = "$idKey in (select question_id from ex_question_point where type = $problemType and chapter_id = $chapterId)";
+    } else {
+        $sql = "1=1";
     }
 
+    // 查询创建者
+    $creator = I('get.creator', '', 'htmlspecialchars');
     $problem = I('get.problem', 0, 'intval');
-    $prosql = problemshow($problem, $sql);
-    $sql .= $prosql;
+    if ($problem != 0 && !checkAdmin(1)) {
+        /** 如果非管理员查询的是私有或者隐藏提库 则默认查询的是他本身 **/
+        $creator = $_SESSION['user_id'];
+    }
+    if (!empty($creator)) {
+        $sql = $sql . " AND creator = '$creator'";
+    }
+
+    // 查询版本类型
+    $questionType = I('get.questionType', 0, 'intval');
+    $sql = $sql . " AND question_type = $questionType";
+
+    // 查询题目类型
+    if ($problem < 0 || $problem > 2 || (!checkAdmin(1) && $problem == 2)) {
+        $problem = 0;
+    }
+    $sql = $sql . " AND isprivate = $problem";
+
     return array(
         'sql' => $sql
     );
