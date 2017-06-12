@@ -171,7 +171,38 @@ class ProblemController extends QuestionBaseController
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
-                $flag = ProblemService::instance()->addProgram2Exam($eid);
+                $ansNumber = I('post.numanswer', 0, 'intval');
+                $problemIds = array();
+                for ($i = 1; $i <= $ansNumber; $i++) {
+                    $programId = test_input($_POST["answer$i"]);
+                    if (!is_numeric($programId)) {
+                        continue;
+                    } else {
+                        $problemIds[] = intval($programId);
+                    }
+                }
+                if ($ansNumber == 0) {
+                    $pList = "0";
+                } else {
+                    $pList = explode(',', $problemIds);
+                }
+                $sql = "select defunct, author, problem_id from problem where problem_id in ($pList)";
+                $res = M()->execute($sql);
+                $validProblemCnt = 0;
+
+                foreach ($res as $r) {
+                    if ($r['defunct'] == 'N') {
+                        $validProblemCnt++;
+                    } else {
+                        if (!strcmp($r['author'], $this->userInfo['user_id']) || $this->isSuperAdmin()) {
+                            $validProblemCnt++;
+                        }
+                    }
+                }
+                if ($validProblemCnt != $ansNumber) {
+                    $this->echoError('其中一些题目您没有权限添加哦~');
+                }
+                $flag = ProblemService::instance()->addProgram2Exam($eid, $problemIds);
                 if ($flag === true) {
                     $this->success('程序题添加成功', U('Teacher/Problem/addProgramProblem', array('eid' => $eid, 'type' => 4)), 2);
                 } else {

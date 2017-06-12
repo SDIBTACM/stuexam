@@ -28,26 +28,21 @@ class ProblemService
         return self::$_instance;
     }
 
-    public function addProgram2Exam($eid) {
-        $ansnum = I('post.numanswer', 0, 'intval');
+    public function addProgram2Exam($eid, $problemIds) {
+        $len = count($problemIds);
         $sql = "DELETE FROM `exp_question` WHERE `exam_id`={$eid} AND `type`='4'";
         M()->execute($sql);
         $dataList = array();
-        for ($i = 1; $i <= $ansnum; $i++) {
-            $programid = test_input($_POST["answer$i"]);
-            if (!is_numeric($programid)) {
-                return false;
-            } else {
-                $programid = intval($programid);
-                $data = array(
-                    'exam_id' => $eid,
-                    'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
-                    'question_id' => $programid
-                );
-                $dataList[] = $data;
-                M('problem')->where('problem_id=%d', $programid)
-                    ->data(array("defunct" => "Y"))->save();
-            }
+        for ($i = 0; $i < $len; $i++) {
+            $programId = $problemIds[$i];
+            $data = array(
+                'exam_id' => $eid,
+                'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
+                'question_id' => $programId
+            );
+            $dataList[] = $data;
+            M('problem')->where('problem_id=%d', $programId)
+                ->data(array("defunct" => "Y"))->save();
         }
         M('exp_question')->addAll($dataList);
         return true;
@@ -89,7 +84,7 @@ class ProblemService
         $where = array(
             'user_id' => $userId,
             'exam_id' => $eid,
-            'type'    => ProblemService::PROGRAM_PROBLEM_TYPE,
+            'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
             'question_id' => $pid,
             'answer_id' => 1
         );
