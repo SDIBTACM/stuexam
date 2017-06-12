@@ -172,6 +172,7 @@ class ProblemController extends QuestionBaseController
             } else {
                 $eid = I('post.eid', 0, 'intval');
                 $ansNumber = I('post.numanswer', 0, 'intval');
+
                 $problemIds = array();
                 for ($i = 1; $i <= $ansNumber; $i++) {
                     $programId = test_input($_POST["answer$i"]);
@@ -184,9 +185,10 @@ class ProblemController extends QuestionBaseController
                 if ($ansNumber == 0) {
                     $pList = "0";
                 } else {
-                    $pList = explode(',', $problemIds);
+                    $pList = implode(',', $problemIds);
                 }
                 $sql = "select defunct, author, problem_id from problem where problem_id in ($pList)";
+
                 $res = M()->execute($sql);
                 $validProblemCnt = 0;
 
