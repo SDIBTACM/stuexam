@@ -189,7 +189,7 @@ class ProblemController extends QuestionBaseController
                 }
                 $sql = "select defunct, author, problem_id from problem where problem_id in ($pList)";
 
-                $res = M()->execute($sql);
+                $res = M()->query($sql);
                 $validProblemCnt = 0;
 
                 foreach ($res as $r) {
