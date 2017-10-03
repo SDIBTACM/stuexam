@@ -64,6 +64,7 @@ class IndexController extends TemplateController
             "FROM `exam`,`ex_student` WHERE `ex_student`.`user_id`='" . $user_id . "' AND `exam`.`visible`='Y' " .
             "AND `ex_student`.`exam_id`=`exam`.`exam_id` AND score >= 0 ORDER BY `exam`.`exam_id` DESC";
         $score = M()->query($query);
+        //M()->
         $this->zadd('score', $score);
         $this->zadd('row', $row);
         $this->auto_display();
