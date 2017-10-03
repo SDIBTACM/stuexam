@@ -238,8 +238,11 @@ class ProgramController extends QuestionController
 
         $user_id = $this->userInfo['user_id'];
 
-        $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
-        $row = M()->query($sql);
+        //$sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
+        //$row = M()->query($sql);
+        
+        $row = M()->table('solution')->field('in_date')->where("user_id='%s' AND `in_date`>NOW()-10 ", $user_id)->order('in_date')->limit(1)->select();
+        
         if ($row) {
             echo "You should not submit more than twice in 10 seconds.....<br>";
             exit(0);
@@ -255,10 +258,19 @@ class ProgramController extends QuestionController
         );
         $insert_id = M('solution')->add($sourceCode);
 
-        $sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
-        M()->execute($sql);
-        $sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$pid";
-        M()->execute($sql);
+        //$sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
+        //M()->execute($sql);
+
+        $insert_source['solution_id'] = $insert_id;
+        $insert_source['source'] = $source;
+        M()->table('`source_code`') ->data($insert_source)->add();
+
+        //$sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$pid";
+        //M()->execute($sql);
+
+        $time = array('created'=>array('exp', 'NOW()'));
+        M()->table('problem')->where('problem_id=%d',$pid)->setField('in_date',$time);
+
         $colorarr = C('judge_color');
         $resultarr = C('judge_result');
         $color = $colorarr[0];
