@@ -23,6 +23,8 @@ class ExtraController extends TemplateController
 
     private static $DEFAULTRATE = 0;
 
+    private static $RANK_CONTEST_ID = 1753;
+
     // 计分比例
     private $scorePercent = array(
         'english' => 7,
@@ -30,8 +32,7 @@ class ExtraController extends TemplateController
         'person'  => 2
     );
 
-    public function rank() {
-        // 获取所有注册的学生
+    public function rank() { // 获取所有注册的学生
         $students = $this->getAllSignUpStudent();
         $userIds = array();
         foreach ($students as $_student) {
@@ -88,14 +89,14 @@ class ExtraController extends TemplateController
     }
 
     private function getAllAcceptStudent() {
-        $sql = "select user_id, sturealname as `name`,studepartment,stumajor from contestreg where contest_id = 1753 and ispending=1 order by seatnum asc";
+        $sql = "select user_id, sturealname as `name`,studepartment,stumajor from contestreg where contest_id = $RANK_CONTEST_ID and ispending=1 order by seatnum asc";
         $students = M()->query($sql);
         return $students;
     }
 
     private function getAllSignUpStudent() {
-        // contest id is 1753
-        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = 1753 and ispending=0";
+        // contest id is $RANK_CONTEST_ID
+        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = $RANK_CONTEST_ID and ispending=0";
         $students = M()->query($sql);
         return $students;
     }
