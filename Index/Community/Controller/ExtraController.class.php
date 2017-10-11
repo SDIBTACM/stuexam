@@ -89,14 +89,14 @@ class ExtraController extends TemplateController
     }
 
     private function getAllAcceptStudent() {
-        $sql = "select user_id, sturealname as `name`,studepartment,stumajor from contestreg where contest_id = $RANK_CONTEST_ID and ispending=1 order by seatnum asc";
+        $sql = "select user_id, sturealname as `name`,studepartment,stumajor from contestreg where contest_id = " . self::$RANK_CONTEST_ID ." and ispending=1 order by seatnum asc";
         $students = M()->query($sql);
         return $students;
     }
 
     private function getAllSignUpStudent() {
         // contest id is $RANK_CONTEST_ID
-        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = $RANK_CONTEST_ID and ispending=0";
+        $sql = "select user_id, sturealname as `name`, seatnum, stusex from contestreg where contest_id = ". self::$RANK_CONTEST_ID ." and ispending=0";
         $students = M()->query($sql);
         return $students;
     }
