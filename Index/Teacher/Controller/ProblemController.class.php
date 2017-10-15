@@ -66,25 +66,25 @@ class ProblemController extends QuestionBaseController
     private function addChooseProblem() {
 
         $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $isadmin = $this->isSuperAdmin();
-        $mypage = splitpage('ex_choose', $sch['sql']);
-        $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $isAdmin = $this->isSuperAdmin();
+        $myPage = splitpage('ex_choose', $sch['sql']);
+        $numOfChoose = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_choose')->field('choose_id,question,creator,easycount')
-            ->where($sch['sql'])->order('choose_id asc')->limit($mypage['sqladd'])
+            ->where($sch['sql'])->order('choose_id asc')->limit($myPage['sqladd'])
             ->select();
 
         $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $haveadded = array();
+        $haveAdded = array();
         foreach ($questionAddedIds as $qid) {
-            $haveadded[$qid['question_id']] = 1;
+            $haveAdded[$qid['question_id']] = 1;
         }
 
         $widgets = array(
             'row' => $row,
-            'added' => $haveadded,
-            'mypage' => $mypage,
-            'isadmin' => $isadmin,
-            'numofchoose' => $numofchoose
+            'added' => $haveAdded,
+            'mypage' => $myPage,
+            'isadmin' => $isAdmin,
+            'numofchoose' => $numOfChoose
         );
 
         $questionIds = array();
@@ -99,25 +99,25 @@ class ProblemController extends QuestionBaseController
 
     private function addJudgeProblem() {
         $sch = getproblemsearch('judge_id', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $isadmin = $this->isSuperAdmin();
-        $mypage = splitpage('ex_judge', $sch['sql']);
-        $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $isAdmin = $this->isSuperAdmin();
+        $myPage = splitpage('ex_judge', $sch['sql']);
+        $numOfJudge = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = m('ex_judge')->field('judge_id,question,creator,easycount')
-            ->where($sch['sql'])->order('judge_id asc')->limit($mypage['sqladd'])
+            ->where($sch['sql'])->order('judge_id asc')->limit($myPage['sqladd'])
             ->select();
 
         $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $haveadded = array();
+        $haveAdded = array();
         foreach ($questionAddedIds as $qid) {
-            $haveadded[$qid['question_id']] = 1;
+            $haveAdded[$qid['question_id']] = 1;
         }
 
         $widgets = array(
             'row' => $row,
-            'added' => $haveadded,
-            'mypage' => $mypage,
-            'isadmin' => $isadmin,
-            'numofjudge' => $numofjudge
+            'added' => $haveAdded,
+            'mypage' => $myPage,
+            'isadmin' => $isAdmin,
+            'numofjudge' => $numOfJudge
         );
 
         $questionIds = array();
@@ -132,25 +132,25 @@ class ProblemController extends QuestionBaseController
 
     private function addFillProblem() {
         $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
-        $isadmin = $this->isSuperAdmin();
-        $mypage = splitpage('ex_fill', $sch['sql']);
-        $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $isAdmin = $this->isSuperAdmin();
+        $myPage = splitpage('ex_fill', $sch['sql']);
+        $numOfFill = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_fill')->field('fill_id,question,creator,easycount,kind')
-            ->where($sch['sql'])->order('fill_id asc')->limit($mypage['sqladd'])
+            ->where($sch['sql'])->order('fill_id asc')->limit($myPage['sqladd'])
             ->select();
 
         $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
-        $haveadded = array();
+        $haveAdded = array();
         foreach ($questionAddedIds as $qid) {
-            $haveadded[$qid['question_id']] = 1;
+            $haveAdded[$qid['question_id']] = 1;
         }
 
         $widgets = array(
             'row' => $row,
-            'added' => $haveadded,
-            'mypage' => $mypage,
-            'isadmin' => $isadmin,
-            'numoffill' => $numoffill
+            'added' => $haveAdded,
+            'mypage' => $myPage,
+            'isadmin' => $isAdmin,
+            'numoffill' => $numOfFill
         );
 
         $questionIds = array();
@@ -212,13 +212,13 @@ class ProblemController extends QuestionBaseController
                 }
             }
         } else {
-            $ansrow = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
-            $answernumC = count($ansrow);
+            $ansRow = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
+            $answerNumC = count($ansRow);
             $key = set_post_key();
             $widgets = array(
                 'mykey' => $key,
-                'ansrow' => $ansrow,
-                'answernumC' => $answernumC
+                'ansrow' => $ansRow,
+                'answernumC' => $answerNumC
             );
             $this->ZaddWidgets($widgets);
             $this->auto_display('program');
@@ -231,16 +231,16 @@ class ProblemController extends QuestionBaseController
             return;
         }
         $eid = intval($_POST['eid']);
-        $quesid = intval($_POST['id']);
-        $typeid = intval($_POST['type']);
+        $questionId = intval($_POST['id']);
+        $typeId = intval($_POST['type']);
         if ($this->isOwner4ExamByExamId($eid) &&
-            $eid > 0 && $quesid > 0 &&
-            in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
+            $eid > 0 && $questionId > 0 &&
+            in_array($typeId, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
         ) {
             $data = array(
                 'exam_id' => $eid,
-                'question_id' => $quesid,
-                'type' => $typeid
+                'question_id' => $questionId,
+                'type' => $typeId
             );
             if (M('exp_question')->add($data)) {
                 $this->echoError("已添加");
@@ -258,16 +258,16 @@ class ProblemController extends QuestionBaseController
             return;
         }
         $eid = intval($_POST['eid']);
-        $quesid = intval($_POST['id']);
-        $typeid = intval($_POST['type']);
+        $questionId = intval($_POST['id']);
+        $typeId = intval($_POST['type']);
         if ($this->isOwner4ExamByExamId($eid) &&
-            $eid > 0 && $quesid > 0 &&
-            in_array($typeid, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
+            $eid > 0 && $questionId > 0 &&
+            in_array($typeId, array(ChooseBaseModel::CHOOSE_PROBLEM_TYPE, JudgeBaseModel::JUDGE_PROBLEM_TYPE, FillBaseModel::FILL_PROBLEM_TYPE))
         ) {
             $data = array(
                 'exam_id' => $eid,
-                'question_id' => $quesid,
-                'type' => $typeid
+                'question_id' => $questionId,
+                'type' => $typeId
             );
             if (M('exp_question')->where($data)->delete()) {
                 $this->echoError("ok");

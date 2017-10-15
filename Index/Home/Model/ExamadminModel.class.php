@@ -5,7 +5,7 @@ use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\StudentBaseModel;
 
-class ExamadminModel
+class ExamAdminModel
 {
 
     private static $_instance = null;

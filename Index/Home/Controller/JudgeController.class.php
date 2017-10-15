@@ -9,7 +9,7 @@
 namespace Home\Controller;
 
 use Home\Model\AnswerModel;
-use Home\Model\ExamadminModel;
+use Home\Model\ExamAdminModel;
 
 use Teacher\Model\JudgeBaseModel;
 
@@ -38,7 +38,7 @@ class JudgeController extends QuestionController
         $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $judgearr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $judgeans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $judgesx = ExamadminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
+        $judgesx = ExamAdminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('judgearr', $judgearr);

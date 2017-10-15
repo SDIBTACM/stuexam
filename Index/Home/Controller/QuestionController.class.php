@@ -8,7 +8,7 @@
 
 namespace Home\Controller;
 
-use Home\Model\ExamadminModel;
+use Home\Model\ExamAdminModel;
 
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -58,11 +58,11 @@ class QuestionController extends TemplateController
         } else {
             $this->examId = $eid;
             $userId = $this->userInfo['user_id'];
-            $this->examBase = ExamadminModel::instance()->checkExamPrivilege($eid, $userId, true);
+            $this->examBase = ExamAdminModel::instance()->checkExamPrivilege($eid, $userId, true);
             $this->navigationUrl = U('Home/Question/navigation', array('eid' => $this->examId));
 
             if (is_array($this->examBase)) {
-                $isruning = ExamadminModel::instance()->getExamRunningStatus(
+                $isruning = ExamAdminModel::instance()->getExamRunningStatus(
                     $this->examBase['start_time'], $this->examBase['end_time']);
                 if ($isruning != ExamBaseModel::EXAM_RUNNING) {
                     $this->alertError('exam is not running!', U('Home/Index/index'));

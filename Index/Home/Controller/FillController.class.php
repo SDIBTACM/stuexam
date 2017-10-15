@@ -9,7 +9,7 @@
 namespace Home\Controller;
 
 use Home\Model\AnswerModel;
-use Home\Model\ExamadminModel;
+use Home\Model\ExamAdminModel;
 
 use Teacher\Model\FillBaseModel;
 
@@ -38,7 +38,7 @@ class FillController extends QuestionController
         $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $fillarr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
         $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillsx = ExamadminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+        $fillsx = ExamAdminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
         $this->zadd('allscore', $allBaseScore);
         $this->zadd('fillarr', $fillarr);
