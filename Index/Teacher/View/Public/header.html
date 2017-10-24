@@ -55,10 +55,13 @@
 
 <js file="__PUBLIC__/Js/jquery-1.11.2.min.js"/>
 <js file="__PUBLIC__/Js/Teacher.min.js"/>
+<js file="__PUBLIC__/Js/TeacherNew.js"/>
 <js file="__PUBLIC__/Js/configuration.js"/>
 <script>
     var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
     var getChildrenNodeLink = "{:U('Teacher/Configuration/getChildrenPointByParentId')}";
+    var delProblemFromExamUrl = "{:U('Teacher/Problem/delpte')}";
+    var addProblem2ExamUrl = "{:U('Teacher/Problem/addpte')}";
     $(function () {
         var url = window.location.href;
         if (url.indexOf('fill') != -1) {

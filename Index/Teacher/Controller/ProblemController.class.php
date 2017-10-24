@@ -243,7 +243,7 @@ class ProblemController extends QuestionBaseController
                 'type' => $typeId
             );
             if (M('exp_question')->add($data)) {
-                $this->echoError("已添加");
+                $this->echoError("ok");
             } else {
                 $this->echoError("添加失败");
             }

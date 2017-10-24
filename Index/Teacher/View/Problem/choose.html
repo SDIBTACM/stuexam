@@ -50,9 +50,11 @@
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
                 <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
                 <if condition="isset($added[$r['choose_id']]) and $added[$r['choose_id']] gt 0">
-                    <td>已添加</td>
+                    <td><a href='javascript:void(0);' class='deltoexam' data-pid="{$r['choose_id']}" data-type="1">
+                        <span class='glyphicon glyphicon-remove' style='color: darkred'></span></a>
+                    </td>
                     <else/>
-                    <td><a href="javascript:void(0);" class="addchooseexam" data-pid="{$r['choose_id']}">
+                    <td><a href="javascript:void(0);" class="addtoexam" data-pid="{$r['choose_id']}" data-type="1">
                         <span class="glyphicon glyphicon-plus"></span>
                     </a></td>
                 </if>
@@ -63,14 +65,19 @@
     {$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
 </div>
 <script type="text/javascript">
-    var addtoexamurl = "{:U('Teacher/Problem/addpte')}";
     $(function () {
         $("#exam_choose").addClass('active');
         $('[data-toggle="popover"]').popover();
-        $(".addchooseexam").click(function () {
+        $("td").on("click", ".addtoexam", function() {
             var eid = $("#examid").val();
             var pid = $(this).data('pid');
-            addtoexam(this, eid, pid, 1);
+            var type = $(this).data('type');
+            addProblem2Exam(addProblem2ExamUrl, eid, pid, type, this);
+        }).on("click", ".deltoexam", function() {
+            var eid = $("#examid").val();
+            var pid = $(this).data('pid');
+            var type = $(this).data('type');
+            deleteProblem2Exam(delProblemFromExamUrl, eid, pid, type, this, true);
         });
     });
 </script>

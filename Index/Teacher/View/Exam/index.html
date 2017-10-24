@@ -120,15 +120,13 @@
 
 </div>
 <script type="text/javascript">
-	var deltoexamurl = "{:U('Teacher/Problem/delpte')}";
-
 	$(function(){
 		$("#exam_index").addClass('active');
 		$(".deltoexam").click(function() {
 			var eid = $("#examid").val();
 			var pid = $(this).data("pid");
 			var type = $(this).data("type");
-			deltoexam(this, eid, pid, type);
+			deleteProblem2Exam(delProblemFromExamUrl, eid, pid, type, this, false);
 		});
 	});
 </script>
