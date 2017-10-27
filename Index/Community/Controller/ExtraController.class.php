@@ -18,12 +18,13 @@ class ExtraController extends TemplateController
 {
     public function _initialize() {
         $this->isNeedLogin = false;
+        self::$RANK_CONTEST_ID = I('get.cid', 1);
         parent::_initialize();
     }
 
     private static $DEFAULTRATE = 0;
 
-    private static $RANK_CONTEST_ID = 1753;
+    private static $RANK_CONTEST_ID;
 
     // 计分比例
     private $scorePercent = array(
@@ -102,11 +103,15 @@ class ExtraController extends TemplateController
     }
 
     private function getUserSolved($userIds) {
+        $userAllSolved = array();
+        if (empty($userIds)) {
+            return $userAllSolved;
+        }
+
         $userStr = implode('\',\'', $userIds);
         $userStr = '\'' . $userStr . '\'';
         $sql = "select user_id, solved from users where user_id in ( $userStr )";
         $userSolved = M()->query($sql);
-        $userAllSolved = array();
         foreach ($userSolved as $solved) {
             $userAllSolved[$solved['user_id']] = $solved['solved'];
         }
@@ -114,6 +119,11 @@ class ExtraController extends TemplateController
     }
 
     private function getEnglish2ndPageSolved($userIds) {
+        $userEnProblemSolved = array();
+        if (empty($userIds)) {
+            return $userEnProblemSolved;
+        }
+
         $userStr = implode('\',\'', $userIds);
         $userStr = '\'' . $userStr . '\'';
         $sql = "select user_id, count(distinct(problem_id)) as num from solution where " .
@@ -121,7 +131,6 @@ class ExtraController extends TemplateController
             "user_id in ($userStr) group by user_id";
         $problemSolved = M()->query($sql);
 
-        $userEnProblemSolved = array();
         foreach ($problemSolved as $solved) {
             $userEnProblemSolved[$solved['user_id']] = $solved['num'];
         }
@@ -129,6 +138,10 @@ class ExtraController extends TemplateController
     }
 
     private function getRecentWeekSolved($userIds) {
+        $userWeekSolved = array();
+        if (empty($userIds)) {
+            return $userWeekSolved;
+        }
         $userStr = implode('\',\'', $userIds);
         $userStr = '\'' . $userStr . '\'';
         $monday = mktime(0, 0, 0, date('m'), date('d') - (date('w') + 6) % 7, date('Y'));
@@ -136,7 +149,6 @@ class ExtraController extends TemplateController
         $sql = "select count(distinct problem_id) as solved, user_id ".
             "from solution where user_id in ($userStr) and result = 4 and in_date>= '$mondayStr' group by user_id";
         $weekSolved = M()->query($sql);
-        $userWeekSolved = array();
         foreach ($weekSolved as $_week) {
             $userWeekSolved[$_week['user_id']] = $_week['solved'];
         }
