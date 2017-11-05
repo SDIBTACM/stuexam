@@ -115,6 +115,16 @@ class ExtraController extends TemplateController
         foreach ($userSolved as $solved) {
             $userAllSolved[$solved['user_id']] = $solved['solved'];
         }
+
+        $sql = "select user_id, count(distinct(problem_id)) as num from solution where " .
+            "problem_id >= 3501 and result = 4 and " .
+            "user_id in ($userStr) group by user_id";
+        $notContainedProblem = M()->query($sql);
+
+        foreach ($notContainedProblem as $problem) {
+            $userAllSolved[$problem['user_id']] -= $problem['num'];
+        }
+
         return $userAllSolved;
     }
 
