@@ -122,7 +122,9 @@ class ExtraController extends TemplateController
         $notContainedProblem = M()->query($sql);
 
         foreach ($notContainedProblem as $problem) {
-            $userAllSolved[$problem['user_id']] -= $problem['num'];
+            if (isset($userAllSolved[$problem['user_id']])) {
+                $userAllSolved[$problem['user_id']] -= $problem['num'];
+            }
         }
 
         return $userAllSolved;
