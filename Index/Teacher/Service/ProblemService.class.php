@@ -120,7 +120,7 @@ class ProblemService
 
     public function doRejudgeProgramByExamIdAndUserId($eid, $userId, $programScore, $start_timeC, $end_timeC) {
         $row_cnt = AnswerModel::instance()->getRightProgramCount($userId, $eid, $start_timeC, $end_timeC);
-        $programsum = round($row_cnt * $programScore);
+        $programsum = formatToFloatScore($row_cnt * $programScore);
         //$program over
         return $programsum;
     }

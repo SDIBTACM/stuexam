@@ -16,10 +16,10 @@ class StudentTableConfig
     public static $TABLE_FIELD = array(
         'user_id' => 'varchar',
         'exam_id' => 'int',
-        'score' => 'int',
-        'choosesum' => 'int',
-        'judgesum' => 'int',
-        'fillsum' => 'int',
-        'programsum' => 'int'
+        'score' => 'float',
+        'choosesum' => 'float',
+        'judgesum' => 'float',
+        'fillsum' => 'float',
+        'programsum' => 'float'
     );
 }

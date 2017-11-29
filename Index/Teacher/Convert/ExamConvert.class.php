@@ -21,12 +21,12 @@ class ExamConvert
             $title = stripslashes($title);
         }
         $arr['title'] = $title;
-        $arr['choosescore'] = I('post.xzfs', 0, 'intval');
-        $arr['judgescore'] = I('post.pdfs', 0, 'intval');
-        $arr['fillscore'] = I('post.tkfs', 0, 'intval');
-        $arr['prgans'] = I('post.yxjgfs', 0, 'intval');
-        $arr['prgfill'] = I('post.cxtkfs', 0, 'intval');
-        $arr['programscore'] = I('post.cxfs', 0, 'intval');
+        $arr['choosescore'] = I('post.xzfs', 0, 'formatToFloatScore');
+        $arr['judgescore'] = I('post.pdfs', 0, 'formatToFloatScore');
+        $arr['fillscore'] = I('post.tkfs', 0, 'formatToFloatScore');
+        $arr['prgans'] = I('post.yxjgfs', 0, 'formatToFloatScore');
+        $arr['prgfill'] = I('post.cxtkfs', 0, 'formatToFloatScore');
+        $arr['programscore'] = I('post.cxfs', 0, 'formatToFloatScore');
         $arr['isvip'] = I('post.isvip', 'Y');
         $arr['isprivate'] = I('post.isprivate',0, 'intval');
 

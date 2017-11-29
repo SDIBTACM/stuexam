@@ -124,9 +124,9 @@ class AnswerModel
                         if ($value['kind'] == 1) {
                             $fillsum += $score['fillscore'];
                         } else if ($value['kind'] == 2) {
-                            $fillsum = $fillsum + $score['prgans'] / $value['answernum'];
+                            $fillsum = $fillsum + formatToFloatScore($score['prgans'] / $value['answernum']);
                         } else if ($value['kind'] == 3) {
-                            $fillsum = $fillsum + $score['prgfill'] / $value['answernum'];
+                            $fillsum = $fillsum + formatToFloatScore($score['prgfill'] / $value['answernum']);
                         }
                     }
                 }

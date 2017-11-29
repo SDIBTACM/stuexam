@@ -30,27 +30,27 @@
         </tr>
         <tr>
             <td>最高分</td>
-            <td>{$row['choosemax']}</td>
-            <td>{$row['judgemax']}</td>
-            <td>{$row['fillmax']}</td>
-            <td>{$row['programmax']}</td>
-            <td>{$row['scoremax']}</td>
+            <td>{$row['choosemax']|formatToFloatScore}</td>
+            <td>{$row['judgemax']|formatToFloatScore}</td>
+            <td>{$row['fillmax']|formatToFloatScore}</td>
+            <td>{$row['programmax']|formatToFloatScore}</td>
+            <td>{$row['scoremax']|formatToFloatScore}</td>
         </tr>
         <tr>
             <td>最低分</td>
-            <td>{$row['choosemin']}</td>
-            <td>{$row['judgemin']}</td>
-            <td>{$row['fillmin']}</td>
-            <td>{$row['programmin']}</td>
-            <td>{$row['scoremin']}</td>
+            <td>{$row['choosemin']|formatToFloatScore}</td>
+            <td>{$row['judgemin']|formatToFloatScore}</td>
+            <td>{$row['fillmin']|formatToFloatScore}</td>
+            <td>{$row['programmin']|formatToFloatScore}</td>
+            <td>{$row['scoremin']|formatToFloatScore}</td>
         </tr>
         <tr>
             <td>平均分</td>
-            <td>{$row['chooseavg']}</td>
-            <td>{$row['judgeavg']}</td>
-            <td>{$row['fillavg']}</td>
-            <td>{$row['programavg']}</td>
-            <td>{$row['scoreavg']}</td>
+            <td>{$row['chooseavg']|formatToFloatScore}</td>
+            <td>{$row['judgeavg']|formatToFloatScore}</td>
+            <td>{$row['fillavg']|formatToFloatScore}</td>
+            <td>{$row['programavg']|formatToFloatScore}</td>
+            <td>{$row['scoreavg']|formatToFloatScore}</td>
         </tr>
     </table>
     <table class="table-bordered table table-bordered">
@@ -86,7 +86,7 @@
         <tr>
             <td>平均分</td>
             <foreach name="programIds" item="program">
-                <td>{$programAvgScore[$program['question_id']]}</td>
+                <td>{$programAvgScore[$program['question_id']]|formatToFloatScore}</td>
             </foreach>
         </tr>
     </table>

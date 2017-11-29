@@ -99,6 +99,10 @@ function test_input($data) {
     return $data;
 }
 
+function formatToFloatScore($score) {
+    return floatval(sprintf("%.1f", $score));
+}
+
 function sqlInjectionFilter() {
     array_walk($_GET, function (&$v) {
         $v = sqlFilter($v);
@@ -127,7 +131,7 @@ function resultReturn($code, $msg = '') {
 function checkScore($score) {
     if (is_null($score)) {
         return '';
-    } else if ($score == -1) {
+    } else if ($score < 0) {
         return "<span class='label label-default'>还未提交</span>";
     } else {
         return $score;

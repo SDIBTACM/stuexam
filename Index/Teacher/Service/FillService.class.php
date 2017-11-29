@@ -112,9 +112,9 @@ class FillService
                         if ($value['kind'] == 1) {
                             $fillSum += $allscore['fillscore'];
                         } else if ($value['kind'] == 2) {
-                            $fillSum = $fillSum + $allscore['prgans'] / $value['answernum'];
+                            $fillSum = $fillSum + formatToFloatScore($allscore['prgans'] / $value['answernum']);
                         } else if ($value['kind'] == 3) {
-                            $fillSum = $fillSum + $allscore['prgfill'] / $value['answernum'];
+                            $fillSum = $fillSum + formatToFloatScore($allscore['prgfill'] / $value['answernum']);
                         }
                     }
                 }
