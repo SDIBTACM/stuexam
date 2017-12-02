@@ -8,8 +8,6 @@
 
 namespace Home\Controller;
 
-use Home\Model\AnswerModel;
-
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
@@ -66,15 +64,15 @@ class ProgramController extends QuestionController
     public function submitPaper() {
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
-        $allscore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $inarr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
-        $inarr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
-        $inarr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
-        $pright = AnswerModel::instance()->getRightProgramCount($this->userInfo['user_id'], $this->examId, $start_timeC, $end_timeC);
-        $inarr['programsum'] = formatToFloatScore($pright * $allscore['programscore']);
-        $inarr['score'] = $inarr['choosesum'] + $inarr['judgesum'] + $inarr['fillsum'] + $inarr['programsum'];
+        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
+        $inArr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
+        $inArr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
+        $inArr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
+        $inArr['programsum'] = ProblemService::instance()->doRejudgeProgramByExamIdAndUserId(
+            $this->examId, $this->userInfo['user_id'], $allScore['programscore'], $start_timeC, $end_timeC);
+        $inArr['score'] = $inArr['choosesum'] + $inArr['judgesum'] + $inArr['fillsum'] + $inArr['programsum'];
         StudentService::instance()->submitExamPaper(
-            $this->userInfo['user_id'], $this->examId, $inarr);
+            $this->userInfo['user_id'], $this->examId, $inArr);
         redirect(U('Home/Index/score'));
     }
 

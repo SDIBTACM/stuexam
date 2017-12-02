@@ -65,7 +65,7 @@ class ChooseController extends QuestionController
         $userId = $this->userInfo['user_id'];
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $inArr['choosesum'] = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($this->examId, $userId, $allScore['choosescore']);
-        StudentService::instance()->submitExamPaper($this->userInfo['user_id'], $this->examId, $inArr);
+        StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }

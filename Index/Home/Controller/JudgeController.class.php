@@ -60,8 +60,8 @@ class JudgeController extends QuestionController
         $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $userId = $this->userInfo['user_id'];
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $inarr['judgesum'] = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($this->examId, $userId, $allScore['judgescore']);
-        StudentService::instance()->submitExamPaper($this->userInfo['user_id'], $this->examId, $inarr);
+        $inArr['judgesum'] = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($this->examId, $userId, $allScore['judgescore']);
+        StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
