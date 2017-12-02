@@ -14,6 +14,7 @@ use Home\Model\ExamAdminModel;
 use Teacher\Model\FillBaseModel;
 
 use Teacher\Service\ExamService;
+use Teacher\Service\FillService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
 
@@ -56,10 +57,11 @@ class FillController extends QuestionController
     }
 
     public function submitPaper() {
-        $fscore = AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE, false);
-        $inarr['fillsum'] = $fscore;
-        StudentService::instance()->submitExamPaper(
-            $this->userInfo['user_id'], $this->examId, $inarr);
+        $userId = $this->userInfo['user_id'];
+        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
+        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $inarr['fillsum'] = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $allScore);
+        StudentService::instance()->submitExamPaper($this->userInfo['user_id'], $this->examId, $inarr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }

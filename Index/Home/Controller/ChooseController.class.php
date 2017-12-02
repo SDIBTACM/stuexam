@@ -13,6 +13,7 @@ use Home\Model\ExamAdminModel;
 
 use Teacher\Model\ChooseBaseModel;
 
+use Teacher\Service\ChooseService;
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
@@ -61,11 +62,10 @@ class ChooseController extends QuestionController
 
     public function submitPaper() {
         $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $cRight = AnswerModel::instance()->saveProblemAnswer(
-            $this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, false);
-        $inArr['choosesum'] = $cRight * $allScore['choosescore'];
-        StudentService::instance()->submitExamPaper(
-            $this->userInfo['user_id'], $this->examId, $inArr);
+        $userId = $this->userInfo['user_id'];
+        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $inArr['choosesum'] = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($this->examId, $userId, $allScore['choosescore']);
+        StudentService::instance()->submitExamPaper($this->userInfo['user_id'], $this->examId, $inArr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }

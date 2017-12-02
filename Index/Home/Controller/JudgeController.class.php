@@ -14,6 +14,7 @@ use Home\Model\ExamAdminModel;
 use Teacher\Model\JudgeBaseModel;
 
 use Teacher\Service\ExamService;
+use Teacher\Service\JudgeService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
 
@@ -56,11 +57,11 @@ class JudgeController extends QuestionController
     }
 
     public function submitPaper() {
-        $allscore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $jright = AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, false);
-        $inarr['judgesum'] = $jright * $allscore['judgescore'];
-        StudentService::instance()->submitExamPaper(
-            $this->userInfo['user_id'], $this->examId, $inarr);
+        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
+        $userId = $this->userInfo['user_id'];
+        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $inarr['judgesum'] = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($this->examId, $userId, $allScore['judgescore']);
+        StudentService::instance()->submitExamPaper($this->userInfo['user_id'], $this->examId, $inarr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }

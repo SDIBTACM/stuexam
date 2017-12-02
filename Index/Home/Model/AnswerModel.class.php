@@ -26,118 +26,119 @@ class AnswerModel
         return self::$_instance;
     }
 
-    public function saveProblemAnswer($user_id, $eid, $type, $issave = true) {
+    public function saveProblemAnswer($user_id, $eid, $type, $isSave = true) {
         switch ($type) {
             case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
-                return $this->saveChooseAnswer($user_id, $eid, $issave);
+                return $this->saveChooseAnswer($user_id, $eid, $isSave);
                 break;
             case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
-                return $this->saveJudgeAnswer($user_id, $eid, $issave);
+                return $this->saveJudgeAnswer($user_id, $eid, $isSave);
                 break;
             case FillBaseModel::FILL_PROBLEM_TYPE:
-                return $this->saveFillAnswer($user_id, $eid, $issave);
+                return $this->saveFillAnswer($user_id, $eid, $isSave);
                 break;
         }
+        return 0;
     }
 
-    private function saveChooseAnswer($user_id, $eid, $issave) {
-        $cntchoose = 0;
-        $tempsql = "";
+    private function saveChooseAnswer($user_id, $eid, $isSave) {
+        $cntChoose = 0;
+        $tempSql = "";
         $right = 0;
-        $chooseq = $this->getQuestion4ExamByType($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $issave);
-        foreach ($chooseq as $value) {
+        $chooseQ = $this->getQuestion4ExamByType($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $isSave);
+        foreach ($chooseQ as $value) {
             $id = $value['question_id'];
             if (isset($_POST["xzda$id"])) {
-                $myanswer = trim($_POST["xzda$id"]);
-                if ($cntchoose == 0) {
-                    $tempsql = "INSERT INTO `ex_stuanswer` VALUES('$user_id','$eid','1','$id','1','$myanswer')";
-                    $cntchoose = 1;
+                $myAnswer = trim($_POST["xzda$id"]);
+                if ($cntChoose == 0) {
+                    $tempSql = "INSERT INTO `ex_stuanswer` VALUES('$user_id','$eid','1','$id','1','$myAnswer')";
+                    $cntChoose = 1;
                 } else {
-                    $tempsql = $tempsql . ",('$user_id','$eid','1','$id','1','$myanswer')";
+                    $tempSql = $tempSql . ",('$user_id','$eid','1','$id','1','$myAnswer')";
                 }
-                if (!$issave && $myanswer == $value['answer']) {
+                if (!$isSave && $myAnswer == $value['answer']) {
                     $right++;
                 }
             }
         }
-        if (!empty($tempsql)) {
-            $tempsql = $tempsql . " on duplicate key update `answer`=values(`answer`)";
-            M()->execute($tempsql);
+        if (!empty($tempSql)) {
+            $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
+            M()->execute($tempSql);
         }
         return $right;
     }
 
-    private function saveJudgeAnswer($user_id, $eid, $issave) {
-        $cntjudge = 0;
-        $tempsql = "";
+    private function saveJudgeAnswer($user_id, $eid, $isSave) {
+        $cntJudge = 0;
+        $tempSql = "";
         $right = 0;
-        $judgeq = $this->getQuestion4ExamByType($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $issave);
-        foreach ($judgeq as $value) {
+        $judgeQ = $this->getQuestion4ExamByType($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $isSave);
+        foreach ($judgeQ as $value) {
             $id = $value['question_id'];
             if (isset($_POST["pdda$id"])) {
-                $myanswer = trim($_POST["pdda$id"]);
-                if ($cntjudge == 0) {
-                    $tempsql = "INSERT INTO `ex_stuanswer` VALUES('$user_id','$eid','2','$id','1','$myanswer')";
-                    $cntjudge = 1;
+                $myAnswer = trim($_POST["pdda$id"]);
+                if ($cntJudge == 0) {
+                    $tempSql = "INSERT INTO `ex_stuanswer` VALUES('$user_id','$eid','2','$id','1','$myAnswer')";
+                    $cntJudge = 1;
                 } else {
-                    $tempsql = $tempsql . ",('$user_id','$eid','2','$id','1','$myanswer')";
+                    $tempSql = $tempSql . ",('$user_id','$eid','2','$id','1','$myAnswer')";
                 }
-                if (!$issave && $myanswer == $value['answer']) {
+                if (!$isSave && $myAnswer == $value['answer']) {
                     $right++;
                 }
             }
         }
-        if (!empty($tempsql)) {
-            $tempsql = $tempsql . " on duplicate key update `answer`=values(`answer`)";
-            M()->execute($tempsql);
+        if (!empty($tempSql)) {
+            $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
+            M()->execute($tempSql);
         }
         return $right;
     }
 
-    private function saveFillAnswer($user_id, $eid, $issave) {
+    private function saveFillAnswer($user_id, $eid, $isSave) {
 
-        $cntfill = 0;
-        $tempsql = "";
-        $fillsum = 0;
-        $fillq = $this->getQuestion4ExamByType($eid, FillBaseModel::FILL_PROBLEM_TYPE, $issave);
-        if (!$issave) {
+        $cntFill = 0;
+        $tempSql = "";
+        $fillSum = 0;
+        $fillQ = $this->getQuestion4ExamByType($eid, FillBaseModel::FILL_PROBLEM_TYPE, $isSave);
+        if (!$isSave) {
             $field = array('fillscore', 'prgans', 'prgfill');
             $score = ExamBaseModel::instance()->getExamInfoById($eid, $field);
         }
-        foreach ($fillq as $value) {
+        foreach ($fillQ as $value) {
             $aid = $value['answer_id'];
             $fid = $value['fill_id'];
             $name = $fid . "tkda";
             if (isset($_POST["$name$aid"])) {
-                $myanswer = $_POST["$name$aid"];
-                $myanswer = test_input($myanswer);
-                $myanswer = addslashes($myanswer);
-                if ($cntfill == 0) {
-                    $tempsql = "INSERT INTO `ex_stuanswer` VALUES('$user_id','$eid','3','$fid','$aid','$myanswer')";
-                    $cntfill = 1;
+                $myAnswer = $_POST["$name$aid"];
+                $myAnswer = test_input($myAnswer);
+                $myAnswer = addslashes($myAnswer);
+                if ($cntFill == 0) {
+                    $tempSql = "INSERT INTO `ex_stuanswer` VALUES('$user_id','$eid','3','$fid','$aid','$myAnswer')";
+                    $cntFill = 1;
                 } else {
-                    $tempsql = $tempsql . ",('$user_id','$eid','3','$fid','$aid','$myanswer')";
+                    $tempSql = $tempSql . ",('$user_id','$eid','3','$fid','$aid','$myAnswer')";
                 }
-                if (!$issave) {
-                    $rightans = addslashes($value['answer']);
-                    if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
+                if (!$isSave) {
+                    $rightAns = addslashes($value['answer']);
+                    if ($myAnswer == $rightAns && strlen($myAnswer) == strlen($rightAns)) {
                         if ($value['kind'] == 1) {
-                            $fillsum += $score['fillscore'];
+                            $fillSum += $score['fillscore'];
                         } else if ($value['kind'] == 2) {
-                            $fillsum = $fillsum + formatToFloatScore($score['prgans'] / $value['answernum']);
+                            $fillSum = $fillSum + formatToFloatScore($score['prgans'] / $value['answernum']);
                         } else if ($value['kind'] == 3) {
-                            $fillsum = $fillsum + formatToFloatScore($score['prgfill'] / $value['answernum']);
+                            $fillSum = $fillSum + formatToFloatScore($score['prgfill'] / $value['answernum']);
                         }
                     }
                 }
             }
         }
-        if (!empty($tempsql)) {
-            $tempsql = $tempsql . " on duplicate key update `answer`=values(`answer`)";
-            M()->execute($tempsql);
+        if (!empty($tempSql)) {
+            $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
+            M()->execute($tempSql);
         }
-        if (!$issave) {
-            return $fillsum;
+        if (!$isSave) {
+            return $fillSum;
         }
     }
 
