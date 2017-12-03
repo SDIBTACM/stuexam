@@ -303,6 +303,7 @@ class InfoController extends TemplateController
 			WHERE `user_id`='" . $userId . "' AND `exam_id`='$eid'";
             M()->execute($sql);
         }
+        ProblemService::instance()->doFixStuAnswerProgramRank($eid, $userId, $start_timeC, $end_timeC);
     }
 
     private function getTypeList($typeStr) {

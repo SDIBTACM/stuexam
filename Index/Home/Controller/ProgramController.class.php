@@ -73,6 +73,7 @@ class ProgramController extends QuestionController
         $inArr['score'] = $inArr['choosesum'] + $inArr['judgesum'] + $inArr['fillsum'] + $inArr['programsum'];
         StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inArr);
+        ProblemService::instance()->doFixStuAnswerProgramRank($this->examId, $this->userInfo['user_id'], $start_timeC, $end_timeC);
         redirect(U('Home/Index/score'));
     }
 
@@ -163,16 +164,16 @@ class ProgramController extends QuestionController
             ->where($where)
             ->find();
         if (!empty($row_cnt)) {
-            Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: " . json_encode($row_cnt));
+            Log::record(date("Y-m-d H:i:s") . " updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: " . json_encode($row_cnt));
             $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
-            Log::record("updresult method, trace 2, userId: $userId, problemId: $id, sync answer res: $_res");
+            Log::record(date("Y-m-d H:i:s") . " updresult method, trace 2, userId: $userId, problemId: $id, sync answer res: $_res");
             if ($_res > 0) {
                 echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
             } else {
                 echo "<font color='blue' size='3px'>不知道发生了什么, 请刷新页面重试哦~~</font>";
             }
         } else {
-            Log::record("updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: null");
+            Log::record(date("Y-m-d H:i:s") . " updresult method, trace 1 on else, userId: $userId , problemId: $id, hasResult4: null");
             $where = array(
                 'problem_id' => $id,
                 'user_id' => $userId,
@@ -184,13 +185,13 @@ class ProgramController extends QuestionController
                 ->order('solution_id desc')
                 ->find();
             if (empty($trow)) {
-                Log::record("updresult method, trace 3, userId: $userId, problemId: $id, solution: null");
+                Log::record(date("Y-m-d H:i:s") . " updresult method, trace 3, userId: $userId, problemId: $id, solution: null");
                 echo "<font color='green' size='3px'>未提交</font>";
             } else {
-                Log::record("updresult method, trace 3, userId: $userId, problemId: $id, solution: " . json_encode($trow));
+                Log::record(date("Y-m-d H:i:s") . " updresult method, trace 3 on else, userId: $userId, problemId: $id, solution: " . json_encode($trow));
                 $ans = $trow['result'];
                 $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
-                Log::record("updresult method, trace 4, userId: $userId, problemId: $id, sync answer res: $_res");
+                Log::record(date("Y-m-d H:i:s") . " updresult method, trace 4, userId: $userId, problemId: $id, sync answer res: $_res");
                 if ($_res < 0) {
                     $this->echoError("<font color='blue' size='3px'>不知道发生了什么,请刷新页面重试~</font>");
                 }

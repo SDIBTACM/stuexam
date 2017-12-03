@@ -78,8 +78,8 @@ class ProblemService
         return $ans;
     }
 
-    public function syncProgramAnswer($userId, $eid, $pid, $answer, $passRate) {
-        Log::record("userId: $userId, eid: $eid, pid: $pid, answer:$answer, passRate:$passRate");
+    public function syncProgramAnswer($userId, $eid, $pid, $judgeResult, $passRate) {
+        Log::record("userId: $userId, eid: $eid, pid: $pid, answer:$judgeResult, passRate:$passRate");
         $dao = M('ex_stuanswer');
         $where = array(
             'user_id' => $userId,
@@ -94,10 +94,10 @@ class ProblemService
         // 如果沒有保存
         if (empty($res)) {
             Log::record("empty record need to add");
-            if ($answer != 4) {
+            if ($judgeResult != 4) {
                 $where['answer'] = strval($passRate);
             } else {
-                $where['answer'] = strval($answer);
+                $where['answer'] = "4";
             }
             return $dao->add($where);
         } else {
@@ -105,7 +105,7 @@ class ProblemService
             $_ans = $res['answer'];
             if (strcmp($_ans, "4") != 0) {
                 $data = array();
-                if ($answer == 4) {
+                if ($judgeResult == 4) {
                     $data['answer'] = "4";
                 } else if ($passRate > doubleval($_ans)) {
                     $data['answer'] = strval($passRate);
@@ -123,5 +123,20 @@ class ProblemService
         $programsum = formatToFloatScore($row_cnt * $programScore);
         //$program over
         return $programsum;
+    }
+
+    public function doFixStuAnswerProgramRank($eid, $userId, $startTime, $endTime) {
+        $programStatus = AnswerModel::instance()->getExamProgramStatus($userId, $eid, $startTime, $endTime);
+        if (empty($programStatus)) {
+            return;
+        }
+
+        foreach($programStatus as $pid => $value) {
+            if ($value == 1) {
+                ProblemService::instance()->syncProgramAnswer($userId, $eid, $pid, 4, null);
+            } else {
+                ProblemService::instance()->syncProgramAnswer($userId, $eid, $pid, -1, $value);
+            }
+        }
     }
 }

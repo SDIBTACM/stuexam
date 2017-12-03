@@ -164,47 +164,61 @@ class AnswerModel
         return $arr;
     }
 
-    public function getRightProgramCount($user_id, $eid, $start_timeC, $end_timeC) {
+    public function getExamProgramStatus($user_id, $eid, $start_timeC, $end_timeC) {
+        $status = array();
+        // 获取所有的考试编程题
         $questionArr = QuestionBaseModel::instance()->getQuestionIds4ExamByType($eid, ProblemService::PROGRAM_PROBLEM_TYPE);
         $questionIds = array();
         foreach($questionArr as $_q) {
             $questionIds[] = $_q['question_id'];
         }
         if (empty($questionIds)) {
-            return 0;
+            return $status;
         }
+
         $questionIdStr = implode('\',\'', $questionIds);
         $questionIdStr = '\'' . $questionIdStr . '\'';
 
-        $count = 0;
-
-        // oj的pass_rate对于正确的时候不准, 添加这个作为容错处理
+        // oj的pass_rate对于正确的时候不准, 添加这个作为容错处理, 获取所有已经对了的题目
         $rightProgramQuery = "select distinct(problem_id) as problem_id from solution where problem_id in ($questionIdStr) and " .
             "user_id='$user_id' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'";
         $rightIdAns = M()->query($rightProgramQuery);
         $rightIds = array();
         foreach ($rightIdAns as $p) {
             $rightIds[] = $p['problem_id'];
-            $count = $count + 1;
+            $status[$p['problem_id']] = 1;
         }
 
+        // 过滤到所有对了的题目, 查询其他题目的状态
         $otherIds = array_diff($questionIds, $rightIds);
         if (empty($otherIds)) {
-            return $count;
+            return $status;
         }
+
         $otherIdStr = implode('\',\'', $otherIds);
         $questionIdStr = '\'' . $otherIdStr . '\'';
-
-        $query = "select max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
-                "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
+        $query = "select problem_id, max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
+            "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
         $data = M()->query($query);
 
         foreach ($data as $d) {
             if ($d['rate'] >= 0.98) {
-                $count = $count + 1;
+                $status[$d['problem_id']] = 1;
             } else {
-                $count = $count + $d['rate'];
+                $status[$d['problem_id']] = $d['rate'];
             }
+        }
+        return $status;
+    }
+
+    public function getRightProgramCount($user_id, $eid, $start_timeC, $end_timeC) {
+        $programStatus = $this->getExamProgramStatus($user_id, $eid, $start_timeC, $end_timeC);
+        $count = 0;
+        if (empty($programStatus)) {
+            return $count;
+        }
+        foreach ($programStatus as $value) {
+            $count += $value;
         }
         return $count;
     }
