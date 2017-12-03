@@ -164,17 +164,19 @@ class ExamController extends TemplateController
         $student = I('get.student', '', 'htmlspecialchars');
         $sqladd = '';
         if (!empty($student)) {
-            $sqladd = " AND `user_id` like '$student%'";
+            $sqladd = " AND ex_privilege.`user_id` like '$student%'";
         }
 
-        $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")
-            ->count();
+        $query = "SELECT COUNT(1) as totalNum FROM ex_privilege, users WHERE ex_privilege.user_id = users.user_id AND " .
+            "ex_privilege.rightstr = 'e$this->eid' $sqladd";
+        $numRow = M()->query($query);
+        $totalnum = $numRow['totalNum'];
 
         $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,".
 				"MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,".
-				"MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`,AVG(`choosesum`) as `chooseavg`,".
-				"AVG(`judgesum`) as `judgeavg`,AVG(`fillsum`) as `fillavg`,AVG(`programsum`) as `programavg`,".
-				"AVG(`score`) as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
+				"MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`, SUM(`choosesum`) / $totalnum as `chooseavg`,".
+				"SUM(`judgesum`) / $totalnum as `judgeavg`,SUM(`fillsum`) / $totalnum as `fillavg`,SUM(`programsum`) / $totalnum as `programavg`,".
+				"SUM(`score`) / $totalnum as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
         $row = M()->query($query);
 
         $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
