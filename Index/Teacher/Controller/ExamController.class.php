@@ -167,10 +167,10 @@ class ExamController extends TemplateController
             $sqladd = " AND ex_privilege.`user_id` like '$student%'";
         }
 
-        $query = "SELECT COUNT(1) as totalNum FROM ex_privilege, users WHERE ex_privilege.user_id = users.user_id AND " .
+        $query = "SELECT COUNT(1) as totalnum FROM ex_privilege, users WHERE ex_privilege.user_id = users.user_id AND " .
             "ex_privilege.rightstr = 'e$this->eid' $sqladd";
         $numRow = M()->query($query);
-        $totalnum = empty($numRow) ? 1 : $numRow[0]['totalNum'];
+        $totalnum = empty($numRow) ? 0 : $numRow[0]['totalnum'];
 
         $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,".
 				"MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,".
