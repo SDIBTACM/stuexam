@@ -76,16 +76,24 @@ class ExamService
         foreach ($userPrivilegeList as $_privilege) {
             $userIdMap[$_privilege['user_id']] = $_privilege['extrainfo'];
         }
+
+        M('ex_privilege')->where("rightstr='e$eid'")->delete();
+
         $_pieces = explode("\n", $ulist);
         if (count($_pieces) > 0 && strlen($_pieces[0]) > 0) {
             for ($i = 0; $i < count($_pieces); $i++) {
                 $_pieces[$i] = trim($_pieces[$i]);
             }
+        } else {
+            $_pieces = array("0");
         }
-        $pieces = array_intersect_key($_pieces, array_unique(array_map('strtolower', $_pieces)));
-        if (count($pieces) == 0) {
-            return false;
+        $realUsers = M("users")->field('user_id')->where(array('user_id' => array('in', $_pieces)))->select();
+        $pieces = array();
+        foreach ($realUsers as $r) {
+            $pieces[] = $r['user_id'];
         }
+        if (count($pieces) == 0) return true;
+
         $flag = true;
         $query = "";
         foreach ($pieces as $piece) {
@@ -101,7 +109,6 @@ class ExamService
                 $query = $query . ",('" . trim($piece) . "','e$eid','$randnum', $extraInfo)";
             }
         }
-        M('ex_privilege')->where("rightstr='e$eid'")->delete();
         M()->execute($query);
         return true;
     }
