@@ -168,12 +168,13 @@ class ExamController extends TemplateController
         }
 
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")->count();
+        $realnum = M('ex_student')->where("exam_id=$this->eid $sqladd and score>=0")->count();
 
         $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,".
 				"MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,".
-				"MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`, SUM(`choosesum`) / $totalnum as `chooseavg`,".
-				"SUM(`judgesum`) / $totalnum as `judgeavg`,SUM(`fillsum`) / $totalnum as `fillavg`,SUM(`programsum`) / $totalnum as `programavg`,".
-				"SUM(`score`) / $totalnum as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
+				"MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`, SUM(`choosesum`) / $realnum as `chooseavg`,".
+				"SUM(`judgesum`) / $realnum as `judgeavg`,SUM(`fillsum`) / $realnum as `fillavg`,SUM(`programsum`) / $realnum as `programavg`,".
+				"SUM(`score`) / $realnum as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
         $row = M()->query($query);
 
         $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
@@ -189,7 +190,7 @@ class ExamController extends TemplateController
         );
         $programIds = QuestionBaseModel::instance()->queryData($query, array('question_id'));
 
-        $programAvgScore = $this->getEachProgramAvgScore($programIds, $totalnum, $sqladd);
+        $programAvgScore = $this->getEachProgramAvgScore($programIds, $realnum, $sqladd);
 
         $this->zadd('totalnum', $totalnum);
         $this->zadd('row', $row[0]);
