@@ -164,7 +164,7 @@ class ExamController extends TemplateController
         $student = I('get.student', '', 'htmlspecialchars');
         $sqladd = '';
         if (!empty($student)) {
-            $sqladd = " AND ex_privilege.`user_id` like '$student%'";
+            $sqladd = " AND `user_id` like '$student%'";
         }
 
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")->count();
