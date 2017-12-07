@@ -17,8 +17,9 @@ namespace Community\Controller;
 class ExtraController extends TemplateController
 {
     public function _initialize() {
+        $this->isNeedFilterSql = true;
         $this->isNeedLogin = false;
-        self::$RANK_CONTEST_ID = I('get.cid', 1);
+        self::$RANK_CONTEST_ID = I('get.cid', 1, 'intval');
         parent::_initialize();
     }
 
