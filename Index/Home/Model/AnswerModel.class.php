@@ -2,9 +2,8 @@
 namespace Home\Model;
 
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
-use Teacher\Model\ExamBaseModel;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\QuestionBaseModel;
 use Teacher\Service\ProblemService;
 
@@ -26,26 +25,24 @@ class AnswerModel
         return self::$_instance;
     }
 
-    public function saveProblemAnswer($user_id, $eid, $type, $isSave = true) {
+    public function saveProblemAnswer($user_id, $eid, $type) {
         switch ($type) {
             case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
-                return $this->saveChooseAnswer($user_id, $eid, $isSave);
+                $this->saveChooseAnswer($user_id, $eid);
                 break;
             case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
-                return $this->saveJudgeAnswer($user_id, $eid, $isSave);
+                $this->saveJudgeAnswer($user_id, $eid);
                 break;
             case FillBaseModel::FILL_PROBLEM_TYPE:
-                return $this->saveFillAnswer($user_id, $eid, $isSave);
+                $this->saveFillAnswer($user_id, $eid);
                 break;
         }
-        return 0;
     }
 
-    private function saveChooseAnswer($user_id, $eid, $isSave) {
+    private function saveChooseAnswer($user_id, $eid) {
         $cntChoose = 0;
         $tempSql = "";
-        $right = 0;
-        $chooseQ = $this->getQuestion4ExamByType($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $isSave);
+        $chooseQ = $this->getQuestion4ExamByType($eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         foreach ($chooseQ as $value) {
             $id = $value['question_id'];
             if (isset($_POST["xzda$id"])) {
@@ -56,23 +53,18 @@ class AnswerModel
                 } else {
                     $tempSql = $tempSql . ",('$user_id','$eid','1','$id','1','$myAnswer')";
                 }
-                if (!$isSave && $myAnswer == $value['answer']) {
-                    $right++;
-                }
             }
         }
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
             M()->execute($tempSql);
         }
-        return $right;
     }
 
-    private function saveJudgeAnswer($user_id, $eid, $isSave) {
+    private function saveJudgeAnswer($user_id, $eid) {
         $cntJudge = 0;
         $tempSql = "";
-        $right = 0;
-        $judgeQ = $this->getQuestion4ExamByType($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $isSave);
+        $judgeQ = $this->getQuestion4ExamByType($eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         foreach ($judgeQ as $value) {
             $id = $value['question_id'];
             if (isset($_POST["pdda$id"])) {
@@ -83,28 +75,18 @@ class AnswerModel
                 } else {
                     $tempSql = $tempSql . ",('$user_id','$eid','2','$id','1','$myAnswer')";
                 }
-                if (!$isSave && $myAnswer == $value['answer']) {
-                    $right++;
-                }
             }
         }
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
             M()->execute($tempSql);
         }
-        return $right;
     }
 
-    private function saveFillAnswer($user_id, $eid, $isSave) {
-
+    private function saveFillAnswer($user_id, $eid) {
         $cntFill = 0;
         $tempSql = "";
-        $fillSum = 0;
-        $fillQ = $this->getQuestion4ExamByType($eid, FillBaseModel::FILL_PROBLEM_TYPE, $isSave);
-        if (!$isSave) {
-            $field = array('fillscore', 'prgans', 'prgfill');
-            $score = ExamBaseModel::instance()->getExamInfoById($eid, $field);
-        }
+        $fillQ = $this->getQuestion4ExamByType($eid, FillBaseModel::FILL_PROBLEM_TYPE);
         foreach ($fillQ as $value) {
             $aid = $value['answer_id'];
             $fid = $value['fill_id'];
@@ -119,47 +101,21 @@ class AnswerModel
                 } else {
                     $tempSql = $tempSql . ",('$user_id','$eid','3','$fid','$aid','$myAnswer')";
                 }
-                if (!$isSave) {
-                    $rightAns = addslashes($value['answer']);
-                    if ($myAnswer == $rightAns && strlen($myAnswer) == strlen($rightAns)) {
-                        if ($value['kind'] == 1) {
-                            $fillSum += $score['fillscore'];
-                        } else if ($value['kind'] == 2) {
-                            $fillSum = $fillSum + formatToFloatScore($score['prgans'] / $value['answernum']);
-                        } else if ($value['kind'] == 3) {
-                            $fillSum = $fillSum + formatToFloatScore($score['prgfill'] / $value['answernum']);
-                        }
-                    }
-                }
             }
         }
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
             M()->execute($tempSql);
         }
-        if (!$isSave) {
-            return $fillSum;
-        }
     }
 
-    private function getQuestion4ExamByType($eid, $type, $issave = true) {
-        if ($issave) {
-            if ($type == FillBaseModel::FILL_PROBLEM_TYPE) {
-                $query = "SELECT `fill_id`,`answer_id` FROM `fill_answer` WHERE `fill_id` IN
+    private function getQuestion4ExamByType($eid, $type) {
+        if ($type == FillBaseModel::FILL_PROBLEM_TYPE) {
+            $query = "SELECT `fill_id`,`answer_id` FROM `fill_answer` WHERE `fill_id` IN
 				( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='$type')";
-                $arr = M()->query($query);
-            } else {
-                $arr = QuestionBaseModel::instance()->getQuestionIds4ExamByType($eid, $type);
-            }
+            $arr = M()->query($query);
         } else {
-            if ($type == ChooseBaseModel::CHOOSE_PROBLEM_TYPE) {
-                $sql = "SELECT `question_id`,`answer` FROM `ex_choose`,`exp_question` WHERE `exam_id`='$eid' AND `type`='1' AND `choose_id`=`question_id`";
-            } else if ($type == JudgeBaseModel::JUDGE_PROBLEM_TYPE) {
-                $sql = "SELECT `question_id`,`answer` FROM `ex_judge`,`exp_question` WHERE `exam_id`='$eid' AND `type`='2' AND `judge_id`=`question_id`";
-            } else {
-                $sql = "SELECT `fill_answer`.`fill_id`,`answer_id`,`answer`,`answernum`,`kind` FROM `fill_answer`,`ex_fill` WHERE `fill_answer`.`fill_id`=`ex_fill`.`fill_id` AND `fill_answer`.`fill_id` IN ( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')";
-            }
-            $arr = M()->query($sql);
+            $arr = QuestionBaseModel::instance()->getQuestionIds4ExamByType($eid, $type);
         }
         return $arr;
     }
@@ -169,7 +125,7 @@ class AnswerModel
         // 获取所有的考试编程题
         $questionArr = QuestionBaseModel::instance()->getQuestionIds4ExamByType($eid, ProblemService::PROGRAM_PROBLEM_TYPE);
         $questionIds = array();
-        foreach($questionArr as $_q) {
+        foreach ($questionArr as $_q) {
             $questionIds[] = $_q['question_id'];
         }
         if (empty($questionIds)) {

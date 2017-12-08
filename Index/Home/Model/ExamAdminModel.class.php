@@ -31,10 +31,10 @@ class ExamAdminModel
      * 4.可选。是否已经交卷 -3
      * @param  number $eid 比赛编号
      * @param  string $user_id 用户ID]
-     * @param  boolean $havetaken 是否判断已经参加考试过
+     * @param  boolean $judgeHaveTaken 是否判断已经参加考试过
      * @return number|array        返回数字表示没有权限，否则有
      */
-    public function checkExamPrivilege($eid, $user_id, $havetaken = false) {
+    public function checkExamPrivilege($eid, $user_id, $judgeHaveTaken = false) {
         $hasPrivilege = $this->getPrivilege($user_id, $eid);
         if (!(checkAdmin(2) || $hasPrivilege)) {
             return 0;
@@ -59,7 +59,7 @@ class ExamAdminModel
             }
         }
 
-        if ($havetaken) {
+        if ($judgeHaveTaken) {
             $where = array(
                 'user_id' => $user_id,
                 'exam_id' => $eid
