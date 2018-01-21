@@ -11,7 +11,7 @@ namespace Home\Controller;
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
-use Think\Log;
+use Basic\Log;
 
 class ProgramController extends QuestionController
 {
@@ -164,16 +164,16 @@ class ProgramController extends QuestionController
             ->where($where)
             ->find();
         if (!empty($row_cnt)) {
-            Log::record(date("Y-m-d H:i:s") . " updresult method, trace 1, userId: $userId , problemId: $id, hasResult4: " . json_encode($row_cnt));
+            Log::info("userId: {} , problemId: {} , has result for: {}", $userId, $id, $row_cnt);
             $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
-            Log::record(date("Y-m-d H:i:s") . " updresult method, trace 2, userId: $userId, problemId: $id, sync answer res: $_res");
+            Log::info("userId: {} , problemId: {} , sync answer res: {}", $userId, $id, $_res);
             if ($_res > 0) {
                 echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
             } else {
                 echo "<font color='blue' size='3px'>不知道发生了什么, 请刷新页面重试哦~~</font>";
             }
         } else {
-            Log::record(date("Y-m-d H:i:s") . " updresult method, trace 1 on else, userId: $userId , problemId: $id, hasResult4: null");
+            Log::info("userId: {} , problemId: {} , has result for: null", $userId, $id);
             $where = array(
                 'problem_id' => $id,
                 'user_id' => $userId,
@@ -185,13 +185,13 @@ class ProgramController extends QuestionController
                 ->order('solution_id desc')
                 ->find();
             if (empty($trow)) {
-                Log::record(date("Y-m-d H:i:s") . " updresult method, trace 3, userId: $userId, problemId: $id, solution: null");
+                Log::info("userId: {} , problemId: {} , solution: null", $userId, $id);
                 echo "<font color='green' size='3px'>未提交</font>";
             } else {
-                Log::record(date("Y-m-d H:i:s") . " updresult method, trace 3 on else, userId: $userId, problemId: $id, solution: " . json_encode($trow));
+                Log::info("userId: {} , problemId: {} , solution: {}", $userId, $id, $trow);
                 $ans = $trow['result'];
                 $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
-                Log::record(date("Y-m-d H:i:s") . " updresult method, trace 4, userId: $userId, problemId: $id, sync answer res: $_res");
+                Log::info("userId: {} , problemId: {} , sync answer res: {}", $userId, $id, $_res);
                 if ($_res < 0) {
                     $this->echoError("<font color='blue' size='3px'>不知道发生了什么,请刷新页面重试~</font>");
                 }
@@ -223,12 +223,12 @@ class ProgramController extends QuestionController
             ->where($where)
             ->find();
         if (!empty($row_cnt)) {
-            Log::record("programSave method, trace 1, userId: $userId , problemId: $pid, programAnswer: " . json_encode($row_cnt));
+            Log::info("userId: {} , problemId: {}, program answer: {}", $userId, $pid, $row_cnt);
             $res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
-            Log::record("programSave method, trace 2, userId: $userId, problemId: $pid, sync answer res: $res");
+            Log::info("userId: {} , problemId: {}, sync answer res: {}", $userId, $pid, $res);
             $this->echoError(4);
         } else {
-            Log::record("programSave method, trace 1, userId: $userId , problemId: $pid, programAnswer: null");
+            Log::info("userId: {} , problemId: {}, program answer: null", $userId, $pid);
             $this->echoError(-1);
         }
     }
