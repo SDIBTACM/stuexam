@@ -21,6 +21,7 @@ use Teacher\Model\StudentBaseModel;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
 
+use Basic\Log;
 
 class QuestionController extends TemplateController
 {
@@ -74,10 +75,13 @@ class QuestionController extends TemplateController
                 $row = $this->examBase;
                 if ($row == 0) {
                     $this->alertError('You have no privilege!', U('/Home/'));
+                    Log::info("User ID: {} , exam id : {} no privilege", $userId, $eid);
                 } else if ($row == -1) {
                     $this->alertError('No Such Exam!', U('/Home/'));
+                    Log::info("User ID: {} , exam id : {} no such exam", $userId, $eid);
                 } else if ($row == -2) {
                     $this->alertError('Do not login in diff machine,Please Contact administrator', U('/Home'));
+                    Log::info("user ID: {}, exam ID: {} try to log in different machine", $userId, $eid);
                 } else if ($row == -3) {
                     $this->alertError('You have taken part in it', U('/Home/'));
                 }

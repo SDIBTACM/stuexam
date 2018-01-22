@@ -7,6 +7,8 @@ use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\QuestionBaseModel;
 use Teacher\Service\ProblemService;
 
+use Basic\Log;
+
 class AnswerModel
 {
 
@@ -57,7 +59,15 @@ class AnswerModel
         }
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
-            M()->execute($tempSql);
+            $status = M()->execute($tempSql);
+        } else {
+            $status = false;
+        }
+
+        if ($status === false) {
+            Log::warn("userid: {}, examid: {}, save choose answer fail! sql : {}", $user_id, $eid, $tempSql);
+        } else {
+            Log::info("userid: {}, examid: {}, save {} choose answer success", $user_id, $eid, $status);
         }
     }
 
@@ -80,6 +90,14 @@ class AnswerModel
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
             M()->execute($tempSql);
+        } else {
+            $status = false;
+        }
+
+        if ($status === false) {
+            Log::warn("userid: {}, examid: {}, save judge answer fail! sql : {}", $user_id, $eid, $tempSql);
+        } else {
+            Log::info("userid: {}, examid: {}, save {} choose judge success", $user_id, $eid, $status);
         }
     }
 
@@ -106,6 +124,14 @@ class AnswerModel
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
             M()->execute($tempSql);
+        } else {
+            $status = false;
+        }
+
+        if ($status === false) {
+            Log::warn("userid: {}, examid: {}, save fill answer fail! sql : {}", $user_id, $eid, $tempSql);
+        } else {
+            Log::info("userid: {}, examid: {}, save {} choose fill success", $user_id, $eid, $status);
         }
     }
 

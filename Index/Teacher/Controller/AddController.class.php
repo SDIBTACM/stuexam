@@ -14,6 +14,8 @@ use Teacher\Service\FillService;
 use Teacher\Service\JudgeService;
 use Teacher\Service\KeyPointService;
 
+use Basic\Log;
+
 
 class AddController extends TemplateController
 {
@@ -28,6 +30,7 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
+                Log::error("userid: {} post key error", $this->userInfo['user_id']);
             }
             if (!$this->isCreator()) {
                 $this->echoError('You have no privilege!');
@@ -67,6 +70,7 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
+                Log::error("userid: {} post key error", $this->userInfo['user_id']);
             }
             $reqResult = null;
             if (isset($_POST['chooseid'])) {
@@ -110,6 +114,7 @@ class AddController extends TemplateController
 
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
+                Log::error("userid: {} post key error", $this->userInfo['user_id']);
             }
             $reqResult = null;
             if (isset($_POST['judgeid'])) {
@@ -154,6 +159,7 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
+                Log::error("userid: {} post key error", $this->userInfo['user_id']);
             }
             $reqResult = null;
             if (isset($_POST['fillid'])) {
@@ -210,6 +216,7 @@ class AddController extends TemplateController
             $row['creator'] = $this->userInfo['user_id'];
             $examId = ExamBaseModel::instance()->insertData($row);
             if (empty($examId)) {
+                Log::warn("userid: {}, clone exam id: {} fail!", $this->userInfo['user_id'], $examId);
                 $this->echoError("复制考试失败,请刷新页面重试");
             }
             // copy exam's problem
@@ -220,6 +227,7 @@ class AddController extends TemplateController
             }
             unset($r);
             QuestionBaseModel::instance()->insertQuestions($res);
+            Log::info("userid: {}, clone exam id: {} success!", $this->userInfo['user_id'], $examId);
             $this->success('考试复制成功!', U('/Teacher'), 1);
         }
     }

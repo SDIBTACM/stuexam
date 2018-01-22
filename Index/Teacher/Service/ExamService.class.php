@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Service;
 
+use Basic\Log;
 use Constant\ReqResult\Result;
 use Teacher\Convert\ExamConvert;
 
@@ -35,6 +36,7 @@ class ExamService
         if (empty($_examInfo) || !checkAdmin(4, $_examInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("You have no privilege to modify it!");
+            Log::info("user id:{} , exam id: {}, change exam fail, reason: no privilege");
             return $reqResult;
         }
 
@@ -43,9 +45,11 @@ class ExamService
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
             $reqResult->setData("index");
+            Log::info("user id:{} , exam id: {}, change exam success, date: {}", $_SESSION['user_id'], $examId, $data);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试修改失败!");
+            Log::warn("user id:{} , exam id: {}, change exam fail!, date: {}", $_SESSION['user_id'], $examId, $data);
         }
         return $reqResult;
     }
@@ -60,9 +64,11 @@ class ExamService
         if ($return) {
             $reqResult->setMessage("考试添加成功!");
             $reqResult->setData("index");
+            Log::info("user id: {} , add exam success", $_SESSION['user_id']);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试添加失败!");
+            Log::info("user id: {} , add exam fail , data: {}", $_SESSION['user_id'], $data);
         }
         return $reqResult;
     }
