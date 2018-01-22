@@ -240,7 +240,7 @@ class ProgramController extends QuestionController
         $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
         $row = M()->query($sql);
         if ($row) {
-            echo "You should not submit more than twice in 10 seconds.....<br>";
+            echo "别交的太快，再检查检查吧~~<br>";
             exit(0);
         }
 
