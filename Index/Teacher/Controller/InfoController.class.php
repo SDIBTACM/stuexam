@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Basic\Log;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
@@ -81,6 +82,7 @@ class InfoController extends TemplateController
         $sortdnum = I('get.sortdnum', 0, 'intval');
         $users = trim($_GET['users']);
         if (!$this->isOwner4ExamByExamId($eid)) {
+            Log::info("user: {} exam: {} stuid: {}, require: del one score, result: FAIL, reason: privilege", $this->userInfo['user_id'], $users, $eid);
             $this->echoError('You have no privilege to do it!');
             return;
         }
@@ -93,6 +95,7 @@ class InfoController extends TemplateController
         foreach ($typeList as $type) {
             $this->delScoreByType($type, $where);
         }
+        Log::info("user: {} exam: {} stuid: {}, require: del one score, result: success", $this->userInfo['user_id'], $users, $eid);
         $this->redirect("Exam/userscore", array(
             'eid' => $eid,
             'sortdnum' => $sortdnum,
@@ -110,6 +113,7 @@ class InfoController extends TemplateController
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         if (!$this->isOwner4ExamByExamId($eid)) {
+            Log::info("user: {} exam: {}, require: submit all paper, result: FAIL, reason: privilege", $this->userInfo['user_id'], $eid);
             $this->echoError('You have no privilege to do it!');
         }
 
@@ -150,6 +154,8 @@ class InfoController extends TemplateController
                 usleep(10000);
             }
         }
+        Log::info("user: {} exam: {}, require: submit all paper, result: success", $this->userInfo['user_id'], $eid);
+
         $this->redirect("Exam/userscore", array(
             'eid' => $eid,
             'sortdnum' => $sortdnum,
@@ -165,6 +171,7 @@ class InfoController extends TemplateController
             return;
         }
         if (!$this->isOwner4ExamByExamId($eid)) {
+            Log::info("user: {} exam: {}, require: del all score, result: FAIL, reason: privilege", $this->userInfo['user_id'], $eid);
             $this->echoError('You have no privilege to do it!');
         }
         unset($_POST['type']);
@@ -184,6 +191,7 @@ class InfoController extends TemplateController
                 $this->delScoreByType($type, $where);
             }
         }
+        Log::info("user: {} exam: {}, require: del all score, result: success", $this->userInfo['user_id'], $eid);
         $this->redirect("Exam/userscore", array('eid' => $eid));
     }
 
@@ -197,16 +205,19 @@ class InfoController extends TemplateController
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         if (!$this->isOwner4ExamByExamId($eid)) {
+            Log::info("user: {} exam: {} stuid: {}, require: submit paper, result: FAIL, reason: privilege", $this->userInfo['user_id'], $eid, $userId);
             $this->echoError('You have no privilege to do it!');
         }
         $flag = $this->dojudgeone($eid, $userId);
         if ($flag) {
+            Log::info("user: {} exam: {} stuid: {}, require: submit paper, result: success", $this->userInfo['user_id'], $eid, $userId);
             $this->redirect("Exam/userscore", array(
                 'eid' => $eid,
                 'sortdnum' => $sortdnum,
                 'sortanum' => $sortanum
             ));
         }
+        Log::warn("user: {} exam: {} stuid: {}, require: submit paper, result: FAIL, reason: unknow", $this->userInfo['user_id'], $eid, $userId);
     }
 
     public function hardSubmit() {
@@ -215,11 +226,13 @@ class InfoController extends TemplateController
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         if (!$this->isOwner4ExamByExamId($eid)) {
+            Log::info("user: {} exam: {} stuid: {}, require: hard submit paper, result: FAIL, reason: privilege", $this->userInfo['user_id'], $eid, $userId);
             $this->echoError('You have no privilege to do it!');
         }
         if (empty($eid) || empty($userId)) {
         } else {
             $this->dojudgeone($eid, $userId);
+            Log::info("user: {} exam: {} stuid: {}, require: hard submit paper, result: success", $this->userInfo['user_id'], $eid, $userId);
         }
         $this->redirect("Exam/userscore", array(
             'eid' => $eid,
@@ -249,6 +262,7 @@ class InfoController extends TemplateController
                 }
                 unset($userlist);
             }
+            Log::info("");
             $this->success('全部重判成功！', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
         } else if (I('post.rjone')) {
             $rjuserid = test_input($_POST['rjuserid']);

@@ -5,6 +5,7 @@ use Constant\Constants\Chapter;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Think\Controller;
+use Basic\Log;
 
 class TemplateController extends \Home\Controller\TemplateController
 {

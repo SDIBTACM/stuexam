@@ -1,6 +1,7 @@
 <?php
 namespace Teacher\Controller;
 
+use Basic\Log;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -76,20 +77,25 @@ class ExamController extends TemplateController
         if (IS_POST && I('post.eid') != '') {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
+                Log::error("userid: {} post key error", $this->userInfo['user_id']);
             } else if (!$this->isCreator()) {
+                Log::info("user: {} exam: {}, require: add user, result: FAIL, reason: privilege", $this->userInfo['user_id'], I('post.eid', 0, 'intval'));
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
                 $ulist = trim($_POST['ulist']);
                 $flag = ExamService::instance()->addUsers2Exam($eid, $ulist);
                 if ($flag === true) {
+                    Log::info("user: {} exam: {}, require: add user, result: success", $this->userInfo['user_id'], $eid);
                     $this->success('考生添加成功', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
                 } else {
+                    Log::info("user: {} exam: {}, require: add stu, result: FAIL, data: {}", $this->userInfo['user_id'], $eid, $ulist);
                     $this->echoError('Invaild Path');
                 }
             }
         } else {
             if (!$this->isOwner4ExamByExamId($this->eid)) {
+                Log::info("user: {} exam: {}, require: add user, result: success, reason: privilege", $this->userInfo['user_id'], I('post.eid', 0, 'intval'));
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $ulist = "";
@@ -266,9 +272,11 @@ class ExamController extends TemplateController
     // only admin can do
     public function rejudge() {
         if (!$this->isSuperAdmin()) {
+            Log::info("user: {} exam: {}, require: rejudge, result: FAIL, reason: privilege", $this->userInfo['user_id'], I('post.eid', 0, 'intval'));
             $this->error('Sorry,Only admin can do');
         } else {
             $key = set_post_key();
+            Log::info("user: {}, exam: {} require: rejudge, result: success", $this->userInfo['user_id'], I('post.eid', 0, 'intval'));
             $this->zadd('mykey', $key);
             $this->auto_display();
         }

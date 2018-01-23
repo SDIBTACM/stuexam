@@ -216,7 +216,7 @@ class AddController extends TemplateController
             $row['creator'] = $this->userInfo['user_id'];
             $examId = ExamBaseModel::instance()->insertData($row);
             if (empty($examId)) {
-                Log::warn("userid: {}, clone exam id: {} fail!", $this->userInfo['user_id'], $examId);
+                Log::warn("user: {}, require: clone exam id: {} , result: FAIL", $this->userInfo['user_id'], $examId);
                 $this->echoError("复制考试失败,请刷新页面重试");
             }
             // copy exam's problem
@@ -227,7 +227,7 @@ class AddController extends TemplateController
             }
             unset($r);
             QuestionBaseModel::instance()->insertQuestions($res);
-            Log::info("userid: {}, clone exam id: {} success!", $this->userInfo['user_id'], $examId);
+            Log::info("user: {}, require: clone exam id: {} , result: success", $this->userInfo['user_id'], $examId);
             $this->success('考试复制成功!', U('/Teacher'), 1);
         }
     }
