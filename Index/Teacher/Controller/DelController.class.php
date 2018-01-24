@@ -27,12 +27,12 @@ class DelController extends TemplateController
 
     public function exam() {
         if (!$this->isOwner4ExamByExamId($this->id)) {
-            Log::info("user: {}, result: delete {} id: {} result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->echoError('You have no privilege!');
         } else {
             $data = array('visible' => 'N');
             ExamBaseModel::instance()->updateById($this->id, $data);
-            Log::info("user: {}, result: delete {} id: {}, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("考试删除成功", U("Teacher/Index/index", array('page' => $this->page)), 2);
             //if the exam was deleted
             //the info of exam was deleted
@@ -46,7 +46,7 @@ class DelController extends TemplateController
     public function choose() {
         $tmp = ChooseBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
-            Log::info("user: {}, result: delete {} id: {} result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->echoError('You have no privilege!');
         } else {
             ChooseBaseModel::instance()->delById($this->id);
@@ -55,7 +55,7 @@ class DelController extends TemplateController
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=1";
             M()->execute($sql);
             QuestionPointBaseModel::instance()->delByQuestion($this->id, 1);
-            Log::info("user: {}, result: delete {} id: {}, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("选择题删除成功", U("Teacher/Index/choose", array('page' => $this->page)), 2);
         }
     }
@@ -63,7 +63,7 @@ class DelController extends TemplateController
     public function judge() {
         $tmp = JudgeBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
-            Log::info("user: {}, result: delete {} id: {} result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->echoError('You have no privilege!');
         } else {
             JudgeBaseModel::instance()->delById($this->id);
@@ -72,7 +72,7 @@ class DelController extends TemplateController
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=2";
             M()->execute($sql);
             QuestionPointBaseModel::instance()->delByQuestion($this->id, 2);
-            Log::info("user: {}, result: delete {} id: {}, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("判断题删除成功", U("Teacher/Index/judge", array('page' => $this->page)), 2);
         }
     }
@@ -81,7 +81,7 @@ class DelController extends TemplateController
         $tmp = FillBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->echoError('You have no privilege!');
-            Log::info("user: {}, result: delete {} id: {} result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
         } else {
             FillBaseModel::instance()->delById($this->id);
             $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$this->id";
@@ -91,7 +91,7 @@ class DelController extends TemplateController
             $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=3";
             M()->execute($sql);
             QuestionPointBaseModel::instance()->delByQuestion($this->id, 3);
-            Log::info("user: {}, result: delete {} id: {}, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: success", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("填空题删除成功", U("Teacher/Index/fill", array('page' => $this->page)), 2);
         }
     }
