@@ -6,6 +6,8 @@ use Teacher\Convert\FillConvert;
 
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
+use Basic\Log;
+
 
 class FillService
 {
@@ -33,9 +35,11 @@ class FillService
         if (empty($_fillInfo) || !checkAdmin(4, $_fillInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
+            Log::info("user id:{} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $fillId);
         } else if ($_fillInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
+            Log::info("user id:{} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $fillId);
         } else {
             $arr = FillConvert::convertFillFromPost();
             $result = FillBaseModel::instance()->updateById($fillId, $arr);
@@ -57,9 +61,11 @@ class FillService
                 );
                 $reqResult->setMessage("填空题修改成功!");
                 $reqResult->setData("fill");
+                Log::info("user id:{} fill id: {}, require: change fill info, result: success", $_SESSION['user_id'], $fillId);
             } else {
                 $reqResult->setStatus(false);
                 $reqResult->setMessage("填空题修改失败!");
+                Log::warn("user id:{} fill id: {}, require: change fill info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $fillId, $arr, $result);
             }
         }
         return $reqResult;
@@ -86,9 +92,11 @@ class FillService
             );
             $reqResult->setMessage("填空题添加成功!");
             $reqResult->setData("fill");
+            Log::info("user id:{}, require: add fill, result: success", $_SESSION['user_id']);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("填空题添加失败!");
+            Log::warn("user id:{}, require: add fill, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $arr, $fillId);
         }
         return $reqResult;
     }

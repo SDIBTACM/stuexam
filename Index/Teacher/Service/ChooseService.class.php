@@ -6,6 +6,7 @@ use Teacher\Convert\ChooseConvert;
 
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
+use Basic\Log;
 
 class ChooseService
 {
@@ -33,9 +34,11 @@ class ChooseService
         if (empty($_chooseInfo) || !checkAdmin(4, $_chooseInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
+            Log::info("user id:{} choose id: {}, require: change choose info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $chooseid);
         } else if ($_chooseInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
+            Log::info("user id:{} choose id: {}, require: change choose info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $chooseid);
         } else {
             $arr = ChooseConvert::convertChooseFromPost();
             $result = ChooseBaseModel::instance()->updateById($chooseid, $arr);
@@ -46,9 +49,11 @@ class ChooseService
                 );
                 $reqResult->setMessage("选择题修改成功!");
                 $reqResult->setData("choose");
+                Log::info("user id:{} choose id: {}, require: change choose info, result: success", $_SESSION['user_id'], $chooseid);
             } else {
                 $reqResult->setStatus(false);
                 $reqResult->setMessage("选择题修改失败!");
+                Log::warn("user id:{} exam id: {}, require: change choose info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $chooseid, $arr, $result);
             }
         }
         return $reqResult;
@@ -67,9 +72,12 @@ class ChooseService
             );
             $reqResult->setMessage("选择题添加成功!");
             $reqResult->setData("choose");
+            Log::info("user id:{}, require: addd choose, result: success", $_SESSION['user_id']);
+
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("选择题添加失败!");
+            Log::warn("user id:{}, require: add choose, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $arr, $lastId);
         }
         return $reqResult;
     }

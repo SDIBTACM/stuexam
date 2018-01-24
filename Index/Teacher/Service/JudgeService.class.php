@@ -6,6 +6,7 @@ use Teacher\Convert\JudgeConvert;
 
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
+use Basic\Log;
 
 class JudgeService
 {
@@ -33,9 +34,11 @@ class JudgeService
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
+            Log::info("user id:{} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
         } else if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("您没有权限进行此操作!");
+            Log::info("user id:{} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
         } else {
             $arr = JudgeConvert::convertJudgeFromPost();
             $result = JudgeBaseModel::instance()->updateById($judgeid, $arr);
@@ -46,9 +49,11 @@ class JudgeService
                 );
                 $reqResult->setMessage("判断题修改成功!");
                 $reqResult->setData("judge");
+                Log::info("user id:{} judge id: {}, require: change judge info, result: success", $_SESSION['user_id'], $judgeid);
             } else {
                 $reqResult->setStatus(false);
                 $reqResult->setMessage("判断题修改失败!");
+                Log::warn("user id:{} judge id: {}, require: change judge info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $judgeid, $arr, $result);
             }
         }
         return $reqResult;
@@ -67,9 +72,11 @@ class JudgeService
             );
             $reqResult->setMessage("判断题添加成功!");
             $reqResult->setData("judge");
+            Log::info("user id:{}, require: add judge, result: success", $_SESSION['user_id']);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("判断题添加失败!");
+            Log::warn("user id:{}, require: add judge, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $arr, $lastId);
         }
         return $reqResult;
     }

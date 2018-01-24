@@ -68,7 +68,7 @@ class ExamService
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试添加失败!");
-            Log::info("user id:{}, require: add exam, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $data, $return);
+            Log::warn("user id:{}, require: add exam, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $data, $return);
         }
         return $reqResult;
     }
