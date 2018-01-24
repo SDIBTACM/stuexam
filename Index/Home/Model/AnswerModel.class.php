@@ -89,7 +89,7 @@ class AnswerModel
         }
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
-            M()->execute($tempSql);
+            $status = M()->execute($tempSql);
         } else {
             $status = false;
         }
@@ -123,7 +123,7 @@ class AnswerModel
         }
         if (!empty($tempSql)) {
             $tempSql = $tempSql . " on duplicate key update `answer`=values(`answer`)";
-            M()->execute($tempSql);
+            $status = M()->execute($tempSql);
         } else {
             $status = false;
         }
