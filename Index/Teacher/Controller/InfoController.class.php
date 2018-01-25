@@ -72,6 +72,7 @@ class InfoController extends TemplateController
 
     public function delscore() {
         if (!(isset($_GET['eid']) && isset($_GET['users']))) {
+            Log::info("user: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
             $this->echoError('Wrong Path');
             return;
         }
@@ -82,7 +83,7 @@ class InfoController extends TemplateController
         $sortdnum = I('get.sortdnum', 0, 'intval');
         $users = trim($_GET['users']);
         if (!$this->isOwner4ExamByExamId($eid)) {
-            Log::info("user: {} exam: {} stuid: {}, require: del one score, result: FAIL, reason: privilege", $this->userInfo['user_id'], $users, $eid);
+            Log::info("user: {} exam: {} stuid: {}, require: del one score, result: FAIL, reason: no privilege", $this->userInfo['user_id'], $users, $eid);
             $this->echoError('You have no privilege to do it!');
             return;
         }
@@ -106,6 +107,7 @@ class InfoController extends TemplateController
     public function submitAllPaper() {
         $eid = I('get.eid', 0, 'intval');
         if (empty($eid)) {
+            Log::info("user: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
             $this->alertError('Invaild Exam');
             return;
         }
@@ -113,7 +115,7 @@ class InfoController extends TemplateController
         $sortanum = I('get.sortanum', 0, 'intval');
         $sortdnum = I('get.sortdnum', 0, 'intval');
         if (!$this->isOwner4ExamByExamId($eid)) {
-            Log::info("user: {} exam: {}, require: submit all paper, result: FAIL, reason: privilege", $this->userInfo['user_id'], $eid);
+            Log::info("user: {} exam: {}, require: submit all paper, result: FAIL, reason: no privilege", $this->userInfo['user_id'], $eid);
             $this->echoError('You have no privilege to do it!');
         }
 
@@ -167,11 +169,12 @@ class InfoController extends TemplateController
         $eid = I('post.eid', 0, 'intval');
         $typeStr = I('post.type', 'all');
         if (empty($eid)) {
+            Log::info("user: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
             $this->echoError("bad exam id");
             return;
         }
         if (!$this->isOwner4ExamByExamId($eid)) {
-            Log::info("user: {} exam: {}, require: del all score, result: FAIL, reason: privilege", $this->userInfo['user_id'], $eid);
+            Log::info("user: {} exam: {}, require: del all score, result: FAIL, reason: no privilege", $this->userInfo['user_id'], $eid);
             $this->echoError('You have no privilege to do it!');
         }
         unset($_POST['type']);
@@ -197,6 +200,7 @@ class InfoController extends TemplateController
 
     public function submitpaper() {
         if (!(isset($_GET['eid']) && isset($_GET['users']))) {
+            Log::info("user: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
             $this->echoError('Wrong Path');
             return;
         }
@@ -243,10 +247,15 @@ class InfoController extends TemplateController
 
     public function dorejudge() {
         if (!(IS_POST && I('post.eid'))) {
+            Log::info("user: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
             $this->echoError('Wrong Method');
             return;
         }
-        if (!check_post_key() || !$this->isSuperAdmin()) {
+        if (!$this->isSuperAdmin()) {
+            $this->echoError('发生错误！');
+        }
+        if (!check_post_key()) {
+            Log::error("userid: {} post key error", $this->userInfo['user_id']);
             $this->echoError('发生错误！');
         }
         $eid = intval($_POST['eid']);
@@ -262,15 +271,16 @@ class InfoController extends TemplateController
                 }
                 unset($userlist);
             }
-            Log::info("");
             $this->success('全部重判成功！', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
         } else if (I('post.rjone')) {
             $rjuserid = test_input($_POST['rjuserid']);
             $flag = $this->dojudgeone($eid, $rjuserid);
             if ($flag) {
+                Log::info("user: {} exam: {}, require: rejudge exam, result: success", $this->userInfo['user_id'], $eid);
                 $this->success('重判成功！', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
             }
         } else {
+            Log::info("user: {} exam: {}, require: rejudge exam, result: FAIL, reason: unknow", $this->userInfo['user_id'], $eid);
             $this->echoError('Invaild Path');
         }
     }
@@ -317,6 +327,7 @@ class InfoController extends TemplateController
 			WHERE `user_id`='" . $userId . "' AND `exam_id`='$eid'";
             M()->execute($sql);
         }
+        Log::info("user: {} exam: {} stuid:{}, require: rejudge one paper, result: success", $this->userInfo['user_id'], $eid, $userId);
         ProblemService::instance()->doFixStuAnswerProgramRank($eid, $userId, $start_timeC, $end_timeC);
     }
 

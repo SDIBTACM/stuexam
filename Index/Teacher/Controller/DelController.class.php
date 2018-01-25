@@ -46,7 +46,7 @@ class DelController extends TemplateController
     public function choose() {
         $tmp = ChooseBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
-            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: no privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->echoError('You have no privilege!');
         } else {
             ChooseBaseModel::instance()->delById($this->id);
@@ -63,7 +63,7 @@ class DelController extends TemplateController
     public function judge() {
         $tmp = JudgeBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
-            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: no privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->echoError('You have no privilege!');
         } else {
             JudgeBaseModel::instance()->delById($this->id);
@@ -81,7 +81,7 @@ class DelController extends TemplateController
         $tmp = FillBaseModel::instance()->getById($this->id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->echoError('You have no privilege!');
-            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
+            Log::info("user: {} {} id: {}, result: delete, result: FAIL! reason: no privilege", $this->userInfo['user_id'], __FUNCTION__, $this->id);
         } else {
             FillBaseModel::instance()->delById($this->id);
             $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$this->id";

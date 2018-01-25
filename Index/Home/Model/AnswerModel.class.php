@@ -65,9 +65,9 @@ class AnswerModel
         }
 
         if ($status === false) {
-            Log::warn("userid: {}, examid: {}, save choose answer fail! sql : {}", $user_id, $eid, $tempSql);
+            Log::warn("userid: {}, examid: {}, require: save choose answer, result: FAIL! sqldata: {}, sqlresult: {}", $user_id, $eid, $tempSql, $status);
         } else {
-            Log::info("userid: {}, examid: {}, save {} choose answer success", $user_id, $eid, $status);
+            Log::info("userid: {}, examid: {}, require: save choose answer, result: success", $user_id, $eid, $status);
         }
     }
 
@@ -95,9 +95,9 @@ class AnswerModel
         }
 
         if ($status === false) {
-            Log::warn("userid: {}, examid: {}, save judge answer fail! sql : {}", $user_id, $eid, $tempSql);
+            Log::warn("userid: {}, examid: {}, require: save judge answer, result: FAIL! sqldata: {}, sqlresult: {}", $user_id, $eid, $tempSql, $status);
         } else {
-            Log::info("userid: {}, examid: {}, save {} choose judge success", $user_id, $eid, $status);
+            Log::info("userid: {}, examid: {}, require: save judge answer, result: success", $user_id, $eid, $status);
         }
     }
 
@@ -129,9 +129,9 @@ class AnswerModel
         }
 
         if ($status === false) {
-            Log::warn("userid: {}, examid: {}, save fill answer fail! sql : {}", $user_id, $eid, $tempSql);
+            Log::warn("userid: {}, examid: {}, require: save fill answer, result: FAIL! sqldata: {}, sqlresult: {}", $user_id, $eid, $tempSql, $status);
         } else {
-            Log::info("userid: {}, examid: {}, save {} choose fill success", $user_id, $eid, $status);
+            Log::info("userid: {}, examid: {}, require: save fill answer, result: success", $user_id, $eid, $status);
         }
     }
 
