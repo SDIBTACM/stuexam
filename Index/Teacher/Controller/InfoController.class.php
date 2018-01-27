@@ -280,7 +280,7 @@ class InfoController extends TemplateController
                 $this->success('重判成功！', U('Teacher/Exam/userscore', array('eid' => $eid)), 2);
             }
         } else {
-            Log::info("user: {} exam: {}, require: rejudge exam, result: FAIL, reason: unknow", $this->userInfo['user_id'], $eid);
+            Log::info("user: {} exam: {}, require: rejudge exam, result: FAIL, reason: post error ", $this->userInfo['user_id'], $eid);
             $this->echoError('Invaild Path');
         }
     }
