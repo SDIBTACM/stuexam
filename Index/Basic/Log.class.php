@@ -98,7 +98,7 @@ class Log
         $trace = self::dealBacktrace();
         $message = self::parseMessage($message, $arguments);
 
-        $millSecs = date('Y-m-d H:i:s') . '.' . (int)(microtime(true) * 10000) % 10000;
+        $millSecs = date('Y-m-d H:i:s') . '.' . sprintf("04%d",(int)(microtime(true) * 10000) % 10000);
         $logMsg = sprintf("%s [%s] [%s] [%s] [%s:%s] - %s",
             $millSecs, getmypid(), $level, $trace['class'], $trace['function'], $trace['line'], $message);
 
