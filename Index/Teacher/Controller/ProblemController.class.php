@@ -59,7 +59,7 @@ class ProblemController extends QuestionBaseController
                 $this->addProgramProblem();
                 break;
             default:
-                Log::info("user: {}, require: add problem to eaxm, result: FAIL, reason: undefine type {}", $this->userInfo['user_id'], $this->eid, $problemType);
+                Log::info("user id: {}, require: add problem to eaxm, result: FAIL, reason: undefine type {}", $this->userInfo['user_id'], $this->eid, $problemType);
                 $this->echoError('Invaild Path');
                 break;
         }
@@ -94,7 +94,7 @@ class ProblemController extends QuestionBaseController
             $questionIds[] = $r['choose_id'];
         }
         $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        Log::info("user: {} exam: {}, require: add choose problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
+        Log::info("user id: {} exam id: {}, require: add choose problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
 
         $this->ZaddWidgets($widgets);
         $this->auto_display('choose');
@@ -128,7 +128,7 @@ class ProblemController extends QuestionBaseController
             $questionIds[] = $r['judge_id'];
         }
         $this->getQuestionChapterAndPoint($questionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        Log::info("user: {} exam: {}, require: add judge problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
+        Log::info("user id: {} exam id: {}, require: add judge problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
 
         $this->ZaddWidgets($widgets);
         $this->auto_display('judge');
@@ -162,7 +162,7 @@ class ProblemController extends QuestionBaseController
             $questionIds[] = $r['fill_id'];
         }
         $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);
-        Log::info("user: {} exam: {}, require: add fill problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
+        Log::info("user id: {} exam id: {}, require: add fill problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
 
         $this->ZaddWidgets($widgets);
         $this->auto_display('fill');
@@ -171,10 +171,10 @@ class ProblemController extends QuestionBaseController
     public function addProgramProblem() {
         if (IS_POST && I('post.eid')) {
             if (!check_post_key()) {
-                Log::error("userid: {} post key error", $this->userInfo['user_id']);
+                Log::error("user id: {} post key error", $this->userInfo['user_id']);
                 $this->echoError('发生错误！');
             } else if (!$this->isCreator()) {
-                Log::info("user: {} exam: {}, require: add program problem to eaxm, result: FAIL, reason: no privilege", $this->userInfo['user_id'], I('post.eid', 0, 'intval'));
+                Log::info("user id: {} exam id: {}, require: add program problem to eaxm, result: FAIL, reason: no privilege", $this->userInfo['user_id'], I('post.eid', 0, 'intval'));
                 $this->echoError('You have no privilege of this exam');
             } else {
                 $eid = I('post.eid', 0, 'intval');
@@ -213,10 +213,10 @@ class ProblemController extends QuestionBaseController
                 }
                 $flag = ProblemService::instance()->addProgram2Exam($eid, $problemIds);
                 if ($flag === true) {
-                    Log::info("user: {} exam: {}, require: add program problem to eaxm, result: success", $this->userInfo['user_id'], $eid);
+                    Log::info("user: {} exam id: {}, require: add program problem to eaxm, result: success", $this->userInfo['user_id'], $eid);
                     $this->success('程序题添加成功', U('Teacher/Problem/addProgramProblem', array('eid' => $eid, 'type' => 4)), 2);
                 } else {
-                    Log::warn("user: {} exam: {}, require: aadd program problem to eaxm, result: FAIL, reason: unknow", $this->userInfo['user_id'], $eid);
+                    Log::warn("user: {} exam id: {}, require: aadd program problem to eaxm, result: FAIL, reason: unknow", $this->userInfo['user_id'], $eid);
                     $this->echoError('Invaild Path');
                 }
             }

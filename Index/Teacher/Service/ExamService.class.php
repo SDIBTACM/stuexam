@@ -36,7 +36,7 @@ class ExamService
         if (empty($_examInfo) || !checkAdmin(4, $_examInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("You have no privilege to modify it!");
-            Log::info("user id:{} exam id: {}, require: change exam info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $examId);
+            Log::info("user id: {} exam id: {}, require: change exam info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $examId);
             return $reqResult;
         }
 
@@ -45,11 +45,12 @@ class ExamService
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
             $reqResult->setData("index");
-            Log::info("user id:{} exam id: {}, require: change exam info, result: success", $_SESSION['user_id'], $examId);
+            Log::info("user id: {} exam id: {}, require: change exam info, result: success", $_SESSION['user_id'], $examId);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试修改失败!");
-            Log::warn("user id:{} exam id: {}, require: change exam info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $examId, $data, $res);
+            Log::warn("user id: {} exam id: {}, require: change exam info, result: FAIL, sqldate: {}, sqlresult: {}",
+                $_SESSION['user_id'], $examId, $data, $res);
         }
         return $reqResult;
     }
@@ -64,11 +65,11 @@ class ExamService
         if ($return) {
             $reqResult->setMessage("考试添加成功!");
             $reqResult->setData("index");
-            Log::info("user id:{}, require: add exam, result: success", $_SESSION['user_id']);
+            Log::info("user id: {}, require: add exam, result: success", $_SESSION['user_id']);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试添加失败!");
-            Log::warn("user id:{}, require: add exam, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $data, $return);
+            Log::warn("user id: {}, require: add exam, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $data, $return);
         }
         return $reqResult;
     }

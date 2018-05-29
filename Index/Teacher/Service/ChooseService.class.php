@@ -49,11 +49,13 @@ class ChooseService
                 );
                 $reqResult->setMessage("选择题修改成功!");
                 $reqResult->setData("choose");
-                Log::info("user id:{} choose id: {}, require: change choose info, result: success", $_SESSION['user_id'], $chooseid);
+                Log::info("user id:{} choose id: {}, require: change choose info, result: success",
+                    $_SESSION['user_id'], $chooseid);
             } else {
                 $reqResult->setStatus(false);
                 $reqResult->setMessage("选择题修改失败!");
-                Log::warn("user id:{} exam id: {}, require: change choose info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $chooseid, $arr, $result);
+                Log::warn("user id: {} exam id: {}, require: change choose info, result: FAIL, sqldate: {}, sqlresult: {}",
+                    $_SESSION['user_id'], $chooseid, $arr, $result);
             }
         }
         return $reqResult;
@@ -77,7 +79,8 @@ class ChooseService
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("选择题添加失败!");
-            Log::warn("user id:{}, require: add choose, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $arr, $lastId);
+            Log::warn("user id:{}, require: add choose, result: FAIL, sqldate: {}, sqlresult: {}",
+                $_SESSION['user_id'], $arr, $lastId);
         }
         return $reqResult;
     }

@@ -61,7 +61,8 @@ class ConfigurationController extends TemplateController
     public function removePoint() {
         if (IS_AJAX) {
             $pointId = I('post.pointid', 0, 'intval');
-            Log::info("user : {}, remove key point id :{} {} ", $this->userInfo['user_id'], $pointId, KeyPointBaseModel::instance()->getByIds($pointId));
+            Log::info("user id: {}, remove key point id :{} {} ",
+                $this->userInfo['user_id'], $pointId, KeyPointBaseModel::instance()->getByIds($pointId));
             KeyPointBaseModel::instance()->delById($pointId);
             $res = KeyPointBaseModel::instance()->delByParentId($pointId);
             QuestionPointBaseModel::instance()->delPoint($pointId);
@@ -85,7 +86,8 @@ class ConfigurationController extends TemplateController
         );
         $res = KeyPointBaseModel::instance()->insertData($point);
         if ($res <= 0) {
-            Log::warn("user id: {}, require: add key point, result: FAIL! sql data:{}, sql result: {}", $this->userInfo['user_id'], $point, $res);
+            Log::warn("user id: {}, require: add key point, result: FAIL! sql data:{}, sql result: {}",
+                $this->userInfo['user_id'], $point, $res);
             $this->echoError("添加失败");
         } else {
             Log::info("user id: {}, require: add key point, result: success!", $this->userInfo['user_id']);

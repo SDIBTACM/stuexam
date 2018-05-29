@@ -30,7 +30,7 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
-                Log::error("userid: {} post key error", $this->userInfo['user_id']);
+                Log::error("user id: {} post key error", $this->userInfo['user_id']);
             }
             if (!$this->isCreator()) {
                 Log::info("user id:{} {} id: {}, require: change {} info, result: FAIL, reason: no admin or creator ",
@@ -72,7 +72,7 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
-                Log::error("userid: {} post key error", $this->userInfo['user_id']);
+                Log::error("user id: {} post key error", $this->userInfo['user_id']);
             }
             $reqResult = null;
             if (isset($_POST['chooseid'])) {
@@ -91,7 +91,7 @@ class AddController extends TemplateController
                 $this->error('No Such Problem!');
             }
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
-                Log::info("user id:{} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
+                Log::info("user id: {} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
                     $_SESSION['user_id'], __FUNCTION__, $id, __FUNCTION__);
                 $this->echoError('You have no privilege!');
             }
@@ -118,7 +118,7 @@ class AddController extends TemplateController
 
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
-                Log::error("userid: {} post key error", $this->userInfo['user_id']);
+                Log::error("user id: {} post key error", $this->userInfo['user_id']);
             }
             $reqResult = null;
             if (isset($_POST['judgeid'])) {
@@ -138,7 +138,7 @@ class AddController extends TemplateController
                 $this->echoError('No Such Problem!');
             }
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
-                Log::info("user id:{} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
+                Log::info("user id: {} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
                     $_SESSION['user_id'], __FUNCTION__, $id, __FUNCTION__);
                 $this->echoError('You have no privilege!');
             }
@@ -165,7 +165,7 @@ class AddController extends TemplateController
         if (IS_POST) {
             if (!check_post_key()) {
                 $this->echoError('发生错误！');
-                Log::error("userid: {} post key error", $this->userInfo['user_id']);
+                Log::error("user id: {} post key error", $this->userInfo['user_id']);
             }
             $reqResult = null;
             if (isset($_POST['fillid'])) {
@@ -185,7 +185,7 @@ class AddController extends TemplateController
             }
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 $this->echoError('You have no privilege!');
-                Log::info("user id:{} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
+                Log::info("user id: {} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
                     $_SESSION['user_id'], __FUNCTION__, $id, __FUNCTION__);
 
             }
@@ -225,7 +225,7 @@ class AddController extends TemplateController
             $row['creator'] = $this->userInfo['user_id'];
             $examId = ExamBaseModel::instance()->insertData($row);
             if (empty($examId)) {
-                Log::warn("user: {}, require: clone exam id: {} , result: FAIL", $this->userInfo['user_id'], $eid);
+                Log::warn("user id: {}, require: clone exam id: {} , result: FAIL", $this->userInfo['user_id'], $eid);
                 $this->echoError("复制考试失败,请刷新页面重试");
             }
             // copy exam's problem
@@ -236,7 +236,7 @@ class AddController extends TemplateController
             }
             unset($r);
             QuestionBaseModel::instance()->insertQuestions($res);
-            Log::info("user: {}, require: clone exam id: {} , result: success", $this->userInfo['user_id'], $examId);
+            Log::info("user id: {}, require: clone exam id: {} , result: success", $this->userInfo['user_id'], $examId);
             $this->success('考试复制成功!', U('/Teacher'), 1);
         }
     }

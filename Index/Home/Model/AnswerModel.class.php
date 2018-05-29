@@ -65,9 +65,10 @@ class AnswerModel
         }
 
         if ($status === false) {
-            Log::warn("userid: {}, examid: {}, require: save choose answer, result: FAIL! sqldata: {}, sqlresult: {}", $user_id, $eid, $tempSql, $status);
+            Log::warn("user id: {}, exam id: {}, require: save choose answer, result: FAIL! sqldata: {}, sqlresult: {}",
+                $user_id, $eid, $tempSql, $status);
         } else {
-            Log::info("userid: {}, examid: {}, require: save choose answer, result: success", $user_id, $eid, $status);
+            Log::info("user id: {}, exam id: {}, require: save choose answer, result: success", $user_id, $eid, $status);
         }
     }
 
@@ -95,9 +96,10 @@ class AnswerModel
         }
 
         if ($status === false) {
-            Log::warn("userid: {}, examid: {}, require: save judge answer, result: FAIL! sqldata: {}, sqlresult: {}", $user_id, $eid, $tempSql, $status);
+            Log::warn("user id: {}, exam id: {}, require: save judge answer, result: FAIL! sqldata: {}, sqlresult: {}",
+                $user_id, $eid, $tempSql, $status);
         } else {
-            Log::info("userid: {}, examid: {}, require: save judge answer, result: success", $user_id, $eid, $status);
+            Log::info("user id: {}, exam id: {}, require: save judge answer, result: success", $user_id, $eid, $status);
         }
     }
 
@@ -129,9 +131,10 @@ class AnswerModel
         }
 
         if ($status === false) {
-            Log::warn("userid: {}, examid: {}, require: save fill answer, result: FAIL! sqldata: {}, sqlresult: {}", $user_id, $eid, $tempSql, $status);
+            Log::warn("user id: {}, exam id: {}, require: save fill answer, result: FAIL! sqldata: {}, sqlresult: {}",
+                $user_id, $eid, $tempSql, $status);
         } else {
-            Log::info("userid: {}, examid: {}, require: save fill answer, result: success", $user_id, $eid, $status);
+            Log::info("user id: {}, exam id: {}, require: save fill answer, result: success", $user_id, $eid, $status);
         }
     }
 
