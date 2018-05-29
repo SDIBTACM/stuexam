@@ -79,7 +79,7 @@ class ProblemService
     }
 
     public function syncProgramAnswer($userId, $eid, $pid, $judgeResult, $passRate) {
-        Log::info("user id: {} , exam id: {} , problem id: {} , answer: {} , pass rate: {}", $userId, $eid, $pid, $judgeResult, $passRate);
+        Log::info("user id: {} , exam id: {} , problem id: {} , answer: {} , pass rate: {}", $userId, $eid, $pid, $judgeResult, $passRate === null ? "1.00" : $passRate);
         $dao = M('ex_stuanswer');
         $where = array(
             'user_id' => $userId,
