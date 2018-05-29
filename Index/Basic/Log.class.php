@@ -46,7 +46,12 @@ class Log
     }
 
     private static function dealBacktrace() {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        if (version_compare(PHP_VERSION,'5.3.6','<')) {
+            $backtrace = debug_backtrace();
+        } else {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        }
+
         $upstream = array();
         foreach ($backtrace as $stackInfo) {
             if ($stackInfo['class'] != __CLASS__) {
