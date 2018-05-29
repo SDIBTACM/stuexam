@@ -68,7 +68,7 @@ class QuestionBaseController extends TemplateController
                 $questionPointMap[$questionPoint['question_id']] = array();
             }
             $questionPointMap[$questionPoint['question_id']][] = array(
-                'chapter' => $questionPoint['chapter_id'],
+                'chapter' => Chapter::getById($questionPoint['chapter_id'])->getPriority(),
                 'parent_point' => $pointMap[$questionPoint['point_parent_id']],
                 'point' => $pointMap[$questionPoint['point_id']]
             );

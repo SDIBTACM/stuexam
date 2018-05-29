@@ -4,9 +4,9 @@
         <option value="0" selected>请选择章节</option>
         <foreach name='chapters' item='chapter' key='index'>
             <if condition="$chapterId eq $index">
-                <option value="{$index}" selected>第{$index}章: {$chapter}</option>
+                <option value="{$index}" selected>{$chapter}</option>
                 <else/>
-                <option value="{$index}">第{$index}章: {$chapter}</option>
+                <option value="{$index}">{$chapter}</option>
             </if>
         </foreach>
     </select>
