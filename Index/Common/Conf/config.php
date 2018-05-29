@@ -13,9 +13,9 @@ return array(
 
 	//'SHOW_PAGE_TRACE' => true,
 	'URL_CASE_INSENSITIVE'  =>  false,
+    'LOG_LEVEL'  =>'EMERG,ALERT,CRIT,ERR',
 
-    'ISDEBUG' => true,
-	'EXAM_VERSION' => '1.0.1',
+	'EXAM_VERSION' => '1.0.2',
 
 	'TEACHER_LIST' => array('wangjp','xiao','tanghl','191227938','yuwenli','ZhihuiLiu','xqs','xf_zh','ncx','yuliping',
 		'zhangb','azytyut','zhangfan','wbyq','sdwulxw','jxb19870205','liupq','xm105', "libokkkkk"),
