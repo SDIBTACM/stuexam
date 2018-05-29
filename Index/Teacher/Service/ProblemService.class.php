@@ -101,7 +101,7 @@ class ProblemService
             }
             return $dao->add($where);
         } else {
-            Log::warn("need to update");
+            Log::info("Program result need to update");
             $_ans = $res['answer'];
             if (strcmp($_ans, "4") != 0) {
                 $data = array();
