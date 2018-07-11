@@ -48,7 +48,7 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_choose')
-            ->field('choose_id,question,creator,easycount,private_num')
+            ->field('choose_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
             ->order('choose_id asc')
             ->limit($mypage['sqladd'])
@@ -79,7 +79,7 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_judge')
-            ->field('judge_id,question,creator,easycount,private_num')
+            ->field('judge_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
             ->order('judge_id asc')
             ->limit($mypage['sqladd'])
@@ -109,7 +109,7 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_fill')
-            ->field('fill_id,question,creator,easycount,kind,private_num')
+            ->field('fill_id,question,creator,easycount,kind,private_code')
             ->where($sch['sql'])
             ->order('fill_id asc')
             ->limit($mypage['sqladd'])
