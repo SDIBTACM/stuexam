@@ -26,7 +26,13 @@
                        value="若x和n均是int型变量,且x和n的初值均为5,则计算表达式x+=n++后x的值为__(1)__,n的值为__(2)__" disabled>
             </div>
         </div>
-
+        <div class="form-group">
+            <label for="private_num" class="control-label col-md-2">题目私有编号:</label>
+            <div class="col-lg-8">
+                <input type="text" id="private_num" name="private_num"
+                       value="{$row['private_num']|default=''}" placeholder="请输入整数">
+            </div>
+        </div>
         <div class="form-group">
             <label class='col-md-2 control-label' for="chapterSelect">知识点(支持添加多个):</label>
 
