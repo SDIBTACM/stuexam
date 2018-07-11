@@ -48,7 +48,7 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_choose')
-            ->field('choose_id,question,creator,easycount')
+            ->field('choose_id,question,creator,easycount,private_num')
             ->where($sch['sql'])
             ->order('choose_id asc')
             ->limit($mypage['sqladd'])
