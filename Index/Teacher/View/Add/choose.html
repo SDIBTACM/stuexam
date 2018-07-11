@@ -18,9 +18,11 @@
                           rows="6">{$row['question']|default=""}</textarea></div>
         </div>
         <div class="form-group">
-            <label for="private_num" class="control-label col-md-2">题目内部编号:</label>
-            <div class="col-md-8">
-                <input type="text" id="private_num" name="private_num" value="{$row['private_num']|default=""}">
+            <label for="private_num" class="control-label col-md-2">题目私有编号:</label>
+            <div class="col-lg-8">
+                <textarea type="text" id="private_num" name="private_num"
+                          rows="1">{$row['private_num']|default=""}</textarea>
+                <p class="alert">请输入整数</p>
             </div>
         </div>
         <div class="form-group">
