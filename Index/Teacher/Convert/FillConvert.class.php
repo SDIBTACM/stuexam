@@ -20,7 +20,7 @@ class FillConvert
         $arr['kind'] = intval($_POST['kind']);
         $arr['isprivate'] = intval($_POST['isprivate']);
         $arr['question_type'] = intval($_POST['questionType']);
-        $arr['private_num'] = intval($_POST['private_num']) == 0 ? null : intval($_POST['private_num']);
+        $arr['private_code'] = test_input($_POST['private_code']);
 
         return $arr;
     }
