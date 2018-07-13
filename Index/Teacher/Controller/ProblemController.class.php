@@ -72,7 +72,7 @@ class ProblemController extends QuestionBaseController
         $myPage = splitpage('ex_choose', $sch['sql']);
         $numOfChoose = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_choose')->field('choose_id,question,creator,easycount,private_code')
-            ->where($sch['sql'])->order('private_code desc')->limit($myPage['sqladd'])
+            ->where($sch['sql'])->order('private_code asc')->limit($myPage['sqladd'])
             ->select();
 
         $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
@@ -106,7 +106,7 @@ class ProblemController extends QuestionBaseController
         $myPage = splitpage('ex_judge', $sch['sql']);
         $numOfJudge = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = m('ex_judge')->field('judge_id,question,creator,easycount,private_code')
-            ->where($sch['sql'])->order('private_code desc')->limit($myPage['sqladd'])
+            ->where($sch['sql'])->order('private_code asc')->limit($myPage['sqladd'])
             ->select();
 
         $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
@@ -140,7 +140,7 @@ class ProblemController extends QuestionBaseController
         $myPage = splitpage('ex_fill', $sch['sql']);
         $numOfFill = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_fill')->field('fill_id,question,creator,easycount,kind,private_code')
-            ->where($sch['sql'])->order('private_code desc')->limit($myPage['sqladd'])
+            ->where($sch['sql'])->order('private_code asc')->limit($myPage['sqladd'])
             ->select();
 
         $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
