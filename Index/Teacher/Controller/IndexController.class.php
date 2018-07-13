@@ -50,7 +50,7 @@ class IndexController extends QuestionBaseController
         $row = M('ex_choose')
             ->field('choose_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
-            ->order('choose_id asc')
+            ->order('private_code asc')
             ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
@@ -81,7 +81,7 @@ class IndexController extends QuestionBaseController
         $row = M('ex_judge')
             ->field('judge_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
-            ->order('judge_id asc')
+            ->order('private_code asc')
             ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
@@ -111,7 +111,7 @@ class IndexController extends QuestionBaseController
         $row = M('ex_fill')
             ->field('fill_id,question,creator,easycount,kind,private_code')
             ->where($sch['sql'])
-            ->order('fill_id asc')
+            ->order('private_code asc')
             ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
