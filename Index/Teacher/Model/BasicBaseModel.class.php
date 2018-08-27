@@ -11,13 +11,16 @@ namespace Teacher\Model;
 
 abstract class BasicBaseModel
 {
-    abstract protected function getDao();
 
     abstract protected function getTableName();
 
     abstract protected function getTableFields();
 
     abstract protected function getPrimaryId();
+
+    protected function getDao() {
+        return M($this->getTableName());
+    }
 
     public function insertData($data) {
         if (empty($data)) return 0;

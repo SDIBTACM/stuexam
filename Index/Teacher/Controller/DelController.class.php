@@ -8,6 +8,7 @@ use Teacher\Model\FillBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\QuestionBaseModel;
 use Teacher\Model\QuestionPointBaseModel;
+use Teacher\Model\StudentAnswerModel;
 use Think\Controller;
 
 class DelController extends TemplateController
@@ -36,12 +37,6 @@ class DelController extends TemplateController
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("考试删除成功", U("Teacher/Index/index", array('page' => $this->page)), 2);
-            //if the exam was deleted
-            //the info of exam was deleted
-            // $query="DELETE FROM `exp_question` WHERE `exam_id`='$id'";
-            // $query="DELETE FROM `ex_privilege` WHERE `rightstr`='e$id'";
-            // $query="DELETE FROM `ex_stuanswer` WHERE `exam_id`='$id'";
-            // $query="DELETE FROM `ex_student` WHERE `exam_id`='$id'";
         }
     }
 
@@ -53,11 +48,9 @@ class DelController extends TemplateController
             $this->echoError('You have no privilege!');
         } else {
             ChooseBaseModel::instance()->delById($this->id);
-            $sql = "DELETE FROM `exp_question` WHERE `question_id`=$this->id and `type`=1";
-            M()->execute($sql);
-            $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=1";
-            M()->execute($sql);
-            QuestionPointBaseModel::instance()->delByQuestion($this->id, 1);
+            QuestionBaseModel::instance()->delQuestionByType($this->id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            StudentAnswerModel::instance()->delAnswerByQuestionAndType($this->id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            QuestionPointBaseModel::instance()->delByQuestion($this->id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("选择题删除成功", U("Teacher/Index/choose", array('page' => $this->page)), 2);
@@ -72,11 +65,9 @@ class DelController extends TemplateController
             $this->echoError('You have no privilege!');
         } else {
             JudgeBaseModel::instance()->delById($this->id);
-            $sql = "DELETE FROM `exp_question` WHERE `question_id`=$this->id and `type`=2";
-            M()->execute($sql);
-            $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=2";
-            M()->execute($sql);
-            QuestionPointBaseModel::instance()->delByQuestion($this->id, 2);
+            QuestionBaseModel::instance()->delQuestionByType($this->id, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            StudentAnswerModel::instance()->delAnswerByQuestionAndType($this->id, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+            QuestionPointBaseModel::instance()->delByQuestion($this->id, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("判断题删除成功", U("Teacher/Index/judge", array('page' => $this->page)), 2);
@@ -93,11 +84,9 @@ class DelController extends TemplateController
             FillBaseModel::instance()->delById($this->id);
             $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$this->id";
             M()->execute($sql);
-            $sql = "DELETE FROM `exp_question` WHERE `question_id`=$this->id and `type`=3";
-            M()->execute($sql);
-            $sql = "DELETE FROM `ex_stuanswer` WHERE `question_id`=$this->id and `type`=3";
-            M()->execute($sql);
-            QuestionPointBaseModel::instance()->delByQuestion($this->id, 3);
+            QuestionBaseModel::instance()->delQuestionByType($this->id, FillBaseModel::FILL_PROBLEM_TYPE);
+            StudentAnswerModel::instance()->delAnswerByQuestionAndType($this->id, FillBaseModel::FILL_PROBLEM_TYPE);
+            QuestionPointBaseModel::instance()->delByQuestion($this->id, FillBaseModel::FILL_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $this->id);
             $this->success("填空题删除成功", U("Teacher/Index/fill", array('page' => $this->page)), 2);

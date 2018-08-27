@@ -21,10 +21,6 @@ class QuestionBaseModel extends GeneralModel
     private function __clone() {
     }
 
-    protected function getDao() {
-        return M($this->getTableName());
-    }
-
     protected function getTableName() {
         return QuestionTableConfig::TABLE_NAME;
     }
@@ -71,5 +67,13 @@ class QuestionBaseModel extends GeneralModel
         );
         $field = array('question_id');
         return $this->getDao()->field($field)->where($where)->count();
+    }
+
+    public function delQuestionByType($questionId, $type) {
+        $where = array(
+            'question_id' => $questionId,
+            'type' => $type
+        );
+        return $this->getDao()->where($where)->delete();
     }
 }

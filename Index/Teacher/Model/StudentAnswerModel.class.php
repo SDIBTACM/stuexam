@@ -1,22 +1,18 @@
 <?php
 /**
  * drunk , fix later
- * Created by PhpStorm.
+ * Created by Magic.
  * User: jiaying
- * Datetime: 15/10/25 19:09
+ * Datetime: 27/08/2018 21:39
  */
 
 namespace Teacher\Model;
 
 
-use Constant\ExamDbConfig\ExamTableConfig;
+use Constant\ExamDbConfig\StudentAnswerTableConfig;
 
-class ExamBaseModel extends GeneralModel
+class StudentAnswerModel extends GeneralModel
 {
-
-    const EXAM_NOT_START = 0;
-    const EXAM_RUNNING = 1;
-    const EXAM_END = -1;
 
     private static $_instance = null;
 
@@ -27,15 +23,15 @@ class ExamBaseModel extends GeneralModel
     }
 
     protected function getTableName() {
-        return ExamTableConfig::TABLE_NAME;
+        return StudentAnswerTableConfig::TABLE_NAME;
     }
 
     protected function getTableFields() {
-        return ExamTableConfig::$TABLE_FIELD;
+        return StudentAnswerTableConfig::$TABLE_FIELD;
     }
 
     protected function getPrimaryId() {
-        return 'exam_id';
+        return null;
     }
 
     public static function instance() {
@@ -45,11 +41,11 @@ class ExamBaseModel extends GeneralModel
         return self::$_instance;
     }
 
-    public function getExamInfoById($examId, $field = array()) {
+    public function delAnswerByQuestionAndType($questionId, $type) {
         $where = array(
-            'exam_id' => $examId,
-            'visible' => 'Y'
+            'question_id' => $questionId,
+            'type' => $type
         );
-        return $this->getDao()->field($field)->where($where)->find();
+        return $this->getDao()->where($where)->delete();
     }
 }
