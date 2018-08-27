@@ -23,6 +23,7 @@ class ChooseConvert
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);
         $arr['question_type'] = intval($_POST['questionType']);
+        $arr['private_code'] = test_input($_POST['private_code']);
 
         return $arr;
     }

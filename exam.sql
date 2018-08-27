@@ -5,7 +5,7 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 219.231.223.36 (MySQL 5.5.58-0ubuntu0.14.04.1-log)
+# Host: 127.0.0.1 (MySQL 5.5.58-0ubuntu0.14.04.1-log)
 # Database: jol
 # Generation Time: 2017-12-08 02:41:43 +0000
 # ************************************************************
@@ -36,6 +36,7 @@ CREATE TABLE `ex_choose` (
   `easycount` tinyint(4) NOT NULL DEFAULT '0' COMMENT '难易程度1-10',
   `isprivate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '权限类型:1公开;2私有;3隐藏',
   `question_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '题目版本类型0旧版1新版非考试2新版考试',
+  `private_code` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`choose_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -54,6 +55,7 @@ CREATE TABLE `ex_fill` (
   `kind` tinyint(4) NOT NULL DEFAULT '1' COMMENT '填空题类型',
   `isprivate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '权限类型:1公开;2私有;3隐藏',
   `question_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '题目版本类型0旧版1新版非考试2新版考试',
+  `private_code` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`fill_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -71,6 +73,7 @@ CREATE TABLE `ex_judge` (
   `easycount` tinyint(4) NOT NULL DEFAULT '0' COMMENT '难易程度1-10',
   `isprivate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '权限类型:1公开;2私有;3隐藏',
   `question_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '题目版本类型0旧版1新版非考试2新版考试',
+  `private_code` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`judge_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

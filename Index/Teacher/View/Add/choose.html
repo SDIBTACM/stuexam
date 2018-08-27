@@ -18,6 +18,13 @@
                           rows="6">{$row['question']|default=""}</textarea></div>
         </div>
         <div class="form-group">
+            <label for="private_code" class="control-label col-md-2">题目私有编号:</label>
+            <div class="col-md-8">
+                <input type="text" id="private_code" name="private_code" class="form-control" maxlength="12"
+                          value="{$row['private_code']|default=''}" placeholder="请输入您自定的编号，不超过12位">
+            </div>
+        </div>
+        <div class="form-group">
             <label for="ams" class="col-md-2 control-label">选项A:</label>
 
             <div class="col-md-3">

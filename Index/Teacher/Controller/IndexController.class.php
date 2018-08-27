@@ -48,9 +48,9 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_choose', $sch['sql']);
         $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_choose')
-            ->field('choose_id,question,creator,easycount')
+            ->field('choose_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
-            ->order('choose_id asc')
+            ->order('private_code asc, choose_id asc')
             ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
@@ -79,9 +79,9 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_judge', $sch['sql']);
         $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_judge')
-            ->field('judge_id,question,creator,easycount')
+            ->field('judge_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
-            ->order('judge_id asc')
+            ->order('private_code asc, judge_id asc')
             ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
@@ -109,9 +109,9 @@ class IndexController extends QuestionBaseController
         $mypage = splitpage('ex_fill', $sch['sql']);
         $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
         $row = M('ex_fill')
-            ->field('fill_id,question,creator,easycount,kind')
+            ->field('fill_id,question,creator,easycount,kind,private_code')
             ->where($sch['sql'])
-            ->order('fill_id asc')
+            ->order('private_code asc, fill_id asc')
             ->limit($mypage['sqladd'])
             ->select();
         $widgets = array(
