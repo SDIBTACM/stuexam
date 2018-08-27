@@ -69,4 +69,18 @@ class Result
     public function setData($data) {
         $this->data = $data;
     }
+
+    public static function errorResult($message) {
+        return new Result(false, $message);
+    }
+
+    public static function successResult() {
+        return new Result(true);
+    }
+
+    public static function successResultWithData($data) {
+        $result = new Result();
+        $result->setData($data);
+        return $result;
+    }
 }

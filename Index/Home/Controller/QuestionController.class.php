@@ -8,6 +8,7 @@
 
 namespace Home\Controller;
 
+use Constant\ReqResult\Result;
 use Home\Model\ExamAdminModel;
 
 use Teacher\Model\ChooseBaseModel;
@@ -59,32 +60,25 @@ class QuestionController extends TemplateController
         } else {
             $this->examId = $eid;
             $userId = $this->userInfo['user_id'];
-            $this->examBase = ExamAdminModel::instance()->checkExamPrivilege($eid, $userId, true);
             $this->navigationUrl = U('Home/Question/navigation', array('eid' => $this->examId));
 
-            if (is_array($this->examBase)) {
-                $isruning = ExamAdminModel::instance()->getExamRunningStatus(
+            $reqResult = ExamAdminModel::instance()->checkExamPrivilege($eid, $userId, true);
+            if (!$reqResult instanceof Result) {
+                $this->alertError("获取考试信息失败, 请刷新页面重试", U('/Home/'));
+            }
+            if (!$reqResult->getStatus()) {
+                $this->alertError($reqResult->getMessage(), U('/Home/'));
+                Log::info("user id: {} , exam id : {} check failed, message:{}", $userId, $eid, $reqResult->getMessage());
+            } else {
+                $this->examBase = $reqResult->getData();
+                $isRunning = ExamAdminModel::instance()->getExamRunningStatus(
                     $this->examBase['start_time'], $this->examBase['end_time']);
-                if ($isruning != ExamBaseModel::EXAM_RUNNING) {
+                if ($isRunning != ExamBaseModel::EXAM_RUNNING) {
                     $this->alertError('exam is not running!', U('Home/Index/index'));
                 }
-                $this->isRunning = $isruning;
-                $lefttime = strtotime($this->examBase['end_time']) - time();
-                $this->leftTime = $lefttime;
-            } else {
-                $row = $this->examBase;
-                if ($row == 0) {
-                    $this->alertError('You have no privilege!', U('/Home/'));
-                    Log::info("user id: {} , exam id : {} no privilege", $userId, $eid);
-                } else if ($row == -1) {
-                    $this->alertError('No Such Exam!', U('/Home/'));
-                    Log::info("user id: {} , exam id : {} no such exam", $userId, $eid);
-                } else if ($row == -2) {
-                    $this->alertError('Do not login in diff machine,Please Contact administrator', U('/Home'));
-                    Log::info("user id: {}, exam id: {} try to log in different machine", $userId, $eid);
-                } else if ($row == -3) {
-                    $this->alertError('You have taken part in it', U('/Home/'));
-                }
+                $this->isRunning = $isRunning;
+                $leftTime = strtotime($this->examBase['end_time']) - time();
+                $this->leftTime = $leftTime;
             }
         }
     }

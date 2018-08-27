@@ -1,6 +1,7 @@
 <?php
 namespace Home\Model;
 
+use Constant\ReqResult\Result;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\StudentBaseModel;
@@ -25,37 +26,33 @@ class ExamAdminModel
 
     /**
      * 判断用户是否有权限参加此考试,判断包括:
-     * 1.是否在权限列表 0
-     * 2.考试是否存在或可见 -1
-     * 3.如果是vip考试,是否在不同机器上登陆过  -2
-     * 4.可选。是否已经交卷 -3
      * @param  number $eid 比赛编号
      * @param  string $user_id 用户ID]
      * @param  boolean $judgeHaveTaken 是否判断已经参加考试过
      * @return number|array        返回数字表示没有权限，否则有
      */
+
     public function checkExamPrivilege($eid, $user_id, $judgeHaveTaken = false) {
         $hasPrivilege = $this->getPrivilege($user_id, $eid);
         if (!(checkAdmin(2) || $hasPrivilege)) {
-            return 0;
+            return Result::errorResult("You have no privilege!");
         }
 
         $field = array('title', 'start_time', 'end_time', 'isvip', 'visible');
         $row = ExamBaseModel::instance()->getExamInfoById($eid, $field);
         if (empty($row)) {
-            return -1;
+            return Result::errorResult("No Such Exam!");
         }
 
-        if (C('OJ_VIP_CONTEST')) {
-            if ($row['isvip'] == 'Y') {
-                $today = date('Y-m-d');
-                $ip1 = $_SERVER['REMOTE_ADDR'];
-                $sql = "SELECT `user_id` FROM `loginlog` WHERE `user_id`='$user_id' AND `time`>='$today' AND ip<>'$ip1' AND
-				 `user_id` NOT IN( SELECT `user_id` FROM `privilege` WHERE `rightstr`='administrator' or `rightstr`='contest_creator') ORDER BY `time` DESC limit 0,1";
-                $tmprow = M()->query($sql);
-                if ($tmprow) {
-                    return -2;
-                }
+        if (C('OJ_VIP_CONTEST') && $row['isvip'] == 'Y') {
+            $today = date('Y-m-d');
+            $ip1 = $_SERVER['REMOTE_ADDR'];
+            $sql = "SELECT user_id FROM loginlog WHERE user_id='$user_id' AND `time`>='$today' AND ip<>'$ip1' AND " .
+                "user_id NOT IN( SELECT user_id FROM privilege WHERE rightstr='administrator' " .
+                "or rightstr='contest_creator') ORDER BY `time` DESC limit 0,1";
+            $tmpRow = M()->query($sql);
+            if ($tmpRow) {
+                return Result::errorResult("Do not login in diff machine,Please Contact administrator");
             }
         }
 
@@ -67,11 +64,12 @@ class ExamAdminModel
             $field = array('score');
             $score = StudentBaseModel::instance()->queryOne($where, $field);
             if (!is_null($score['score']) && $score['score'] >= 0) {
-                return -3;
+                return Result::errorResult("You have taken part in it");
             }
         }
 
-        return $row;
+        return Result::successResultWithData($row);
+
     }
 
     /**
