@@ -32,29 +32,27 @@ class JudgeService
         $field = array('creator', 'isprivate');
         $tmp = JudgeBaseModel::instance()->getById($judgeid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
-            $reqResult->setStatus(false);
-            $reqResult->setMessage("您没有权限进行此操作!");
             Log::info("user id:{} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
-        } else if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
-            $reqResult->setStatus(false);
-            $reqResult->setMessage("您没有权限进行此操作!");
+            return Result::errorResult("您没有权限进行此操作!");
+        }
+
+        if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
             Log::info("user id: {} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
+            return Result::errorResult("您没有权限进行此操作!");
+        }
+        $arr = JudgeConvert::convertJudgeFromPost();
+        $result = JudgeBaseModel::instance()->updateById($judgeid, $arr);
+        if ($result !== false) {
+            $pointIds = I('post.point', array());
+            KeyPointService::instance()->saveExamPoint(
+                $pointIds, $judgeid, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+            );
+            $reqResult->setMessage("判断题修改成功!");
+            $reqResult->setData("judge");
+            Log::info("user id: {} judge id: {}, require: change judge info, result: success", $_SESSION['user_id'], $judgeid);
         } else {
-            $arr = JudgeConvert::convertJudgeFromPost();
-            $result = JudgeBaseModel::instance()->updateById($judgeid, $arr);
-            if ($result !== false) {
-                $pointIds = I('post.point', array());
-                KeyPointService::instance()->saveExamPoint(
-                    $pointIds, $judgeid, JudgeBaseModel::JUDGE_PROBLEM_TYPE
-                );
-                $reqResult->setMessage("判断题修改成功!");
-                $reqResult->setData("judge");
-                Log::info("user id: {} judge id: {}, require: change judge info, result: success", $_SESSION['user_id'], $judgeid);
-            } else {
-                $reqResult->setStatus(false);
-                $reqResult->setMessage("判断题修改失败!");
-                Log::warn("user id: {} judge id: {}, require: change judge info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $judgeid, $arr, $result);
-            }
+            Log::warn("user id: {} judge id: {}, require: change judge info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $judgeid, $arr, $result);
+            return Result::errorResult("判断题修改失败!");
         }
         return $reqResult;
     }
@@ -74,9 +72,8 @@ class JudgeService
             $reqResult->setData("judge");
             Log::info("user id: {}, require: add judge, result: success", $_SESSION['user_id']);
         } else {
-            $reqResult->setStatus(false);
-            $reqResult->setMessage("判断题添加失败!");
             Log::warn("user id: {}, require: add judge, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $arr, $lastId);
+            return Result::errorResult("判断题修改失败!");
         }
         return $reqResult;
     }

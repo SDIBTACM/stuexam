@@ -25,10 +25,6 @@ class JudgeBaseModel extends GeneralModel
     private function __clone() {
     }
 
-    protected function getDao() {
-        return M($this->getTableName());
-    }
-
     protected function getTableName() {
         return JudgeTableConfig::TABLE_NAME;
     }

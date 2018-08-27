@@ -32,33 +32,30 @@ class ChooseService
         $field = array('creator', 'isprivate');
         $_chooseInfo = ChooseBaseModel::instance()->getById($chooseid, $field);
         if (empty($_chooseInfo) || !checkAdmin(4, $_chooseInfo['creator'])) {
-            $reqResult->setStatus(false);
-            $reqResult->setMessage("您没有权限进行此操作!");
-            Log::info("user id:{} choose id: {}, require: change choose info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $chooseid);
-        } else if ($_chooseInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
-            $reqResult->setStatus(false);
-            $reqResult->setMessage("您没有权限进行此操作!");
-            Log::info("user id:{} choose id: {}, require: change choose info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $chooseid);
-        } else {
-            $arr = ChooseConvert::convertChooseFromPost();
-            $result = ChooseBaseModel::instance()->updateById($chooseid, $arr);
-            if ($result !== false) {
-                $pointIds = I('post.point', array());
-                KeyPointService::instance()->saveExamPoint(
-                    $pointIds, $chooseid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
-                );
-                $reqResult->setMessage("选择题修改成功!");
-                $reqResult->setData("choose");
-                Log::info("user id:{} choose id: {}, require: change choose info, result: success",
-                    $_SESSION['user_id'], $chooseid);
-            } else {
-                $reqResult->setStatus(false);
-                $reqResult->setMessage("选择题修改失败!");
-                Log::warn("user id: {} exam id: {}, require: change choose info, result: FAIL, sqldate: {}, sqlresult: {}",
-                    $_SESSION['user_id'], $chooseid, $arr, $result);
-            }
+            return Result::errorResult("您没有权限进行此操作!");
         }
-        return $reqResult;
+
+        if ($_chooseInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
+            return Result::errorResult("您没有权限进行此操作!");
+        }
+
+        $arr = ChooseConvert::convertChooseFromPost();
+        $result = ChooseBaseModel::instance()->updateById($chooseid, $arr);
+        if ($result !== false) {
+            $pointIds = I('post.point', array());
+            KeyPointService::instance()->saveExamPoint(
+                $pointIds, $chooseid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+            );
+            $reqResult->setMessage("选择题修改成功!");
+            $reqResult->setData("choose");
+            Log::info("user id:{} choose id: {}, require: change choose info, result: success",
+                $_SESSION['user_id'], $chooseid);
+            return $reqResult;
+        } else {
+            Log::warn("user id: {} exam id: {}, require: change choose info, result: FAIL, sqldate: {}, sqlresult: {}",
+                $_SESSION['user_id'], $chooseid, $arr, $result);
+            return Result::errorResult("选择题修改失败!");
+        }
     }
 
     public function addChooseInfo() {
@@ -67,21 +64,19 @@ class ChooseService
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
         $lastId = ChooseBaseModel::instance()->insertData($arr);
-        if ($lastId) {
-            $pointIds = I('post.point', array());
-            KeyPointService::instance()->saveExamPoint(
-                $pointIds, $lastId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
-            );
-            $reqResult->setMessage("选择题添加成功!");
-            $reqResult->setData("choose");
-            Log::info("user id:{}, require: addd choose, result: success", $_SESSION['user_id']);
-
-        } else {
-            $reqResult->setStatus(false);
-            $reqResult->setMessage("选择题添加失败!");
+        if ($lastId <= 0) {
             Log::warn("user id:{}, require: add choose, result: FAIL, sqldate: {}, sqlresult: {}",
                 $_SESSION['user_id'], $arr, $lastId);
+            return Result::errorResult("选择题添加失败!");
         }
+
+        $pointIds = I('post.point', array());
+        KeyPointService::instance()->saveExamPoint(
+            $pointIds, $lastId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+        );
+        $reqResult->setMessage("选择题添加成功!");
+        $reqResult->setData("choose");
+        Log::info("user id:{}, require: addd choose, result: success", $_SESSION['user_id']);
         return $reqResult;
     }
 

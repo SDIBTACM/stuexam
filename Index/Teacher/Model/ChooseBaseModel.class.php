@@ -25,10 +25,6 @@ class ChooseBaseModel extends GeneralModel
     private function __clone() {
     }
 
-    protected function getDao() {
-        return M($this->getTableName());
-    }
-
     protected function getTableName() {
         return ChooseTableConfig::TABLE_NAME;
     }
