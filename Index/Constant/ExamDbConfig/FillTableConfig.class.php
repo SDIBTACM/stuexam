@@ -23,5 +23,6 @@ class FillTableConfig
         'kind' => 'tinyint',
         'isprivate' => 'tinyint',
         'question_type' => 'tinyint'
+        'private_code' => 'varchar',
     );
 }
