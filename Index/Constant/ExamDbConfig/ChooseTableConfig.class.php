@@ -26,5 +26,6 @@ class ChooseTableConfig
         'easycount' => 'tinyint',
         'isprivate' => 'tinyint',
         'question_type' => 'tinyint',
+        'private_code' => 'varchar',
     );
 }
