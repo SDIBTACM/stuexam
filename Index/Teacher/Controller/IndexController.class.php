@@ -4,6 +4,7 @@ namespace Teacher\Controller;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Think\Controller;
 
 class IndexController extends QuestionBaseController
@@ -35,7 +36,7 @@ class IndexController extends QuestionBaseController
         $this->zadd('row', $row);
         $this->zadd('mypage', $mypage);
         $this->zadd('mykey', $key);
-        $this->zadd('teacherList', C('TEACHER_LIST'));
+        $this->zadd('teacherList', PrivilegeBaseModel::instance()->getTeacherListWithCache());
         $this->zadd("creator", $creator);
         $this->zadd("extraQuery", $extraQuery);
         $this->auto_display();

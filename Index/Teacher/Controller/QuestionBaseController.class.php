@@ -11,6 +11,7 @@ namespace Teacher\Controller;
 
 use Constant\Constants\Chapter;
 use Teacher\Model\KeyPointBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\QuestionPointBaseModel;
 
 class QuestionBaseController extends TemplateController
@@ -44,7 +45,7 @@ class QuestionBaseController extends TemplateController
         $this->zadd('parentNode', $parentNode);
         $this->zadd('childrenNode', $childrenNode);
 
-        $this->zadd('teacherList', C('TEACHER_LIST'));
+        $this->zadd('teacherList', PrivilegeBaseModel::instance()->getTeacherListWithCache());
     }
 
     protected function getQuestionChapterAndPoint($questionIds, $type) {

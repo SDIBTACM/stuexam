@@ -17,6 +17,5 @@ return array(
 
 	'EXAM_VERSION' => '1.0.2',
 
-	'TEACHER_LIST' => array('wangjp','xiao','tanghl','191227938','yuwenli','ZhihuiLiu','xqs','xf_zh','ncx','yuliping',
-		'zhangb','azytyut','zhangfan','wbyq','sdwulxw','jxb19870205','liupq','xm105', "libokkkkk"),
+	'TEACHER_LIST_CACHE_TIME' => 86400 // 默认一天
 );
