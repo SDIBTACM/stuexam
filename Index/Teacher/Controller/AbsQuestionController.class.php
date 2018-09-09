@@ -21,7 +21,7 @@ abstract class AbsQuestionController extends TemplateController
         }
     }
 
-    protected function save() {
+    public function save() {
         if (!check_post_key()) {
         $this->echoError('发生错误！');
             Log::error("user id: {} post key error", $this->userInfo['user_id']);
@@ -29,9 +29,9 @@ abstract class AbsQuestionController extends TemplateController
         $this->doSave();
     }
 
-    abstract function doSave();
+    abstract protected function doSave();
 
-    protected function del() {
+    public function del() {
         if (!check_get_key() || I('get.id') == '') {
             $this->echoError('发生错误');
         }
@@ -40,9 +40,9 @@ abstract class AbsQuestionController extends TemplateController
         $this->doDelete($id, $page);
     }
 
-    abstract function doDelete($id, $page);
+    abstract protected function doDelete($id, $page);
 
-    abstract function index();
+    abstract public function index();
 
     protected function checkReqResult(Result $result) {
         if ($result == null) {
