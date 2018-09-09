@@ -5,7 +5,7 @@
 
     <form class="form-inline text-right" role="form" method="get">
         <div class='form-group pull-left'>
-            <a href="{:U('Teacher/Add/exam')}" class='btn btn-info form-control'>添加考试</a>
+            <a href="{:U('Teacher/quiz/index')}" class='btn btn-info form-control'>添加考试</a>
         </div>
         <div class="form-group">
             <label class="sr-only">creator list</label>
@@ -53,14 +53,14 @@
                 </if>
                 <td><label class='label label-default'>{$r['creator']}</label></td>
                 <td><a title="删除"
-                       href="javascript:suredo('{:U('Teacher/Del/exam',array('id'=>$r['exam_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
+                       href="javascript:suredo('{:U('Teacher/quiz/del',array('id'=>$r['exam_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color: peru"></span>
                 </a></td>
-                <td><a title="编辑" href="{:U('Teacher/Add/exam',array('eid'=>$r['exam_id'],'page'=>$mypage['page']))}">
+                <td><a title="编辑" href="{:U('Teacher/quiz/index',array('eid'=>$r['exam_id'],'page'=>$mypage['page']))}">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 </a></td>
                 <td><a title="复制" href="javascript:void(0);"
-                       onclick="suredo('{:U('Teacher/Add/copyOneExam',array('eid'=>$r['exam_id']))}','确定要复制该考试嘛?')">
+                       onclick="suredo('{:U('Teacher/quiz/copyOneExam',array('eid'=>$r['exam_id']))}','确定要复制该考试嘛?')">
                     <span class="glyphicon glyphicon-share" aria-hidden="true" style="color: green"></span>
                 </a></td>
             </tr>
