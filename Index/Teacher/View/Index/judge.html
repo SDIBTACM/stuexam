@@ -10,7 +10,7 @@
 
     <form class="form-inline text-right" role="form" method="get">
         <div class='form-group pull-left'>
-            <a href="{:U('Teacher/Add/judge',array('page'=>$mypage['page']))}" class='btn btn-info form-control'>添加判断题</a>
+            <a href="{:U('Teacher/judge/index',array('page'=>$mypage['page']))}" class='btn btn-info form-control'>添加判断题</a>
         </div>
         <include file="Public:QuestionSearch"/>
     </form>
@@ -60,11 +60,11 @@
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
                 <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
                 <td><a title="删除"
-                       href="javascript:suredo('{:U('Teacher/Del/judge',array('id'=>$r['judge_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
+                       href="javascript:suredo('{:U('Teacher/judge/del',array('id'=>$r['judge_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color: peru"></span>
                 </a></td>
                 <td><a title="编辑" target="_blank"
-                       href="{:U('Teacher/Add/judge',array('id'=>$r['judge_id'],'page'=>$mypage['page'],'problem' => $problem))}">
+                       href="{:U('Teacher/judge/index',array('id'=>$r['judge_id'],'page'=>$mypage['page'],'problem' => $problem))}">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 </a></td>
             </tr>

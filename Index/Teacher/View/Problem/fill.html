@@ -27,7 +27,7 @@
         <foreach name='row' item='r' key='k'>
             <tr>
                 <td>{$numoffill+$k}</td>
-                <td align='left'><a target="_blank" href="{:U('Teacher/Add/fill',array('id'=>$r['fill_id']))}">{$r['question']|cutstring}</a>
+                <td align='left'><a target="_blank" href="{:U('Teacher/fill/index',array('id'=>$r['fill_id']))}">{$r['question']|cutstring}</a>
                     <a tabindex="0" class="pull-right btn btn-xs btn-danger" role="button" data-toggle="popover"
                        data-trigger="focus" data-content="{$r['question']}">展开>></a>
                 </td>

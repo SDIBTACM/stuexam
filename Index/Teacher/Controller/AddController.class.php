@@ -26,6 +26,7 @@ class AddController extends TemplateController
         }
     }
 
+    // TODO
     public function exam() {
         if (IS_POST) {
             if (!check_post_key()) {
