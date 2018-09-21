@@ -17,9 +17,8 @@ use Teacher\Model\StudentAnswerModel;
 use Teacher\Service\FillService;
 use Teacher\Service\KeyPointService;
 
-class FillController extends AbsQuestionController
-{
-    function doSave() {
+class FillController extends AbsQuestionController {
+    protected function doSave() {
         $reqResult = null;
         if (isset($_POST['fillid'])) {
             $reqResult = FillService::instance()->updateFillInfo();
@@ -29,7 +28,7 @@ class FillController extends AbsQuestionController
         $this->checkReqResult($reqResult);
     }
 
-    function doDelete($id, $page) {
+    protected function doDelete($id, $page) {
         $tmp = FillBaseModel::instance()->getById($id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             $this->echoError('You have no privilege!');
@@ -44,16 +43,38 @@ class FillController extends AbsQuestionController
             QuestionPointBaseModel::instance()->delByQuestion($id, FillBaseModel::FILL_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $id);
-            $this->success("填空题删除成功", U("Teacher/Index/fill", array('page' => $page)), 2);
+            $this->success("填空题删除成功", U("Teacher/fill/showList", array('page' => $page)), 2);
         }
     }
 
-    function index() {
-        if (IS_GET && I('get.id') != '') {
-            $id = I('get.id', 0, 'intval');
-            $page = I('get.page', 1, 'intval');
-            $problemType = I('get.problem', 0, 'intval');
-            $key = set_post_key();
+    protected function getList() {
+        $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
+        $mypage = splitpage('ex_fill', $sch['sql']);
+        $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $row = M('ex_fill')
+            ->field('fill_id,question,creator,easycount,kind,private_code')
+            ->where($sch['sql'])
+            ->order('private_code asc, fill_id asc')
+            ->limit($mypage['sqladd'])
+            ->select();
+        $widgets = array(
+            'row' => $row,
+            'mypage' => $mypage,
+            'numoffill' => $numoffill,
+        );
+
+        $questionIds = array();
+        foreach ($row as $r) {
+            $questionIds[] = $r['fill_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);
+
+        $this->ZaddWidgets($widgets);
+    }
+
+    protected function getDetail() {
+        $id = I('get.id', 0, 'intval');
+        if ($id > 0) {
             $row = FillBaseModel::instance()->getById($id);
             if (empty($row)) {
                 $this->echoError('No Such Problem!');
@@ -69,21 +90,8 @@ class FillController extends AbsQuestionController
                 $this->zadd('ansrow', $ansrow);
             }
             $pnt = KeyPointService::instance()->getQuestionPoints($id, FillBaseModel::FILL_PROBLEM_TYPE);
-            $this->zadd('page', $page);
             $this->zadd('row', $row);
-            $this->zadd('mykey', $key);
             $this->zadd('pnt', $pnt);
-            $this->zadd('problemType', $problemType);
-            $this->auto_display("Add:fill");
-        } else {
-            $page = I('get.page', 1, 'intval');
-            $key = set_post_key();
-            $problemType = I('get.problem', 0, 'intval');
-            $this->zadd('page', $page);
-            $this->zadd('mykey', $key);
-            $this->zadd('problemType', $problemType);
-            $this->auto_display("Add:fill");
         }
     }
-
 }

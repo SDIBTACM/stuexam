@@ -35,7 +35,7 @@
                 <li id="indexnavindex"><a href="{:U('/Home')}">Exam List</a></li>
                 <li id="indexnavscore"><a href="{:U('Home/Index/score')}">个人中心</a></li>
                 <if condition="null != $Think.session.administrator  or  null != $Think.session.contest_creator  or $Think.session.problem_editor neq null">
-                    <li><a href="{:U('/Teacher')}">管理后台</a></li>
+                    <li><a href="{:U('/Teacher/quiz/showList')}">管理后台</a></li>
                 </if>
             </ul>
             <!-- first ul end -->

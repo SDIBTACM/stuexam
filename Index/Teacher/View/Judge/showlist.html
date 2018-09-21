@@ -5,12 +5,12 @@
 </style>
 <div class="container exam_content">
     <div class='row'>
-        <div class="col-md-3"><h2>填空题库总览</h2></div>
+        <div class="col-md-3"><h2>判断题库总览</h2></div>
     </div>
 
     <form class="form-inline text-right" role="form" method="get">
         <div class='form-group pull-left'>
-            <a href="{:U('Teacher/fill/index',array('page'=>$mypage['page']))}" class='btn btn-info form-control'>添加填空题</a>
+            <a href="{:U('Teacher/judge/index',array('page'=>$mypage['page']))}" class='btn btn-info form-control'>添加判断题</a>
         </div>
         <include file="Public:QuestionSearch"/>
     </form>
@@ -25,13 +25,12 @@
             <th>二级知识点</th>
             <th>创建者</th>
             <th>所属题库</th>
-            <th>题型</th>
             <th colspan="2">操作</th>
         </thread>
         <tbody>
         <foreach name='row' item='r' key='k'>
             <tr>
-                <td>{$numoffill+$k}</td>
+                <td>{$numofjudge+$k}</td>
                 <td align='left'>{$r['question']|cutstring}
                     <button type="button"
                             class="pull-right btn btn-danger btn-xs"
@@ -43,49 +42,40 @@
                 <div class="clearfix"></div>
                 <td><label class="label alert-info">{$r['private_code']|default=""}</label></td>
                 <td>
-                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
+                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
                         <label class="label alert-danger">{$questionPoint['chapter']}</label><br/>
                     </foreach>
                 </td>
                 <td>
-                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
+                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
                         <label class="label alert-info">{$questionPoint['parent_point']}</label><br/>
                     </foreach>
                 </td>
                 <td>
-                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
+                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
                         <label class="label alert-info">{$questionPoint['point']}</label><br/>
                     </foreach>
                 </td>
 
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
                 <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
-                <if condition="$r['kind'] eq 1">
-                    <td><span class="label label-info">基础填空题</span></td>
-                    <else/>
-                    <if condition="$r['kind'] eq 2">
-                        <td><span class="label label-warning">写运行结果</span></td>
-                        <else/>
-                        <td><span class="label label-success">程序填空题</span></td>
-                    </if>
-                </if>
                 <td><a title="删除"
-                       href="javascript:suredo('{:U('Teacher/fill/del',array('id'=>$r['fill_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
+                       href="javascript:suredo('{:U('Teacher/judge/del',array('id'=>$r['judge_id'],'getkey'=>$mykey,'page'=>$mypage['page']))}','确定删除?')">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color: peru"></span>
                 </a></td>
                 <td><a title="编辑" target="_blank"
-                       href="{:U('Teacher/fill/index',array('id'=>$r['fill_id'],'page'=>$mypage['page'], 'problem' => $problem))}">
+                       href="{:U('Teacher/judge/index',array('id'=>$r['judge_id'],'page'=>$mypage['page'],'problem' => $problem))}">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 </a></td>
             </tr>
         </foreach>
         </tbody>
     </table>
-    {$mypage|showpagelast=###,U("Teacher/Index/fill"),"$extraQuery"}
+    {$mypage|showpagelast=###,U("Teacher/judge/showList"),"$extraQuery"}
 </div>
 <script type="text/javascript">
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
-        // $('[data-toggle="popover"]').popover();
+//	$('[data-toggle="popover"]').popover();
     });
 </script>

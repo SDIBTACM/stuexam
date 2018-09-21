@@ -4,12 +4,10 @@ namespace Teacher\Service;
 use Basic\Log;
 use Constant\ReqResult\Result;
 use Teacher\Convert\ExamConvert;
-
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
-use Teacher\Model\KeyPointBaseModel;
 
 class ExamService
 {
@@ -44,7 +42,7 @@ class ExamService
         $res = ExamBaseModel::instance()->updateById($examId, $data);
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
-            $reqResult->setData("index");
+            $reqResult->setData("quiz");
             Log::info("user id: {} exam id: {}, require: change exam info, result: success", $_SESSION['user_id'], $examId);
         } else {
             $reqResult->setStatus(false);
@@ -64,7 +62,7 @@ class ExamService
 
         if ($return) {
             $reqResult->setMessage("考试添加成功!");
-            $reqResult->setData("index");
+            $reqResult->setData("quiz");
             Log::info("user id: {}, require: add exam, result: success", $_SESSION['user_id']);
         } else {
             $reqResult->setStatus(false);

@@ -3,18 +3,15 @@ namespace Teacher\Controller;
 
 use Basic\Log;
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\JudgeBaseModel;
-use Teacher\Model\FillBaseModel;
-use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\ExamBaseModel;
-
+use Teacher\Model\FillBaseModel;
+use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Service\ChooseService;
-use Teacher\Service\JudgeService;
 use Teacher\Service\ExamService;
 use Teacher\Service\FillService;
+use Teacher\Service\JudgeService;
 use Teacher\Service\ProblemService;
-
-use Think\Controller;
 
 class InfoController extends TemplateController
 {

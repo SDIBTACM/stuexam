@@ -18,9 +18,8 @@ use Teacher\Model\StudentAnswerModel;
 use Teacher\Service\ChooseService;
 use Teacher\Service\KeyPointService;
 
-class ChooseController extends AbsQuestionController
-{
-    function doSave() {
+class ChooseController extends AbsQuestionController {
+    protected function doSave() {
         $reqResult = null;
         if (isset($_POST['chooseid'])) {
             $reqResult = ChooseService::instance()->updateChooseInfo();
@@ -30,7 +29,7 @@ class ChooseController extends AbsQuestionController
         $this->checkReqResult($reqResult);
     }
 
-    function doDelete($id, $page) {
+    protected function doDelete($id, $page) {
         $tmp = ChooseBaseModel::instance()->getById($id, array('creator', 'isprivate'));
         if (!$this->isProblemCanDelete($tmp['isprivate'], $tmp['creator'])) {
             Log::info("user id: {} {} id: {}, result: delete, result: FAIL! reason: no privilege",
@@ -43,16 +42,38 @@ class ChooseController extends AbsQuestionController
             QuestionPointBaseModel::instance()->delByQuestion($id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $id);
-            $this->success("选择题删除成功", U("Teacher/Index/choose", array('page' => $page)), 2);
+            $this->success("选择题删除成功", U("Teacher/choose/showList", array('page' => $page)), 2);
         }
     }
 
-    function index() {
-        if (IS_GET && I('get.id') != '') {
-            $id = I('get.id', 0, 'intval');
-            $page = I('get.page', 1, 'intval');
-            $problemType = I('get.problem', 0, 'intval');
-            $key = set_post_key();
+    protected function getList() {
+        $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $mypage = splitpage('ex_choose', $sch['sql']);
+        $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $row = M('ex_choose')
+            ->field('choose_id,question,creator,easycount,private_code')
+            ->where($sch['sql'])
+            ->order('private_code asc, choose_id asc')
+            ->limit($mypage['sqladd'])
+            ->select();
+        $widgets = array(
+            'row' => $row,
+            'mypage' => $mypage,
+            'numofchoose' => $numofchoose,
+        );
+
+        $questionIds = array();
+        foreach ($row as $r) {
+            $questionIds[] = $r['choose_id'];
+        }
+        $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+
+        $this->ZaddWidgets($widgets);
+    }
+
+    protected function getDetail() {
+        $id = I('get.id', 0, 'intval');
+        if ($id > 0) {
             $row = ChooseBaseModel::instance()->getById($id);
             if (empty($row)) {
                 $this->error('No Such Problem!');
@@ -63,20 +84,8 @@ class ChooseController extends AbsQuestionController
                 $this->echoError('You have no privilege!');
             }
             $pnt = KeyPointService::instance()->getQuestionPoints($id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-            $this->zadd('page', $page);
             $this->zadd('row', $row);
-            $this->zadd('mykey', $key);
-            $this->zadd('problemType', $problemType);
             $this->zadd('pnt', $pnt);
-            $this->auto_display("Add:choose");
-        } else {
-            $page = I('get.page', 1, 'intval');
-            $problemType = I('get.problem', 0, 'intval');
-            $key = set_post_key();
-            $this->zadd('page', $page);
-            $this->zadd('mykey', $key);
-            $this->zadd('problemType', $problemType);
-            $this->auto_display("Add:choose");
         }
     }
 

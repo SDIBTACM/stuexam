@@ -1,18 +1,15 @@
 <?php
+
 namespace Teacher\Controller;
 
+use Basic\Log;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\QuestionBaseModel;
-
 use Teacher\Service\ProblemService;
 
-use Think\Controller;
-use Basic\Log;
-
-class ProblemController extends QuestionBaseController
-{
+class ProblemController extends QuestionBaseController {
 
     private $eid = null;
 
@@ -90,7 +87,7 @@ class ProblemController extends QuestionBaseController
         );
 
         $questionIds = array();
-        foreach($row as $r) {
+        foreach ($row as $r) {
             $questionIds[] = $r['choose_id'];
         }
         $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
@@ -124,7 +121,7 @@ class ProblemController extends QuestionBaseController
         );
 
         $questionIds = array();
-        foreach($row as $r) {
+        foreach ($row as $r) {
             $questionIds[] = $r['judge_id'];
         }
         $this->getQuestionChapterAndPoint($questionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
@@ -158,7 +155,7 @@ class ProblemController extends QuestionBaseController
         );
 
         $questionIds = array();
-        foreach($row as $r) {
+        foreach ($row as $r) {
             $questionIds[] = $r['fill_id'];
         }
         $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);

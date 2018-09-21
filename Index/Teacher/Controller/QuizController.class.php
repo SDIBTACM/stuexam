@@ -11,16 +11,12 @@ namespace Teacher\Controller;
 
 use Basic\Log;
 use Teacher\Model\ExamBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\QuestionBaseModel;
 use Teacher\Service\ExamService;
 
-class QuizController extends AbsQuestionController
-{
+class QuizController extends AbsEventController {
     protected function doSave() {
-        if (!check_post_key()) {
-            $this->echoError('发生错误！');
-            Log::error("user id: {} post key error", $this->userInfo['user_id']);
-        }
         if (!$this->isCreator()) {
             Log::info("user id:{} {} id: {}, require: change {} info, result: FAIL, reason: no admin or creator ",
                 $this->userInfo['user_id'], __FUNCTION__, I('get.eid', 0, 'intval'), __FUNCTION__);
@@ -45,15 +41,13 @@ class QuizController extends AbsQuestionController
             ExamBaseModel::instance()->updateById($id, $data);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $id);
-            $this->success("考试删除成功", U("Teacher/Index/index", array('page' => $page)), 2);
+            $this->success("考试删除成功", U("Teacher/Quiz/showList", array('page' => $page)), 2);
         }
     }
 
-    public function index() {
-        if (IS_GET && I('get.eid') != '') {
-            $examId = I('get.eid', 0, 'intval');
-            $page = I('get.page', 1, 'intval');
-            $key = set_post_key();
+    protected function getDetail() {
+        $examId = I('get.eid', 0, 'intval');
+        if ($examId > 0) {
             $examInfo = ExamBaseModel::instance()->getExamInfoById($examId);
             if (empty($examInfo)) {
                 $this->echoError('No Such Exam!');
@@ -61,17 +55,30 @@ class QuizController extends AbsQuestionController
             if (!$this->isOwner4ExamByUserId($examInfo['creator'])) {
                 $this->echoError('You have no privilege!');
             }
-            $this->zadd('page', $page);
             $this->zadd('row', $examInfo);
-            $this->zadd('mykey', $key);
-            $this->auto_display("Add:exam");
-        } else {
-            $page = I('get.page', 1, 'intval');
-            $key = set_post_key();
-            $this->zadd('page', $page);
-            $this->zadd('mykey', $key);
-            $this->auto_display("Add:exam");
         }
+    }
+
+    protected function getList() {
+        $sql = getexamsearch($this->userInfo['user_id']);
+        $myPage = splitpage('exam', $sql);
+        $creator = I('get.creator', '', 'htmlspecialchars');
+        if (empty($creator)) {
+            $extraQuery = "";
+        } else {
+            $extraQuery = "creator=$creator";
+        }
+        $row = M('exam')
+            ->field('exam_id,title,start_time,end_time,creator')
+            ->where($sql)
+            ->order('exam_id desc')
+            ->limit($myPage['sqladd'])
+            ->select();
+        $this->zadd('row', $row);
+        $this->zadd('mypage', $myPage);
+        $this->zadd('teacherList', PrivilegeBaseModel::instance()->getTeacherListWithCache());
+        $this->zadd("creator", $creator);
+        $this->zadd("extraQuery", $extraQuery);
     }
 
     public function copyOneExam() {
@@ -100,7 +107,7 @@ class QuizController extends AbsQuestionController
             unset($r);
             QuestionBaseModel::instance()->insertQuestions($res);
             Log::info("user id: {}, require: clone exam id: {} , result: success", $this->userInfo['user_id'], $examId);
-            $this->success('考试复制成功!', U('/Teacher'), 1);
+            $this->success('考试复制成功!', U('/Teacher/quiz/showList'), 1);
         }
     }
 
