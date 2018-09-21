@@ -30,4 +30,33 @@ abstract class AbsQuestionController extends AbsEventController {
         $this->zadd('problemType', $problemType);
         parent::index();
     }
+
+    /**
+     * 添加题目到考试的列表展示
+     */
+    public function toExam() {
+        $examId = I('get.eid', 0, 'intval');
+        $problemType = I('get.type', 0, 'intval');
+        $widgets = array(
+            'eid' => $examId,
+            'type' => $problemType
+        );
+        if (!$this->isOwner4ExamByExamId($examId)) {
+            $this->echoError('You have no privilege of this exam~');
+        } else {
+            $this->ZaddWidgets($widgets);
+        }
+
+        $this->buildSearch();
+
+        $isAdmin = $this->isSuperAdmin();
+        $this->zadd("isadmin", $isAdmin);
+
+        $this->getList();
+
+        $this->zadd("added", $this->getQuestionHaveIn($examId));
+        $this->auto_display();
+    }
+
+    abstract protected function getQuestionHaveIn($examId);
 }

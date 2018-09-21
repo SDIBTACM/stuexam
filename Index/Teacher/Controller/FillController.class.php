@@ -49,18 +49,18 @@ class FillController extends AbsQuestionController {
 
     protected function getList() {
         $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
-        $mypage = splitpage('ex_fill', $sch['sql']);
-        $numoffill = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $myPage = splitpage('ex_fill', $sch['sql']);
+        $numOfFill = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_fill')
             ->field('fill_id,question,creator,easycount,kind,private_code')
             ->where($sch['sql'])
             ->order('private_code asc, fill_id asc')
-            ->limit($mypage['sqladd'])
+            ->limit($myPage['sqladd'])
             ->select();
         $widgets = array(
             'row' => $row,
-            'mypage' => $mypage,
-            'numoffill' => $numoffill,
+            'mypage' => $myPage,
+            'numoffill' => $numOfFill
         );
 
         $questionIds = array();
@@ -94,4 +94,17 @@ class FillController extends AbsQuestionController {
             $this->zadd('pnt', $pnt);
         }
     }
+
+    protected function getQuestionHaveIn($examId) {
+        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType(
+            $examId, FillBaseModel::FILL_PROBLEM_TYPE
+        );
+        $haveAdded = array();
+        foreach ($questionAddedIds as $qid) {
+            $haveAdded[$qid['question_id']] = 1;
+        }
+        return $haveAdded;
+    }
+
+
 }

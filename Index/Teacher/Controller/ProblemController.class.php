@@ -43,15 +43,6 @@ class ProblemController extends QuestionBaseController {
     public function add() {
         $problemType = I('get.type', 1, 'intval');
         switch ($problemType) {
-            case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
-                $this->addChooseProblem();
-                break;
-            case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
-                $this->addJudgeProblem();
-                break;
-            case FillBaseModel::FILL_PROBLEM_TYPE:
-                $this->addFillProblem();
-                break;
             case ProblemService::PROGRAM_PROBLEM_TYPE:
                 $this->addProgramProblem();
                 break;
@@ -60,109 +51,6 @@ class ProblemController extends QuestionBaseController {
                 $this->echoError('Invaild Path');
                 break;
         }
-    }
-
-    private function addChooseProblem() {
-
-        $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $isAdmin = $this->isSuperAdmin();
-        $myPage = splitpage('ex_choose', $sch['sql']);
-        $numOfChoose = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
-        $row = M('ex_choose')->field('choose_id,question,creator,easycount,private_code')
-            ->where($sch['sql'])->order('private_code asc, choose_id asc')->limit($myPage['sqladd'])
-            ->select();
-
-        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $haveAdded = array();
-        foreach ($questionAddedIds as $qid) {
-            $haveAdded[$qid['question_id']] = 1;
-        }
-
-        $widgets = array(
-            'row' => $row,
-            'added' => $haveAdded,
-            'mypage' => $myPage,
-            'isadmin' => $isAdmin,
-            'numofchoose' => $numOfChoose
-        );
-
-        $questionIds = array();
-        foreach ($row as $r) {
-            $questionIds[] = $r['choose_id'];
-        }
-        $this->getQuestionChapterAndPoint($questionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        Log::info("user id: {} exam id: {}, require: add choose problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
-
-        $this->ZaddWidgets($widgets);
-        $this->auto_display('choose');
-    }
-
-    private function addJudgeProblem() {
-        $sch = getproblemsearch('judge_id', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $isAdmin = $this->isSuperAdmin();
-        $myPage = splitpage('ex_judge', $sch['sql']);
-        $numOfJudge = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
-        $row = m('ex_judge')->field('judge_id,question,creator,easycount,private_code')
-            ->where($sch['sql'])->order('private_code asc, judge_id asc')->limit($myPage['sqladd'])
-            ->select();
-
-        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $haveAdded = array();
-        foreach ($questionAddedIds as $qid) {
-            $haveAdded[$qid['question_id']] = 1;
-        }
-
-        $widgets = array(
-            'row' => $row,
-            'added' => $haveAdded,
-            'mypage' => $myPage,
-            'isadmin' => $isAdmin,
-            'numofjudge' => $numOfJudge
-        );
-
-        $questionIds = array();
-        foreach ($row as $r) {
-            $questionIds[] = $r['judge_id'];
-        }
-        $this->getQuestionChapterAndPoint($questionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        Log::info("user id: {} exam id: {}, require: add judge problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
-
-        $this->ZaddWidgets($widgets);
-        $this->auto_display('judge');
-    }
-
-    private function addFillProblem() {
-        $sch = getproblemsearch('fill_id', FillBaseModel::FILL_PROBLEM_TYPE);
-        $isAdmin = $this->isSuperAdmin();
-        $myPage = splitpage('ex_fill', $sch['sql']);
-        $numOfFill = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
-        $row = M('ex_fill')->field('fill_id,question,creator,easycount,kind,private_code')
-            ->where($sch['sql'])->order('private_code asc, fill_id asc')->limit($myPage['sqladd'])
-            ->select();
-
-        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
-        $haveAdded = array();
-        foreach ($questionAddedIds as $qid) {
-            $haveAdded[$qid['question_id']] = 1;
-        }
-
-        $widgets = array(
-            'row' => $row,
-            'added' => $haveAdded,
-            'mypage' => $myPage,
-            'isadmin' => $isAdmin,
-            'numoffill' => $numOfFill
-        );
-
-        $questionIds = array();
-        foreach ($row as $r) {
-            $questionIds[] = $r['fill_id'];
-        }
-        $this->getQuestionChapterAndPoint($questionIds, FillBaseModel::FILL_PROBLEM_TYPE);
-        Log::info("user id: {} exam id: {}, require: add fill problem to eaxm, result: success", $this->userInfo['user_id'], $this->eid);
-
-        $this->ZaddWidgets($widgets);
-        $this->auto_display('fill');
     }
 
     public function addProgramProblem() {

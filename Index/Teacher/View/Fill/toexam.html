@@ -4,13 +4,12 @@
     }
 </style>
 <div class="container exam_content">
-    <h2>添加判断题</h2>
+    <h2>添加填空题</h2>
     <include file='Public:sideheader'/>
     <input type="hidden" name="eid" id="examid" value="{$eid}">
     <form class="form-inline text-right" role="form" method="get">
         <include file="Public:QuestionSearch"/>
     </form>
-
     <table class="table table-hover table-bordered table-condensed">
         <thread>
             <th>ID</th>
@@ -21,13 +20,14 @@
             <th>二级知识点</th>
             <th>创建者</th>
             <th>所属题库</th>
+            <th>题型</th>
             <th>操作</th>
         </thread>
         <tbody>
         <foreach name='row' item='r' key='k'>
             <tr>
-                <td>{$numofjudge+$k}</td>
-                <td align='left'><a target="_blank" href="{:U('Teacher/judge/index',array('id'=>$r['judge_id']))}">{$r['question']|cutstring}</a>
+                <td>{$numoffill+$k}</td>
+                <td align='left'><a target="_blank" href="{:U('Teacher/fill/index',array('id'=>$r['fill_id']))}">{$r['question']|cutstring}</a>
                     <a tabindex="0" class="pull-right btn btn-xs btn-danger" role="button" data-toggle="popover"
                        data-trigger="focus" data-content="{$r['question']}">展开>></a>
                 </td>
@@ -35,29 +35,38 @@
                 <td><label class="label alert-info">{$r['private_code']|default=""}</label></td>
 
                 <td>
-                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
+                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
                         <label class="label alert-danger">{$questionPoint['chapter']}</label><br/>
                     </foreach>
                 </td>
                 <td>
-                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
+                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
                         <label class="label alert-info">{$questionPoint['parent_point']}</label><br/>
                     </foreach>
                 </td>
                 <td>
-                    <foreach name="questionPointMap[$r['judge_id']]" item="questionPoint">
+                    <foreach name="questionPointMap[$r['fill_id']]" item="questionPoint">
                         <label class="label alert-info">{$questionPoint['point']}</label><br/>
                     </foreach>
                 </td>
 
                 <td style="font-size: medium"><label class='label label-default'>{$r['creator']}</label></td>
                 <td><label class="label label-info">{$problem == 0 ? "Public" : ($problem == 1 ? "Private" : "Protected")}</label></td>
-                <if condition="isset($added[$r['judge_id']]) and $added[$r['judge_id']] gt 0">
-                    <td><a href='javascript:void(0);' class='deltoexam' data-pid="{$r['judge_id']}" data-type="2">
+                <if condition="$r['kind'] eq 1">
+                    <td><span class="label label-info">基础填空题</span></td>
+                    <else/>
+                    <if condition="$r['kind'] eq 2">
+                        <td><span class="label label-warning">写运行结果</span></td>
+                        <else/>
+                        <td><span class="label label-success">程序填空题</span></td>
+                    </if>
+                </if>
+                <if condition="isset($added[$r['fill_id']]) and $added[$r['fill_id']] gt 0">
+                    <td><a href='javascript:void(0);' class='deltoexam' data-pid="{$r['fill_id']}" data-type="3">
                         <span class='glyphicon glyphicon-remove' style='color: darkred'></span></a>
                     </td>
                     <else/>
-                    <td><a href="javascript:void(0);" class="addtoexam" data-pid="{$r['judge_id']}" data-type="2">
+                    <td><a href="javascript:void(0);" class="addtoexam" data-pid="{$r['fill_id']}" data-type="3">
                         <span class="glyphicon glyphicon-plus"></span>
                     </a></td>
                 </if>
@@ -65,11 +74,11 @@
         </foreach>
         </tbody>
     </table>
-    {$mypage|showpagelast=###,U("Teacher/Problem/add",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
+    {$mypage|showpagelast=###,U("Teacher/Fill/toExam",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#exam_judge").addClass('active');
+        $("#exam_fill").addClass('active');
         $('[data-toggle="popover"]').popover();
         $("td").on("click", ".addtoexam", function() {
             var eid = $("#examid").val();
@@ -82,5 +91,6 @@
             var type = $(this).data('type');
             deleteProblem2Exam(delProblemFromExamUrl, eid, pid, type, this, true);
         });
+
     });
 </script>

@@ -48,18 +48,18 @@ class ChooseController extends AbsQuestionController {
 
     protected function getList() {
         $sch = getproblemsearch('choose_id', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $mypage = splitpage('ex_choose', $sch['sql']);
-        $numofchoose = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $myPage = splitpage('ex_choose', $sch['sql']);
+        $numOfChoose = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_choose')
             ->field('choose_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
             ->order('private_code asc, choose_id asc')
-            ->limit($mypage['sqladd'])
+            ->limit($myPage['sqladd'])
             ->select();
         $widgets = array(
             'row' => $row,
-            'mypage' => $mypage,
-            'numofchoose' => $numofchoose,
+            'mypage' => $myPage,
+            'numofchoose' => $numOfChoose
         );
 
         $questionIds = array();
@@ -89,4 +89,14 @@ class ChooseController extends AbsQuestionController {
         }
     }
 
+    protected function getQuestionHaveIn($examId) {
+        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType(
+            $examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+        );
+        $haveAdded = array();
+        foreach ($questionAddedIds as $qid) {
+            $haveAdded[$qid['question_id']] = 1;
+        }
+        return $haveAdded;
+    }
 }

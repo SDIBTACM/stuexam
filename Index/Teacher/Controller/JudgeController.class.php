@@ -47,18 +47,18 @@ class JudgeController extends AbsQuestionController {
 
     protected function getList() {
         $sch = getproblemsearch('judge_id', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $mypage = splitpage('ex_judge', $sch['sql']);
-        $numofjudge = 1 + ($mypage['page'] - 1) * $mypage['eachpage'];
+        $myPage = splitpage('ex_judge', $sch['sql']);
+        $numOfJudge = 1 + ($myPage['page'] - 1) * $myPage['eachpage'];
         $row = M('ex_judge')
             ->field('judge_id,question,creator,easycount,private_code')
             ->where($sch['sql'])
             ->order('private_code asc, judge_id asc')
-            ->limit($mypage['sqladd'])
+            ->limit($myPage['sqladd'])
             ->select();
         $widgets = array(
             'row' => $row,
-            'mypage' => $mypage,
-            'numofjudge' => $numofjudge,
+            'mypage' => $myPage,
+            'numofjudge' => $numOfJudge,
         );
 
         $questionIds = array();
@@ -87,4 +87,16 @@ class JudgeController extends AbsQuestionController {
             $this->zadd('pnt', $pnt);
         }
     }
+
+    protected function getQuestionHaveIn($examId) {
+        $questionAddedIds = QuestionBaseModel::instance()->getQuestionIds4ExamByType(
+            $examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+        );
+        $haveAdded = array();
+        foreach ($questionAddedIds as $qid) {
+            $haveAdded[$qid['question_id']] = 1;
+        }
+        return $haveAdded;
+    }
+
 }
