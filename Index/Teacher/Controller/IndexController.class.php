@@ -10,6 +10,6 @@ namespace Teacher\Controller;
 class IndexController extends TemplateController {
 
     public function index() {
-        $this->redirect("/Teacher/quiz/showList");
+        $this->redirect("/Teacher/Quiz/showList");
     }
 }

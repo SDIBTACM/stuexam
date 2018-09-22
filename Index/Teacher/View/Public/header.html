@@ -31,10 +31,10 @@
         <!-- navbar-header-end -->
         <div class="collapse navbar-collapse" id="header-navbar">
             <ul class="nav navbar-nav">
-                <li id='navexam'><a href="{:U('/Teacher/quiz/showList')}">考试管理</a></li>
-                <li id='navchoose'><a href="{:U('Teacher/choose/showList')}">选择题</a></li>
-                <li id='navjudge'><a href="{:U('Teacher/judge/showList')}">判断题</a></li>
-                <li id='navfill'><a href="{:U('Teacher/fill/showList')}">填空题</a></li>
+                <li id='navexam'><a href="{:U('/Teacher/Quiz/showList')}">考试管理</a></li>
+                <li id='navchoose'><a href="{:U('Teacher/Choose/showList')}">选择题</a></li>
+                <li id='navjudge'><a href="{:U('Teacher/Judge/showList')}">判断题</a></li>
+                <li id='navfill'><a href="{:U('Teacher/Fill/showList')}">填空题</a></li>
                 <li><a href="{:U('/Home')}">前台列表</a></li>
                 <if condition="session('administrator') neq null">
                     <li><a href="{:U('Teacher/Configuration/keyPoint')}">配置中心</a></li>

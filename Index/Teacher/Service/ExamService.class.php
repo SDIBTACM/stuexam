@@ -43,7 +43,7 @@ class ExamService
         $res = ExamBaseModel::instance()->updateById($examId, $data);
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
-            $reqResult->setData("quiz");
+            $reqResult->setData("Quiz");
             Log::info("user id: {} exam id: {}, require: change exam info, result: success", $_SESSION['user_id'], $examId);
         } else {
             $reqResult->setStatus(false);
@@ -63,7 +63,7 @@ class ExamService
 
         if ($return) {
             $reqResult->setMessage("考试添加成功!");
-            $reqResult->setData("quiz");
+            $reqResult->setData("Quiz");
             Log::info("user id: {}, require: add exam, result: success", $_SESSION['user_id']);
         } else {
             $reqResult->setStatus(false);

@@ -41,7 +41,7 @@ class JudgeController extends AbsQuestionController {
             QuestionPointBaseModel::instance()->delByQuestion($id, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $id);
-            $this->success("判断题删除成功", U("Teacher/judge/showList", array('page' => $page)), 2);
+            $this->success("判断题删除成功", U("Teacher/Judge/showList", array('page' => $page)), 2);
         }
     }
 
