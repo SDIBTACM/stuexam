@@ -57,7 +57,7 @@ abstract class AbsQuestionController extends AbsEventController {
         $this->getList();
 
         $this->zadd("added", $this->getQuestionHaveIn($examId));
-        $this->auto_display();
+        $this->auto_display("toexam");
     }
 
     abstract protected function getQuestionHaveIn($examId);
