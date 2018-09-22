@@ -57,7 +57,7 @@ abstract class AbsEventController extends QuestionBaseController {
 
         $this->getList();
 
-        $this->auto_display();
+        $this->auto_display("showlist");
     }
 
     abstract protected function getList();
