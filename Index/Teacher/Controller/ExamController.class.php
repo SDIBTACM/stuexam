@@ -182,6 +182,40 @@ class ExamController extends TemplateController {
         }
     }
 
+    public function distributePaper() {
+        if (!$this->isOwner4ExamByExamId($this->eid)) {
+            $this->echoError('You have no privilege of this exam~');
+        }
+
+        $userIdListStr = I('get.userIdList', '');
+        $userIdList = explode(",", $userIdListStr);
+        if (empty($userIdList)) {
+            echo "ok";
+        }
+
+        // 删除这些中已有的
+        $rightStr = 'wa' . $this->eid;
+        $where = array(
+            "user_id" => array('in', $userIdList),
+            "rightstr" => $rightStr
+        );
+        M('ex_privilege')->where($where)->delete();
+
+        // 重新添加
+        $flag = true;
+        $query = "";
+        foreach ($userIdList as $userId) {
+            if ($flag) {
+                $flag = false;
+                $query = "INSERT INTO `ex_privilege`(`user_id`,`rightstr`,`randnum`, `extrainfo`) VALUES('" . trim($userId) . "','".$rightStr."',0,0)";
+            } else {
+                $query = $query . ",('" . trim($userId) . "','".$rightStr."',0,0)";
+            }
+        }
+        M()->execute($query);
+        echo "ok";
+    }
+
     private function getAllStudentMapCanSeeWrongAnswer($examId) {
         $field = array('user_id');
         $where = array(

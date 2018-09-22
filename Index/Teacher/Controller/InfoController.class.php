@@ -2,10 +2,7 @@
 namespace Teacher\Controller;
 
 use Basic\Log;
-use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
-use Teacher\Model\FillBaseModel;
-use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Service\ChooseService;
 use Teacher\Service\ExamService;

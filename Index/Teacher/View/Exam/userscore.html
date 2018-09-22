@@ -13,7 +13,7 @@
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
             选择删除分数
         </button>
-        <button class='btn btn-default' onclick="">
+        <button id="oneClickDistribute" class='btn btn-default'>
             <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
             选择分发错题
         </button>
@@ -144,7 +144,7 @@
                         <td><label class="label alert-success">是</label></td>
                     </if>
                     <td>
-                        <input type="checkbox" name="check{$r['user_id']}" data-userId="{$r['user_id']}" class="delCheck" value="1">
+                        <input type="checkbox" name="check{$r['user_id']}" data-userid="{$r['user_id']}" class="delCheck" value="1">
                     </td>
                 </tr>
             </foreach>
@@ -251,6 +251,32 @@
             if (c) {
                 $("#checkSubmit").submit();
             }
+        });
+        
+        $("#oneClickDistribute").click(function () {
+            var userIdList =[];
+            var distributeUrl = "{:U('Teacher/Exam/distributePaper')}";
+            $(".delCheck").each(function () {
+                if (this.checked) {
+                   var uid = $(this).data('userid');
+                   userIdList.push(uid);
+                }
+            });
+            if (userIdList.length === 0) {
+                alert("请选择需要分发错题的学生");
+                return;
+            }
+            console.log(userIdList.join(","));
+            var eid = $("#examId").val();
+            $.ajax({
+                url : distributeUrl,
+                type: "GET",
+                dataType: "json",
+                data: {"userIdList":userIdList.join(","), "eid":eid},
+                success : function() {
+                    window.location.reload();
+                }
+            });
         });
 
         var userScoreListUrl = "{:U('Teacher/Data/userScoreList')}";
