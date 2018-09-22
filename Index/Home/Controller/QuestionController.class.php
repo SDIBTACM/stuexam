@@ -24,7 +24,7 @@ use Teacher\Service\StudentService;
 
 use Basic\Log;
 
-class QuestionController extends BaseController
+class QuestionController extends InterceptorController
 {
 
     public $examId = null;

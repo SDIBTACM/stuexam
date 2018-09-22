@@ -12,15 +12,15 @@ namespace Home\Controller;
 use Basic\Log;
 use Teacher\Model\ExamBaseModel;
 
-class BaseController extends TemplateController
+class InterceptorController extends TemplateController
 {
-    public function __construct() {
+    public function _initialize() {
+        parent::_initialize();
         $this->checkLoginIp();
-        parent::__construct();
     }
 
     private function checkLoginIp() {
-        if ($this->isSuperAdmin() || $this->isTeacher()) return true;
+        if ($this->isTeacher()) return true;
         $allowLoginIpList = $this->getAllowLoginIpList();
         Log::debug("{}", $allowLoginIpList);
         if (0 == count($allowLoginIpList)) return true;
