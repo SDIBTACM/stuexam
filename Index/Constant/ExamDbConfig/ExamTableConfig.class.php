@@ -27,6 +27,7 @@ class ExamTableConfig
         'programscore' => 'float',
         'isvip' => 'char',
         'visible' => 'char',
-        'isprivate' => 'tinyint'
+        'isprivate' => 'tinyint',
+        'allow_login_ip_list' => 'varchar'
     );
 }

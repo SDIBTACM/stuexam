@@ -188,6 +188,14 @@
                 </select>
             </div>
         </div>
+        <div class="form-group">
+            <label for="iplist" class="control-label col-md-3">允许登录ip列表， 请按照 CIRD 格式输入:</label>
+
+            <div class="col-md-6">
+                <textarea id='iplist' name="iplist" class="form-control"
+                          rows="8">{$row['allow_login_ip_list'] | default="" | json_decode=###,true | join="\\n",###}</textarea>
+            </div>
+        </div>
 
         <input type='hidden' name="postkey" value="{$mykey}">
         <input type='hidden' name='page' value="{$page}">
