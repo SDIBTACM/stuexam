@@ -64,11 +64,11 @@
     var addProblem2ExamUrl = "{:U('Teacher/Problem/addpte')}";
     $(function () {
         var url = window.location.href;
-        if (url.indexOf('fill') != -1) {
+        if (url.indexOf('fill') != -1 || url.indexOf("Fill") != -1) {
             $("#navfill").addClass('active');
-        } else if (url.indexOf('choose') != -1) {
+        } else if (url.indexOf('choose') != -1 || url.indexOf("Choose") != -1) {
             $("#navchoose").addClass('active');
-        } else if (url.indexOf('judge') != -1) {
+        } else if (url.indexOf('judge') != -1 || url.indexOf("Judge") != -1) {
             $("#navjudge").addClass('active');
         } else {
             $("#navexam").addClass('active');
