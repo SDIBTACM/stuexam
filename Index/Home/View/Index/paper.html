@@ -1,0 +1,83 @@
+<style>
+    .answerac {
+        color: green;
+    }
+    .answerwa {
+        color: red;
+    }
+</style>
+<div class="container exam_content" style='text-align:left'>
+    <div style="text-align:center">
+        <h2>{$title|default=""} -- 错题集</h2>
+        <h4>考生账号:{$Think.session.user_id}</h4>
+    </div>
+
+    <h4>一.选择题</h4>
+    <foreach name='chooseans' item='cans' key='numofchoose'>
+        <div class="panel panel-default">
+            <div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$cans['question']|nl2br}</div>
+            <div class="panel-body">
+                <p>(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
+            </div>
+            <div class="panel-footer">
+                <strong>我的答案:
+                    <php>
+                        $myanswer = isset($choosearr[ $cans['choose_id'] ]) ? $choosearr[ $cans['choose_id'] ] : "未选";
+                        if ($myanswer == $cans['answer']) {
+                        } else {
+                        echo "<span class='answerwa'>$myanswer | 错误</span>";
+                        }
+                    </php>
+                </strong>
+            </div>
+        </div>
+    </foreach>
+
+    <h4>二.判断题</h4>
+    <foreach name='judgeans' item='jans' key='numofjudge'>
+        <div class="panel panel-default">
+            <div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</div>
+            <div class="panel-body"><strong>我的答案:
+                <php>
+                    $myanswer = isset($judgearr[ $jans['judge_id'] ]) ? $judgearr[ $jans['judge_id'] ] : "未选";
+                    if ($myanswer == $jans['answer']) {
+                    } else {
+                    echo "<span class='answerwa'>$myanswer | 错误</span>";
+                    }
+                </php></strong></div>
+        </div>
+    </foreach>
+
+    <h4>三.填空题</h4>
+    <foreach name='fillans' item='fans' key='numoffill'>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <if condition="$fans['kind'] eq 1">
+                    <font color='red'>({$allscore['fillscore']*$fans['answernum']} 分)</font>
+                    <elseif condition="$fans['kind'] eq 2" />
+                    <font color='red'>({$allscore['prgans']} 分)</font>
+                    <else/>
+                    <font color='red'>({$allscore['prgfill']} 分)</font>
+                </if>
+                {$numoffill+1}.{$fans['question']|nl2br}</div>
+            <div class="panel-body">
+                <for start='1' end="$fans['answernum']+1">
+                    <if condition="$i eq 1">
+                        <strong>我的答案:</strong>
+                    </if>
+                    <strong>答案({$i})
+                        <php>
+                            $rightans = $fillans2[ $fans['fill_id'] ][$i - 1]['answer'];
+                            $myanswer = isset($fillarr[$fans['fill_id']][$i]) ? $fillarr[$fans['fill_id']][$i] : "未选";
+                            if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
+                            echo "<span class='answerac'>正确</span>";
+                            } else {
+                            echo "<span class='answerwa'>$myanswer | 错误</span>";
+                            }
+                        </php>
+                    </strong>
+                </for>
+            </div>
+        </div>
+    </foreach>
+</div>

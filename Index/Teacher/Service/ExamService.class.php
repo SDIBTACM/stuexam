@@ -8,6 +8,7 @@ use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
+use Teacher\Model\PrivilegeBaseModel;
 
 class ExamService
 {
@@ -76,7 +77,9 @@ class ExamService
         if ($eid <= 0) {
             return false;
         }
-        $userPrivilegeList = M('ex_privilege')->field('user_id, extrainfo')->where("rightstr='e$eid'")->select();
+        $_where = array('rightstr' => "e$eid");
+        $_fields = array('user_id', 'extrainfo');
+        $userPrivilegeList = PrivilegeBaseModel::instance()->queryAll($_where, $_fields);
         $userIdMap = array();
         foreach ($userPrivilegeList as $_privilege) {
             $userIdMap[$_privilege['user_id']] = $_privilege['extrainfo'];

@@ -68,36 +68,6 @@ class TemplateController extends \Home\Controller\TemplateController
         }
     }
 
-    /**
-     * 当前登录用户是否可以删除某题目
-     * @param $private
-     * @param $creator
-     * @return bool
-     */
-    protected function isProblemCanDelete($private, $creator) {
-        if ($this->isSuperAdmin()) {
-            return true;
-        } else {
-            if ($private != PrivilegeBaseModel::PROBLEM_SYSTEM) {
-                return $this->isOwner4ExamByUserId($creator);
-            } else {
-                return false;
-            }
-        }
-    }
-
-    protected function checkProblemPrivate($private, $creator) {
-        if ($private == PrivilegeBaseModel::PROBLEM_SYSTEM && !$this->isSuperAdmin()) {
-            return -1;
-        }
-        if (!$this->isSuperAdmin()) {
-            if ($private == PrivilegeBaseModel::PROBLEM_PRIVATE && $creator != $this->userInfo['user_id']) {
-                return -1;
-            }
-        }
-        return 1;
-    }
-
     protected function ZaddChapters() {
         $chapters = Chapter::getConstant();
         $chapterMap = array();

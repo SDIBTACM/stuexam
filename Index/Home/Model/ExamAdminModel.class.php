@@ -29,7 +29,7 @@ class ExamAdminModel
      * @param  number $eid 比赛编号
      * @param  string $user_id 用户ID]
      * @param  boolean $judgeHaveTaken 是否判断已经参加考试过
-     * @return number|array        返回数字表示没有权限，否则有
+     * @return Result        返回数字表示没有权限，否则有
      */
 
     public function checkExamPrivilege($eid, $user_id, $judgeHaveTaken = false) {
@@ -119,7 +119,7 @@ class ExamAdminModel
      * 判断用户是否在权限列表
      * @param  string $userId 用户ID
      * @param  number $eid 比赛编号
-     * @return number        是否存在
+     * @return boolean    是否存在
      */
     private function getPrivilege($userId, $eid) {
         $res = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($userId, $eid);

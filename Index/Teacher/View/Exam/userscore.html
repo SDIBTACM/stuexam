@@ -3,20 +3,37 @@
     <include file='Public:sideheader'/>
     <input type="hidden" name="eid" id="eid" value="{$eid}"/>
 
+    <div class="actionList pull-right" style="margin-bottom: 10px">
+        <button class='btn btn-default'
+                onclick="suredo('{:U("Teacher/Info/submitAllPaper", array("eid" => $eid,"sortdnum" => $dsortnum,"sortanum" => $asortnum) )}','确认帮所有考生提交试卷嘛?')">
+            <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
+            一键全部交卷
+        </button>
+        <button id="oneClickDel" class='btn btn-danger'>
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            选择删除分数
+        </button>
+        <button class='btn btn-default' onclick="">
+            <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+            选择分发错题
+        </button>
+    </div>
+
     <table class="table table-hover table-bordered table-condensed">
         <thead>
         <tr>
-            <th width=2%>Rank</th>
+            <th width=1%>Rank</th>
             <th width=7%>账号</th>
-            <th width=9%>姓名</th>
-            <th width=5%>选择题<input type="checkbox" name="typeRadio" value="choose" /></th>
-            <th width=5%>判断题<input type="checkbox" name="typeRadio" value="judge" /></th>
-            <th width=5%>填空题<input type="checkbox" name="typeRadio" value="fill" /></th>
-            <th width=5%>程序题<input type="checkbox" name="typeRadio" value="program" /></th>
-            <th width=5%>总成绩<input type="checkbox" name="typeRadio" value="all" checked="checked"/></th>
+            <th width=8%>姓名</th>
+            <th width=6%>选择题<input type="checkbox" name="typeRadio" value="choose" /></th>
+            <th width=6%>判断题<input type="checkbox" name="typeRadio" value="judge" /></th>
+            <th width=6%>填空题<input type="checkbox" name="typeRadio" value="fill" /></th>
+            <th width=6%>程序题<input type="checkbox" name="typeRadio" value="program" /></th>
+            <th width=6%>总成绩<input type="checkbox" name="typeRadio" value="all" checked="checked"/></th>
             <th width=7%>试卷</th>
-            <th width=7%>操作</th>
-            <th width=6%>选择删除</th>
+            <th width=6%>操作</th>
+            <th width="5%">错题可见</th>
+            <th width=4%>请选择</th>
         </tr>
         </thead>
         <tbody>
@@ -71,17 +88,10 @@
                         Search
                     </button>
                 </td>
+                <td></td>
+                <td></td>
                 <td>
-                    <a href="javascript:void(0);" id="oneClickDel" class='label label-danger col-md-offset-1 col-md-4' title="一键删除">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                    </a>
-                    <a href="javascript:void(0);" class='label label-success col-md-offset-2 col-md-4' title="一键提交"
-                       onclick="suredo('{:U('Teacher/Info/submitAllPaper', array('eid' => $eid,'sortdnum' => $dsortnum,'sortanum' => $asortnum) )}','确认帮所有考生提交试卷嘛?')">
-                        <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
-                    </a>
-                </td>
-                <td>
-                    <input type="checkbox" name="allCheck" id="allCheck">全选
+                    <input type="checkbox" name="allCheck" id="allCheck">全选<br/>
                     <input type="checkbox" name="rejectCheck" id="rejectCheck">反选
                 </td>
             </form>
@@ -106,7 +116,7 @@
                         <else/>
                             <if condition="$r['hasSubmit'] eq 1">
                                 <td><a class='label label-info'
-                                       href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">已交卷>></a>
+                                       href="{:U('Teacher/Data/showPaper',array('users'=>$r['user_id'],'eid'=>$eid))}">已交卷>></a>
                                 </td>
                                 <td><a class='label label-danger'
                                        href="#" data-skip="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}"
@@ -120,7 +130,7 @@
                                         </td>
                                         <else/>
                                         <td><a class='label label-danger'
-                                               href="{:U('Teacher/Info/showpaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
+                                               href="{:U('Teacher/Data/showPaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
                                         </td>
                                         <td><a class='label label-warning'
                                                href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">强制交卷>></a>
@@ -128,8 +138,13 @@
                                     </if>
                             </if>
                     </if>
+                    <if condition="$r['canSeeWA'] eq 0">
+                        <td><label class="label alert-danger">否</label></td>
+                        <else/>
+                        <td><label class="label alert-success">是</label></td>
+                    </if>
                     <td>
-                        <input type="checkbox" name="check{$r['user_id']}" class="delCheck" value="1">
+                        <input type="checkbox" name="check{$r['user_id']}" data-userId="{$r['user_id']}" class="delCheck" value="1">
                     </td>
                 </tr>
             </foreach>
@@ -152,7 +167,7 @@
 
 </div>
 <script type="text/javascript">
-    var scoreurl = "{:U('Teacher/Exam/userscore')}";
+    var scoreurl = "{:U('Teacher/Exam/userscore')}"; // use in js
     function checkWhetherDel(the) {
         var skipLink = $(the).data("skip");
         var _typeAndName = getTypeAndNameSelect();
@@ -162,7 +177,7 @@
         var typeAndName = _typeAndName.split("|");
         var typeStr = typeAndName[0];
         var nameStr = typeAndName[1];
-        var c = confirm('确定要删除选定考生的' + nameStr +'嘛?');
+        var c = confirm('确定要删除选定考生的#' + nameStr +'#嘛?');
         if (c) {
             window.location.href=skipLink + "?type=" + typeStr;
         }
@@ -232,7 +247,7 @@
             var typeStr = typeAndName[0];
             var nameStr = typeAndName[1];
             $("#delType").val(typeStr);
-            var c = confirm('确定要删除选定考生的' + nameStr +'嘛?');
+            var c = confirm('确定要删除选定考生的#' + nameStr +'#嘛?');
             if (c) {
                 $("#checkSubmit").submit();
             }
