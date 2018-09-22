@@ -43,7 +43,7 @@ class FillController extends AbsQuestionController {
             QuestionPointBaseModel::instance()->delByQuestion($id, FillBaseModel::FILL_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $id);
-            $this->success("填空题删除成功", U("Teacher/fill/showList", array('page' => $page)), 2);
+            $this->success("填空题删除成功", U("Teacher/Fill/showList", array('page' => $page)), 2);
         }
     }
 

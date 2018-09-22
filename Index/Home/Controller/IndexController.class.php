@@ -1,6 +1,7 @@
 <?php
 namespace Home\Controller;
 
+use Home\Model\ExamAdminModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
@@ -101,9 +102,17 @@ class IndexController extends TemplateController
         // 验证是否能查看这张试卷的错题
         $examId = I('get.eid', 0, 'intval');
         $userId = $this->userInfo['user_id'];
-        $row = ExamBaseModel::instance()->getExamInfoById($examId, array('exam_id'));
+        $field = array('title', 'start_time', 'end_time');
+        $row = ExamBaseModel::instance()->getExamInfoById($examId, $field);
         if (empty($row)) {
             $this->alertError("考试不存在", U('/Home/Index/score'));
+        }
+
+        $isRunning = ExamAdminModel::instance()->getExamRunningStatus(
+            $row['start_time'], $row['end_time']
+        );
+        if ($isRunning != ExamBaseModel::EXAM_END) {
+            $this->alertError("只有结束后的考试才能查看错题", U('/Home/Index/score'));
         }
 
         $where = array(

@@ -107,7 +107,7 @@ class QuizController extends AbsEventController {
             unset($r);
             QuestionBaseModel::instance()->insertQuestions($res);
             Log::info("user id: {}, require: clone exam id: {} , result: success", $this->userInfo['user_id'], $examId);
-            $this->success('考试复制成功!', U('/Teacher/quiz/showList'), 1);
+            $this->success('考试复制成功!', U('/Teacher/Quiz/showList'), 1);
         }
     }
 

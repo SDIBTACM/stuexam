@@ -13,7 +13,7 @@ class DispatcherController extends TemplateController
 {
     public function index() {
         if ($this->isTeacher()) {
-            redirect(U('/Teacher/quiz/showList'));
+            $this->redirect('/Teacher/Quiz/showList');
         } else {
             redirect(U('/Home'));
         }

@@ -42,7 +42,7 @@ class ChooseController extends AbsQuestionController {
             QuestionPointBaseModel::instance()->delByQuestion($id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
             Log::info("user id: {} {} id: {}, result: delete, result: success",
                 $this->userInfo['user_id'], __FUNCTION__, $id);
-            $this->success("选择题删除成功", U("Teacher/choose/showList", array('page' => $page)), 2);
+            $this->success("选择题删除成功", U("Teacher/Choose/showList", array('page' => $page)), 2);
         }
     }
 
