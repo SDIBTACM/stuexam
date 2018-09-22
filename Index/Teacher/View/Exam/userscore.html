@@ -274,7 +274,10 @@
                 dataType: "json",
                 data: {"userIdList":userIdList.join(","), "eid":eid},
                 success : function() {
-                    window.location.reload();
+                    location.reload(true);
+                },
+                error: function() {
+                    alert("sorry,something error");
                 }
             });
         });

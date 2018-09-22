@@ -190,7 +190,7 @@ class ExamController extends TemplateController {
         $userIdListStr = I('get.userIdList', '');
         $userIdList = explode(",", $userIdListStr);
         if (empty($userIdList)) {
-            echo "ok";
+            $this->ajaxReturn(array());
         }
 
         // 删除这些中已有的
@@ -213,7 +213,7 @@ class ExamController extends TemplateController {
             }
         }
         M()->execute($query);
-        echo "ok";
+        $this->ajaxReturn(array());
     }
 
     private function getAllStudentMapCanSeeWrongAnswer($examId) {
