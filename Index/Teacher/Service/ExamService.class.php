@@ -40,7 +40,14 @@ class ExamService
         }
 
         $data = ExamConvert::convertExamDataFromPost();
-        $res = ExamBaseModel::instance()->updateById($examId, $data);
+        $fileConfig = array();
+        if ($data['isiplimit']) {
+            $fileConfig = array(
+                'allow_login_ip_list' => explode("\r\n", I('post.iplist')),
+            );
+        }
+        $res = saveExamConfig(I('post.examid', 0, 'intval'), $fileConfig);
+        $res &= ExamBaseModel::instance()->updateById($examId, $data);
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
             $reqResult->setData("Quiz");

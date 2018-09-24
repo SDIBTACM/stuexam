@@ -40,7 +40,7 @@ class ExamConvert
         $arr['programscore'] = I('post.cxfs', 0, 'formatToFloatScore');
         $arr['isvip'] = I('post.isvip', 'Y');
         $arr['isprivate'] = I('post.isprivate',0, 'intval');
-        $arr['allow_login_ip_list'] = json_encode(explode("\r\n", I('post.iplist')));
+        $arr['isiplimit'] = I('post.isiplimit',0, 'intval');
 
         return $arr;
     }

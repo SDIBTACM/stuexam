@@ -24,7 +24,7 @@ use Teacher\Service\StudentService;
 
 use Basic\Log;
 
-class QuestionController extends InterceptorController
+class QuestionController extends TemplateController
 {
 
     public $examId = null;
@@ -47,6 +47,7 @@ class QuestionController extends InterceptorController
 
     public function _initialize() {
         parent::_initialize();
+        $this->checkLoginIp();
         $this->preExamQuestion();
         $this->initExamQuestionCount();
         $this->initExamUserScore();
@@ -195,4 +196,27 @@ class QuestionController extends InterceptorController
     public function getLeftTime() {
         return $this->leftTime;
     }
+
+    private function checkLoginIp() {
+        //if ($this->isTeacher()) return true;
+        $allowLoginIpList = $this->getAllowLoginIpList();
+        if (0 == count($allowLoginIpList)) return true;
+
+        foreach ($allowLoginIpList as $item) {
+            $item = explode("/", $item);
+            if (compareIpWithSubnetMask($_SERVER['REMOTE_ADDR'], $item[0], $item[1])) return true;
+        }
+        return $this->alertError("You not allow login from this ip, Please contact to your teacher");
+    }
+
+    private function getAllowLoginIpList() {
+        $res = ExamBaseModel::instance()->getById(I('get.eid'), array('isiplimit'));
+        $arr = array();
+        if ($res['isiplimit']) {
+            $arr = getExamConfig(I('get.eid'));
+            $arr = $arr['allow_login_ip_list'];
+        }
+        return !is_array($arr) ? array() : $arr;
+    }
+
 }

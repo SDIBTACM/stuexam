@@ -12,11 +12,11 @@ return array(
 
     'DB_HOST'=>'127.0.0.1',
 
-    'DB_NAME'=>'jol',
+    'DB_NAME'=>'onlinejudge',
 
-    'DB_USER'=>'root',
+    'DB_USER'=>'oj',
 
-    'DB_PWD'=>'root',
+    'DB_PWD'=>'123456',
 
     'DB_PREFIX'=>''
 );

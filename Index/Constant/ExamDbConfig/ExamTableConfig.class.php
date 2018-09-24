@@ -28,6 +28,6 @@ class ExamTableConfig
         'isvip' => 'char',
         'visible' => 'char',
         'isprivate' => 'tinyint',
-        'allow_login_ip_list' => 'varchar'
+        'isiplimit' => 'tinyint'
     );
 }

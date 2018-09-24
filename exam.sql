@@ -173,6 +173,7 @@ CREATE TABLE `exam` (
   `isvip` char(1) NOT NULL DEFAULT 'Y' COMMENT '是否限制当天登陆次数',
   `visible` char(1) NOT NULL DEFAULT 'Y' COMMENT '比赛是否被删除',
   `isprivate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否是私有考试',
+  `isiplimit` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否限制登录IP',
   PRIMARY KEY (`exam_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='考试列表';
 

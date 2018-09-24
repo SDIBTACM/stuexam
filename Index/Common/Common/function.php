@@ -153,3 +153,22 @@ function ddbg($vars) {
     }
 }
 
+/**
+ * 获取不同考试中的私有配置
+ * @param $id int exam id
+ * @return array
+ */
+function getExamConfig($id) {
+    return json_decode(file_get_contents(C('RUNTIME_CONFIG') . 'exam-config-' . $id . '.php'), true);
+}
+
+/**
+ * 储存不同考试的私有配置
+ * @param $id int exam id
+ * @param $data array exam setting
+ * @return bool
+ */
+function saveExamConfig($id, $data){
+    if (!is_dir(C('RUNTIME_CONFIG'))) mkdir(C('RUNTIME_CONFIG'), 0755, true);
+    return file_put_contents(C('RUNTIME_CONFIG') . 'exam-config-' . $id . '.php', json_encode($data));
+}

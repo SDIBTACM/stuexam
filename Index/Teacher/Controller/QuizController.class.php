@@ -55,6 +55,9 @@ class QuizController extends AbsEventController {
             if (!$this->isOwner4ExamByUserId($examInfo['creator'])) {
                 $this->echoError('You have no privilege!');
             }
+            $examConfig = getExamConfig($examId);
+
+            $examInfo['allow_login_ip_list'] = $examConfig['allow_login_ip_list'];
             $this->zadd('row', $examInfo);
         }
     }

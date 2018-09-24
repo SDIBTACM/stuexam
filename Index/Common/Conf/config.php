@@ -17,5 +17,7 @@ return array(
 
 	'EXAM_VERSION' => '1.0.2',
 
+	'RUNTIME_CONFIG' => RUNTIME_PATH . 'Config/',
+
 	'TEACHER_LIST_CACHE_TIME' => 86400 // 默认一天
 );
