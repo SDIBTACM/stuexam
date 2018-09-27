@@ -51,7 +51,7 @@ class ChooseBaseModel extends GeneralModel
      */
     public function getChooseProblems4Exam($eid) {
         $type = self::CHOOSE_PROBLEM_TYPE;
-        $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer`".
+        $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer`,`private_code`".
                 " FROM `ex_choose`,`exp_question`".
 		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_choose`.`choose_id`=`exp_question`.`question_id`".
                 " ORDER BY `choose_id`";

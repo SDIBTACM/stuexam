@@ -46,7 +46,7 @@ class FillBaseModel extends GeneralModel
 
     public function getFillProblems4Exam($eid) {
         $type = self::FILL_PROBLEM_TYPE;
-        $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind`" .
+        $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind`,`private_code`" .
                 " FROM `ex_fill`,`exp_question`" .
 		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_fill`.`fill_id`=`exp_question`.`question_id`" .
                 " ORDER BY `fill_id`";

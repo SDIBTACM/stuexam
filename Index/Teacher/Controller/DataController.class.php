@@ -163,15 +163,17 @@ class DataController extends TemplateController
 
         foreach ($chooseProblem as $_choose) {
             $chooseQuestionIds[] = $_choose['choose_id'];
-            $chooseResultMap[$_choose['choose_id']] = $this->getEachQuestionRightPerson(
+            $chooseResultMap[$_choose['choose_id']]['rightPerson'] = $this->getEachQuestionRightPerson(
                 $this->eid, $_choose['choose_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer']
             );
+            $chooseResultMap[$_choose['choose_id']]['privateCode'] = $_choose['private_code'];
         }
         foreach ($judgeProblem as $_judge) {
             $judgeQuestionIds[] = $_judge['judge_id'];
-            $judgeResultMap[$_judge['judge_id']] = $this->getEachQuestionRightPerson(
+            $judgeResultMap[$_judge['judge_id']]['rightPerson'] = $this->getEachQuestionRightPerson(
                 $this->eid, $_judge['judge_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer']
             );
+            $judgeResultMap[$_judge['judge_id']]['privateCode'] = $_judge['private_code'];
         }
         foreach ($fillProblem as $_fill) {
             $fillQuestionIds[] = $_fill['fill_id'];

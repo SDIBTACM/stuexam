@@ -94,30 +94,30 @@
     <table class="table-bordered table table-bordered">
         <tr class="info"><td colspan="5"><h3>选择题章节知识点分布</h3></td></tr>
         <tr><td>题号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
-        <foreach name="chooseResultMap" key="_chooseId" item="rightPerson">
+        <foreach name="chooseResultMap" key="_chooseId" item="resultMap">
             <if condition="isset($choosePointMap[$_chooseId])">
                 <foreach name="choosePointMap[$_chooseId]" item="point" key="index">
                     <tr>
                         <if condition="$index eq 0">
                             <td rowspan="{$choosePointMap[$_chooseId]|count}"
-                                style="vertical-align: middle">{$_chooseId}</td>
+                                style="vertical-align: middle">{$resultMap['privateCode']}</td>
                         </if>
                         <td>{$point['chapterName']}</td>
                         <td>{$point['parent_point']}</td>
                         <td>{$point['point']}</td>
                         <if condition="$index eq 0">
                             <td rowspan="{$choosePointMap[$_chooseId]|count}"
-                                style="vertical-align: middle">{$rightPerson} / {$row['realnum']}</td>
+                                style="vertical-align: middle">{$resultMap['rightPerson']} / {$row['realnum']}</td>
                         </if>
                     </tr>
                 </foreach>
                 <else/>
                     <tr>
-                        <td>{$_chooseId}</td>
+                        <td>{$resultMap['privateCode']}</td>
                         <td>---</td>
                         <td>---</td>
                         <td>---</td>
-                        <td>{$rightPerson} / {$row['realnum']}</td>
+                        <td>{$resultMap['rightPerson']} / {$row['realnum']}</td>
                     </tr>
             </if>
         </foreach>
@@ -125,31 +125,31 @@
 
     <table class="table-bordered table table-bordered">
         <tr class="info"><td colspan="5"><h3>判断题章节知识点分布</h3></td></tr>
-        <tr><td>题号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
-        <foreach name="judgeResultMap" key="_judgeId" item="rightPerson">
+        <tr><td>编号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
+        <foreach name="judgeResultMap" key="_judgeId" item="resultMap">
             <if condition="isset($judgePointMap[$_judgeId])">
                 <foreach name="judgePointMap[$_judgeId]" item="point" key="index">
                     <tr>
                         <if condition="$index eq 0">
                             <td rowspan="{$judgePointMap[$_judgeId]|count}"
-                                style="vertical-align: middle">{$_judgeId}</td>
+                                style="vertical-align: middle">{$resultMap['privateCode']}</td>
                         </if>
                         <td>{$point['chapterName']}</td>
                         <td>{$point['parent_point']}</td>
                         <td>{$point['point']}</td>
                         <if condition="$index eq 0">
                             <td rowspan="{$judgePointMap[$_judgeId]|count}"
-                                style="vertical-align: middle">{$rightPerson} / {$row['realnum']}</td>
+                                style="vertical-align: middle">{$resultMap['rightPerson']} / {$row['realnum']}</td>
                         </if>
                     </tr>
                 </foreach>
                 <else/>
                 <tr>
-                    <td>{$_judgeId}</td>
+                    <td>{$resultMap['privateCode']}</td>
                     <td>---</td>
                     <td>---</td>
                     <td>---</td>
-                    <td>{$rightPerson} / {$row['realnum']}</td>
+                    <td>{$resultMap['rightPerson']} / {$row['realnum']}</td>
                 </tr>
             </if>
         </foreach>
