@@ -101,7 +101,7 @@
                         <if condition="$index eq 0">
                             <td rowspan="{$choosePointMap[$_chooseId]|count}"
                                 style="vertical-align: middle">
-                                <a href="{:U('Teacher/Choose/Index', array('id' => $_chooseId))}" target="_blank">{$_chooseId}</a>
+                                <a href="{:U('Teacher/Choose/index', array('id' => $_chooseId))}" target="_blank">{$_chooseId}</a>
                             </td>
                             <td rowspan="{$choosePointMap[$_chooseId]|count}"
                                 style="vertical-align: middle">{$resultMap['privateCode']}</td>
@@ -117,7 +117,7 @@
                 </foreach>
                 <else/>
                     <tr>
-                        <td><a href="{:U('Teacher/Choose/Index', array('id' => $_chooseId))}" target="_blank">{$_chooseId}</a></td>
+                        <td><a href="{:U('Teacher/Choose/index', array('id' => $_chooseId))}" target="_blank">{$_chooseId}</a></td>
                         <td>{$resultMap['privateCode']}</td>
                         <td>---</td>
                         <td>---</td>
@@ -138,7 +138,7 @@
                         <if condition="$index eq 0">
                             <td rowspan="{$judgePointMap[$_judgeId]|count}"
                                 style="vertical-align: middle">
-                                <a href="{:U('Teacher/Judge/Index', array('id' => $_judgeId))}" target="_blank">{$_judgeId}</a>
+                                <a href="{:U('Teacher/Judge/index', array('id' => $_judgeId))}" target="_blank">{$_judgeId}</a>
                             </td>
                             <td rowspan="{$judgePointMap[$_judgeId]|count}"
                                 style="vertical-align: middle">{$resultMap['privateCode']}</td>
@@ -154,7 +154,7 @@
                 </foreach>
                 <else/>
                 <tr>
-                    <td><a href="{:U('Teacher/Judge/Index', array('id' => $_judgeId))}" target="_blank">{$_judgeId}</a></td>
+                    <td><a href="{:U('Teacher/Judge/index', array('id' => $_judgeId))}" target="_blank">{$_judgeId}</a></td>
                     <td>{$resultMap['privateCode']}</td>
                     <td>---</td>
                     <td>---</td>
@@ -175,7 +175,7 @@
                         <if condition="$index eq 0">
                             <td rowspan="{$fillPointMap[$_fillId]|count}"
                                 style="vertical-align: middle">
-                                <a href="{:U('Teacher/Fill/Index', array('id' => $_fillId))}" target="_blank">{$_fillId}</a>
+                                <a href="{:U('Teacher/Fill/index', array('id' => $_fillId))}" target="_blank">{$_fillId}</a>
                             </td>
                         </if>
                         <td>{$point['chapterName']}</td>
@@ -185,7 +185,7 @@
                 </foreach>
                 <else/>
                 <tr>
-                    <td><a href="{:U('Teacher/Fill/Index', array('id' => $_fillId))}" target="_blank">{$_fillId}</a></td>
+                    <td><a href="{:U('Teacher/Fill/index', array('id' => $_fillId))}" target="_blank">{$_fillId}</a></td>
                     <td>---</td>
                     <td>---</td>
                     <td>---</td>
