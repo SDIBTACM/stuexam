@@ -40,10 +40,22 @@ class ExamController extends TemplateController {
         $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
         $programans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
 
+        $chooseQuestionIds = array();
+        $judgeQuestionIds = array();
+        $fillQuestionIds = array();
+
+        foreach ($chooseans as $_choose) {
+            $chooseQuestionIds[] = $_choose['choose_id'];
+        }
+        foreach ($judgeans as $_judge) {
+            $judgeQuestionIds[] = $_judge['judge_id'];
+        }
+
         $fillans2 = array();
         if ($fillans) {
             foreach ($fillans as $key => $value) {
                 $fillans2[$value['fill_id']] = ProblemService::instance()->getProblemsAndAnswer4Exam($value['fill_id'], ProblemService::PROBLEMANS_TYPE_FILL);
+                $fillQuestionIds[] = $value['fill_id'];
             }
         }
         $numofchoose = count($chooseans);
@@ -67,6 +79,15 @@ class ExamController extends TemplateController {
         $this->zadd('prgfillnum', $numofprgfill);
         $this->zadd('programnum', $numofprogram);
 
+        $this->zadd('choosePointMap', ProblemService::instance()->getQuestionPoint(
+            $chooseQuestionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+        ));
+        $this->zadd('judgePointMap', ProblemService::instance()->getQuestionPoint(
+            $judgeQuestionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+        ));
+        $this->zadd('fillPointMap', ProblemService::instance()->getQuestionPoint(
+            $fillQuestionIds, FillBaseModel::FILL_PROBLEM_TYPE
+        ));
         $this->auto_display();
     }
 

@@ -184,6 +184,7 @@ class ProblemService
             }
             $questionPointMap[$questionPoint['question_id']][] = array(
                 'chapter' => Chapter::getById($questionPoint['chapter_id'])->getPriority(),
+                'chapterName' => Chapter::getById($questionPoint['chapter_id'])->getName(),
                 'parent_point' => $pointMap[$questionPoint['point_parent_id']],
                 'point' => $pointMap[$questionPoint['point_id']]
             );

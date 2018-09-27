@@ -1,6 +1,7 @@
 <div style='padding-bottom:7px'>
     <ul class="nav nav-pills">
-        <li><a href="{:U('Home/Question/navigation',array('eid' => $eid))}" target="_blank">进入考试页面</a></li>
+        <!--<li><a href="{:U('Home/Question/navigation',array('eid' => $eid))}" target="_blank">进入考试页面</a></li>-->
+        <li><a href="{:U('Teacher/Quiz/Index',array('eid' => $eid))}" target="_blank">基础配置</a></li>
         <li id='exam_index'><a href="{:U('Teacher/Exam/index',array('eid' => $eid))}">试卷一览</a></li>
         <li id='exam_choose'><a href="{:U('Teacher/Choose/toExam',array('eid' => $eid,'type' => 1))}">选择题</a></li>
         <li id='exam_judge'><a href="{:U('Teacher/Judge/toExam',array('eid' => $eid,'type' => 2))}">判断题</a></li>
@@ -10,6 +11,8 @@
         <li id='exam_userscore'><a href="{:U('Teacher/Exam/userscore',array('eid' => $eid))}">考生成绩</a></li>
         <li id='exam_analysis'><a href="{:U('Teacher/Data/analysis',array('eid' => $eid))}">考试分析</a></li>
         <li id='exam_ranklist'><a href="{:U('Teacher/Data/programRank', array('eid' => $eid))}">编程排名</a></li>
-        <li id='exam_rejudge'><a href="{:U('Teacher/Exam/rejudge',array('eid' => $eid))}">REJUDGE</a></li>
+        <if condition="$Think.session.administrator neq null">
+            <li id='exam_rejudge'><a href="{:U('Teacher/Exam/rejudge',array('eid' => $eid))}">REJUDGE</a></li>
+        </if>
     </ul>
 </div>
