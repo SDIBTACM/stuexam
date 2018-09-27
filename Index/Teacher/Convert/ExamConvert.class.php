@@ -61,7 +61,7 @@ class ExamConvert
         $arr['prgfill'] = 1;
         $arr['programscore'] = 10;
         $arr['isvip'] = 'Y';
-        $arr['visible'] = 'N';
+        $arr['visible'] = 'Y';
         $arr['isprivate'] = 1;
 
         return $arr;

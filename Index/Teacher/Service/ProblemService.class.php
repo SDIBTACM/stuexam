@@ -1,11 +1,14 @@
 <?php
 namespace Teacher\Service;
 
+use Constant\Constants\Chapter;
 use Home\Model\AnswerModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
 use Basic\Log;
+use Teacher\Model\KeyPointBaseModel;
+use Teacher\Model\QuestionPointBaseModel;
 
 class ProblemService
 {
@@ -157,5 +160,34 @@ class ProblemService
             default:
                 return null;
         }
+    }
+
+    public function getQuestionPoint($questionIds, $type) {
+        $questionPoints = QuestionPointBaseModel::instance()->getQuestionsPoint($questionIds, $type);
+        $questionPointMap = array();
+
+        $pointIds = array();
+        foreach($questionPoints as $questionPoint) {
+            $pointIds[] = $questionPoint['point_id'];
+            $pointIds[] = $questionPoint['point_parent_id'];
+        }
+        $pointIds = array_unique($pointIds);
+        $pointMap = array();
+        $points = KeyPointBaseModel::instance()->getByIds($pointIds);
+        foreach ($points as $point) {
+            $pointMap[$point['id']] = $point['name'];
+        }
+
+        foreach ($questionPoints as $questionPoint) {
+            if (!isset($questionPointMap[$questionPoint['question_id']])) {
+                $questionPointMap[$questionPoint['question_id']] = array();
+            }
+            $questionPointMap[$questionPoint['question_id']][] = array(
+                'chapter' => Chapter::getById($questionPoint['chapter_id'])->getPriority(),
+                'parent_point' => $pointMap[$questionPoint['point_parent_id']],
+                'point' => $pointMap[$questionPoint['point_id']]
+            );
+        }
+        return $questionPointMap;
     }
 }
