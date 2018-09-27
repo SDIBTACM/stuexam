@@ -16,17 +16,18 @@ use Teacher\Service\ProblemService;
  */
 class GenerateExamConvert {
 
-    private static $generateFilePath = TEMP_PATH . "examList.txt";
-
     public static function generateProblem() {
+
+        $generateFilePath = TEMP_PATH . "examList.txt";
+
         $lastProblemType = 0;
         $problemMap = array();
 
-        if (!file_exists(self::$generateFilePath)) {
+        if (!file_exists($generateFilePath)) {
             return $problemMap;
         }
 
-        $fp = @fopen(self::$generateFilePath, "r");
+        $fp = @fopen($generateFilePath, "r");
         if ($fp) {
             while (!feof($fp)) {
                 $line = trim(fgets($fp));

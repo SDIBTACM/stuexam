@@ -187,8 +187,9 @@ class ExamService {
                 }
             }
         }
-        var_dump($total);
-        var_dump($failed);
+        var_dump(json_encode($total));
+        var_dump(json_encode($failed));
+        return Result::successResult();
     }
 
     private function generateQuestion($problemType, $problemList, $examId) {

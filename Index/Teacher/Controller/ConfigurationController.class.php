@@ -124,6 +124,6 @@ class ConfigurationController extends TemplateController
     }
 
     public function generateExam() {
-        ExamService::instance()->autoGenerateExam();
+        echo json_encode(ExamService::instance()->autoGenerateExam());
     }
 }
