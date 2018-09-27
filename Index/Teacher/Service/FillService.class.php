@@ -1,4 +1,5 @@
 <?php
+
 namespace Teacher\Service;
 
 use Constant\ReqResult\Result;
@@ -9,8 +10,7 @@ use Teacher\Model\PrivilegeBaseModel;
 use Basic\Log;
 
 
-class FillService
-{
+class FillService {
 
     private static $_instance = null;
 
@@ -30,7 +30,7 @@ class FillService
     public function updateFillInfo() {
         $reqResult = new Result();
         $fillId = I('post.fillid', 0, 'intval');
-        $field = array('creator', 'isprivate');
+        $field = array('creator', 'isprivate', 'private_code');
         $_fillInfo = FillBaseModel::instance()->getById($fillId, $field);
         if (empty($_fillInfo) || !checkAdmin(4, $_fillInfo['creator'])) {
             Log::info("user id: {} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $fillId);
@@ -41,6 +41,17 @@ class FillService
             return Result::errorResult("您没有权限进行此操作!");
         }
         $arr = FillConvert::convertFillFromPost();
+
+        // 如果 code 发生变化
+        if (strcmp($arr['private_code'], $_fillInfo['private_code'])) {
+            $privateCodeCheck = FillBaseModel::instance()->getByPrivateCode(
+                $arr['private_code']
+            );
+            if (!empty($privateCodeCheck)) {
+                return Result::errorResult("该私有编号已经有题目设置, 不能重复设置");
+            }
+        }
+
         $result = FillBaseModel::instance()->updateById($fillId, $arr);
         if ($result !== false) {
             $sql = "DELETE FROM `fill_answer` WHERE `fill_id`=$fillId";
@@ -73,6 +84,14 @@ class FillService
         $arr = FillConvert::convertFillFromPost();
         $arr['addtime'] = date('Y-m-d H:i:s');
         $arr['creator'] = $_SESSION['user_id'];
+
+        $privateCodeCheck = FillBaseModel::instance()->getByPrivateCode(
+            $arr['private_code']
+        );
+        if (!empty($privateCodeCheck)) {
+            return Result::errorResult("该私有编号已经有题目设置, 不能重复设置");
+        }
+
         $fillId = FillBaseModel::instance()->insertData($arr);
         if ($fillId <= 0) {
             Log::warn("user id: {}, require: add fill, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'],

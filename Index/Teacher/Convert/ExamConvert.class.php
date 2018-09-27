@@ -43,4 +43,27 @@ class ExamConvert
 
         return $arr;
     }
+
+    /**
+     * 生成一个默认的考试配置, 为自动生成试卷使用, 绑定生成的题目
+     */
+    public static function generateDefaultExamConfig() {
+        $arr = array();
+
+        $arr['title'] = "自动生成试卷占位符";
+        $arr['start_time'] = "1970-01-01 09:00:00";
+        $arr['end_time'] = "1970-01-02 12:00:00";
+        $arr['creator'] = $_SESSION['user_id'];
+        $arr['choosescore'] = 1;
+        $arr['judgescore'] = 1;
+        $arr['fillscore'] = 1;
+        $arr['prgans'] = 1;
+        $arr['prgfill'] = 1;
+        $arr['programscore'] = 10;
+        $arr['isvip'] = 'Y';
+        $arr['visible'] = 'N';
+        $arr['isprivate'] = 1;
+
+        return $arr;
+    }
 }

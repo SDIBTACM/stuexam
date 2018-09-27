@@ -12,6 +12,7 @@ namespace Teacher\Controller;
 use Basic\Log;
 use Teacher\Model\KeyPointBaseModel;
 use Teacher\Model\QuestionPointBaseModel;
+use Teacher\Service\ExamService;
 
 class ConfigurationController extends TemplateController
 {
@@ -120,5 +121,9 @@ class ConfigurationController extends TemplateController
         $parentId = I('get.parentId', 0, 'intval');
         $childrenPoint = KeyPointBaseModel::instance()->getChildrenNodeByParentId($parentId);
         $this->ajaxReturn($childrenPoint, 'JSON');
+    }
+
+    public function generateExam() {
+        ExamService::instance()->autoGenerateExam();
     }
 }

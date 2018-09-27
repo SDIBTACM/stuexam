@@ -29,7 +29,7 @@ class JudgeService
     public function updateJudgeInfo() {
         $reqResult = new Result();
         $judgeid = I('post.judgeid', 0, 'intval');
-        $field = array('creator', 'isprivate');
+        $field = array('creator', 'isprivate', 'private_code');
         $tmp = JudgeBaseModel::instance()->getById($judgeid, $field);
         if (empty($tmp) || !checkAdmin(4, $tmp['creator'])) {
             Log::info("user id:{} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
@@ -41,6 +41,17 @@ class JudgeService
             return Result::errorResult("您没有权限进行此操作!");
         }
         $arr = JudgeConvert::convertJudgeFromPost();
+
+        // 如果 code 发生变化
+        if (strcmp($arr['private_code'], $tmp['private_code'])) {
+            $privateCodeCheck = JudgeBaseModel::instance()->getByPrivateCode(
+                $arr['private_code']
+            );
+            if (!empty($privateCodeCheck)) {
+                return Result::errorResult("该私有编号已经有题目设置, 不能重复设置");
+            }
+        }
+
         $result = JudgeBaseModel::instance()->updateById($judgeid, $arr);
         if ($result !== false) {
             $pointIds = I('post.point', array());
@@ -62,6 +73,14 @@ class JudgeService
         $arr = JudgeConvert::convertJudgeFromPost();
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
+
+        $privateCodeCheck = JudgeBaseModel::instance()->getByPrivateCode(
+            $arr['private_code']
+        );
+        if (!empty($privateCodeCheck)) {
+            return Result::errorResult("该私有编号已经有题目设置, 不能重复设置");
+        }
+
         $lastId = JudgeBaseModel::instance()->insertData($arr);
         if ($lastId) {
             $pointIds = I('post.point', array());

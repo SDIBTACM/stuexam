@@ -1,17 +1,18 @@
 <?php
+
 namespace Teacher\Service;
 
 use Basic\Log;
 use Constant\ReqResult\Result;
 use Teacher\Convert\ExamConvert;
+use Teacher\Convert\GenerateExamConvert;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 
-class ExamService
-{
+class ExamService {
 
     private static $_instance = null;
 
@@ -158,5 +159,80 @@ class ExamService
             }
         }
         return $arr;
+    }
+
+    public function autoGenerateExam() {
+        $problemMap = GenerateExamConvert::generateProblem();
+        if (empty($problemMap)) {
+            return Result::errorResult("生成的题目列表为空");
+        }
+
+        $examConfig = ExamConvert::generateDefaultExamConfig();
+        $examId = ExamBaseModel::instance()->insertData($examConfig);
+
+        $total = array(0, 0, 0, 0, 0);
+        $failed = array();
+
+        foreach ($problemMap as $problemType => $problemList) {
+            $total[$problemType] = count($problemList);
+            if ($problemType == ProblemService::PROGRAM_PROBLEM_TYPE) {
+                $this->generateProgram($problemList, $examId);
+            } else {
+                $result = $this->generateQuestion($problemType, $problemList, $examId);
+                if ($result instanceof Result) {
+                    if (!$result->getStatus()) {
+                        $failed[$problemType]['count'] = $result->getData();
+                        $failed[$problemType]['message'] = $result->getMessage();
+                    }
+                }
+            }
+        }
+        var_dump($total);
+        var_dump($failed);
+    }
+
+    private function generateQuestion($problemType, $problemList, $examId) {
+        $failed = 0;
+        $message = "";
+        foreach ($problemList as $privateCode) {
+            // 验证 code 是否存在
+            $res = ProblemService::instance()->getByPrivateCode($problemType, $privateCode);
+            if (empty($res)) {
+                $failed++;
+                $message .= "$privateCode: 编号不存在\n";
+            } else {
+                if ($problemType == ChooseBaseModel::CHOOSE_PROBLEM_TYPE) {
+                    $questionId = $res['choose_id'];
+                } else if ($problemType == JudgeBaseModel::JUDGE_PROBLEM_TYPE) {
+                    $questionId = $res['judge_id'];
+                } else {
+                    $questionId = $res['fill_id'];
+                }
+
+                $data = array(
+                    'exam_id' => $examId,
+                    'question_id' => $questionId,
+                    'type' => $problemType
+                );
+                $insertFlag = M('exp_question')->add($data);
+                if (!$insertFlag) {
+                    $failed++;
+                    $message .= "$privateCode: 添加到考券时失败, 需要人为添加";
+                }
+            }
+        }
+        if ($failed > 0) {
+            $result = new Result();
+            $result->setStatus(false);
+            $result->setMessage($message);
+            $result->setData($failed);
+            return $result;
+        } else {
+            return Result::successResult();
+        }
+    }
+
+    private function generateProgram($problemList, $examId) {
+        ProblemService::instance()->addProgram2Exam($examId, $problemList);
     }
 }

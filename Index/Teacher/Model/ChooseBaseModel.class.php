@@ -58,4 +58,16 @@ class ChooseBaseModel extends GeneralModel
         $ans = M()->query($sql);
         return $ans;
     }
+
+    public function getByPrivateCode($privateCode) {
+        if (empty($privateCode)) {
+            return array();
+        }
+
+        $where = array(
+            'private_code' => $privateCode
+        );
+
+        return $this->queryOne($where);
+    }
 }

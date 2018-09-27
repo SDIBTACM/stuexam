@@ -62,4 +62,16 @@ class FillBaseModel extends GeneralModel
             ->select();
         return $ans;
     }
+
+    public function getByPrivateCode($privateCode) {
+        if (empty($privateCode)) {
+            return array();
+        }
+
+        $where = array(
+            'private_code' => $privateCode
+        );
+
+        return $this->queryOne($where);
+    }
 }

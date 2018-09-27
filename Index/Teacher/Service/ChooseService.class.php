@@ -29,7 +29,7 @@ class ChooseService
     public function updateChooseInfo() {
         $reqResult = new Result();
         $chooseid = I('post.chooseid', 0, 'intval');
-        $field = array('creator', 'isprivate');
+        $field = array('creator', 'isprivate', 'private_code');
         $_chooseInfo = ChooseBaseModel::instance()->getById($chooseid, $field);
         if (empty($_chooseInfo) || !checkAdmin(4, $_chooseInfo['creator'])) {
             return Result::errorResult("您没有权限进行此操作!");
@@ -40,6 +40,17 @@ class ChooseService
         }
 
         $arr = ChooseConvert::convertChooseFromPost();
+
+        // 如果 code 发生变化
+        if (strcmp($arr['private_code'], $_chooseInfo['private_code'])) {
+            $privateCodeCheck = ChooseBaseModel::instance()->getByPrivateCode(
+                $arr['private_code']
+            );
+            if (!empty($privateCodeCheck)) {
+                return Result::errorResult("该私有编号已经有题目设置, 不能重复设置");
+            }
+        }
+
         $result = ChooseBaseModel::instance()->updateById($chooseid, $arr);
         if ($result !== false) {
             $pointIds = I('post.point', array());
@@ -63,6 +74,14 @@ class ChooseService
         $arr = ChooseConvert::convertChooseFromPost();
         $arr['creator'] = $_SESSION['user_id'];
         $arr['addtime'] = date('Y-m-d H:i:s');
+
+        $privateCodeCheck = ChooseBaseModel::instance()->getByPrivateCode(
+            $arr['private_code']
+        );
+        if (!empty($privateCodeCheck)) {
+            return Result::errorResult("该私有编号已经有题目设置, 不能重复设置");
+        }
+
         $lastId = ChooseBaseModel::instance()->insertData($arr);
         if ($lastId <= 0) {
             Log::warn("user id:{}, require: add choose, result: FAIL, sqldate: {}, sqlresult: {}",

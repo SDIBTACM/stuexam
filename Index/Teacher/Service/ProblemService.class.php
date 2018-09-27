@@ -29,6 +29,9 @@ class ProblemService
     }
 
     public function addProgram2Exam($eid, $problemIds) {
+        if ($eid <= 0) {
+            return false;
+        }
         $len = count($problemIds);
         $sql = "DELETE FROM `exp_question` WHERE `exam_id`={$eid} AND `type`='4'";
         M()->execute($sql);
@@ -137,6 +140,22 @@ class ProblemService
             } else {
                 ProblemService::instance()->syncProgramAnswer($userId, $eid, $pid, -1, $value);
             }
+        }
+    }
+
+    public function getByPrivateCode($problemType, $privateCode) {
+        switch ($problemType) {
+            case ChooseBaseModel::CHOOSE_PROBLEM_TYPE:
+                return ChooseBaseModel::instance()->getByPrivateCode($privateCode);
+
+            case JudgeBaseModel::JUDGE_PROBLEM_TYPE:
+                return JudgeBaseModel::instance()->getByPrivateCode($privateCode);
+
+            case FillBaseModel::FILL_PROBLEM_TYPE:
+                return FillBaseModel::instance()->getByPrivateCode($privateCode);
+
+            default:
+                return null;
         }
     }
 }
