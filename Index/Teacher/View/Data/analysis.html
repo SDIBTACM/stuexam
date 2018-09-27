@@ -92,7 +92,7 @@
     </table>
 
     <table class="table-bordered table table-bordered">
-        <tr class="info"><td colspan="5"><h3>选择题章节知识点分布</h3></td></tr>
+        <tr class="info"><td colspan="6"><h3>选择题章节知识点分布</h3></td></tr>
         <tr><td>序号</td><td>编号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
         <foreach name="chooseResultMap" key="_chooseId" item="resultMap">
             <if condition="isset($choosePointMap[$_chooseId])">
@@ -129,7 +129,7 @@
     </table>
 
     <table class="table-bordered table table-bordered">
-        <tr class="info"><td colspan="5"><h3>判断题章节知识点分布</h3></td></tr>
+        <tr class="info"><td colspan="6"><h3>判断题章节知识点分布</h3></td></tr>
         <tr><td>序号</td><td>编号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
         <foreach name="judgeResultMap" key="_judgeId" item="resultMap">
             <if condition="isset($judgePointMap[$_judgeId])">
