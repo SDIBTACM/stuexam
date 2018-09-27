@@ -150,7 +150,58 @@ class DataController extends TemplateController
         $this->zadd("programIds", $programIds);
         $this->zadd("programAvgScore", $programAvgScore);
 
+        $chooseProblem = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $judgeProblem = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $fillProblem = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
+
+        $chooseQuestionIds = array();
+        $judgeQuestionIds = array();
+        $fillQuestionIds = array();
+
+        $chooseResultMap = array();
+        $judgeResultMap = array();
+
+        foreach ($chooseProblem as $_choose) {
+            $chooseQuestionIds[] = $_choose['choose_id'];
+            $chooseResultMap[$_choose['choose_id']] = $this->getEachQuestionRightPerson(
+                $this->eid, $_choose['choose_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer']
+            );
+        }
+        foreach ($judgeProblem as $_judge) {
+            $judgeQuestionIds[] = $_judge['judge_id'];
+            $judgeResultMap[$_judge['judge_id']] = $this->getEachQuestionRightPerson(
+                $this->eid, $_judge['judge_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer']
+            );
+        }
+        foreach ($fillProblem as $_fill) {
+            $fillQuestionIds[] = $_fill['fill_id'];
+        }
+
+        $this->zadd('chooseResultMap', $chooseResultMap);
+        $this->zadd('judgeResultMap', $judgeResultMap);
+        $this->zadd('fillQuestionIds', $fillQuestionIds);
+
+        $this->zadd('choosePointMap', ProblemService::instance()->getQuestionPoint(
+            $chooseQuestionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+        ));
+        $this->zadd('judgePointMap', ProblemService::instance()->getQuestionPoint(
+            $judgeQuestionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+        ));
+        $this->zadd('fillPointMap', ProblemService::instance()->getQuestionPoint(
+            $fillQuestionIds, FillBaseModel::FILL_PROBLEM_TYPE
+        ));
+
         $this->auto_display();
+    }
+
+    private function getEachQuestionRightPerson($examId, $questionId, $type, $rightAnswer) {
+        $where = array(
+            'exam_id' => $examId,
+            'question_id' => $questionId,
+            'type' => $type,
+            'answer' => $rightAnswer
+        );
+        return M('ex_stuanswer')->distinct('user_id')->where($where)->count();
     }
 
     private function getEachProgramAvgScore($programIds, $personCnt, $sqladd) {

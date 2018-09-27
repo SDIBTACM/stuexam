@@ -12,12 +12,12 @@
         <button type="submit" class="btn btn-default btn-lg">Search</button>
     </form>
     <table class="table-bordered table table-bordered">
-        <tr>
+        <tr class="warning">
             <td colspan=2><strong>考试编号:{$eid}</strong></td>
             <td colspan=2><strong>应考人数:{$totalnum}</strong></td>
             <td colspan=2><strong>实考人数:{$row['realnum']}</strong></td>
         </tr>
-        <tr>
+        <tr class="info">
             <td colspan=6><h3>各部分得分</h3></td>
         </tr>
         <tr>
@@ -54,7 +54,7 @@
         </tr>
     </table>
     <table class="table-bordered table table-bordered">
-        <tr>
+        <tr class="info">
             <td colspan=6><h3>各分数段人数</h3></td>
         </tr>
         <tr>
@@ -76,7 +76,7 @@
     </table>
 
     <table class="table-bordered table table-bordered">
-        <tr><td colspan=6><h3>各编程题平均分</h3></td></tr>
+        <tr class="info"><td colspan=<php>echo count($programIds)+1</php>><h3>各编程题平均分</h3></td></tr>
         <tr>
             <td>题号</td>
             <foreach name="programIds" item="program">
@@ -89,6 +89,97 @@
                 <td>{$programAvgScore[$program['question_id']]|formatToFloatScore}</td>
             </foreach>
         </tr>
+    </table>
+
+    <table class="table-bordered table table-bordered">
+        <tr class="info"><td colspan="5"><h3>选择题章节知识点分布</h3></td></tr>
+        <tr><td>题号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
+        <foreach name="chooseResultMap" key="_chooseId" item="rightPerson">
+            <if condition="isset($choosePointMap[$_chooseId])">
+                <foreach name="choosePointMap[$_chooseId]" item="point" key="index">
+                    <tr>
+                        <if condition="$index eq 0">
+                            <td rowspan="{$choosePointMap[$_chooseId]|count}"
+                                style="vertical-align: middle">{$_chooseId}</td>
+                        </if>
+                        <td>{$point['chapterName']}</td>
+                        <td>{$point['parent_point']}</td>
+                        <td>{$point['point']}</td>
+                        <if condition="$index eq 0">
+                            <td rowspan="{$choosePointMap[$_chooseId]|count}"
+                                style="vertical-align: middle">{$rightPerson} / {$row['realnum']}</td>
+                        </if>
+                    </tr>
+                </foreach>
+                <else/>
+                    <tr>
+                        <td>{$_chooseId}</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>{$rightPerson} / {$row['realnum']}</td>
+                    </tr>
+            </if>
+        </foreach>
+    </table>
+
+    <table class="table-bordered table table-bordered">
+        <tr class="info"><td colspan="5"><h3>判断题章节知识点分布</h3></td></tr>
+        <tr><td>题号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
+        <foreach name="judgeResultMap" key="_judgeId" item="rightPerson">
+            <if condition="isset($judgePointMap[$_judgeId])">
+                <foreach name="judgePointMap[$_judgeId]" item="point" key="index">
+                    <tr>
+                        <if condition="$index eq 0">
+                            <td rowspan="{$judgePointMap[$_judgeId]|count}"
+                                style="vertical-align: middle">{$_judgeId}</td>
+                        </if>
+                        <td>{$point['chapterName']}</td>
+                        <td>{$point['parent_point']}</td>
+                        <td>{$point['point']}</td>
+                        <if condition="$index eq 0">
+                            <td rowspan="{$judgePointMap[$_judgeId]|count}"
+                                style="vertical-align: middle">{$rightPerson} / {$row['realnum']}</td>
+                        </if>
+                    </tr>
+                </foreach>
+                <else/>
+                <tr>
+                    <td>{$_judgeId}</td>
+                    <td>---</td>
+                    <td>---</td>
+                    <td>---</td>
+                    <td>{$rightPerson} / {$row['realnum']}</td>
+                </tr>
+            </if>
+        </foreach>
+    </table>
+
+    <table class="table-bordered table table-bordered">
+        <tr class="info"><td colspan="5"><h3>填空题章节知识点分布</h3></td></tr>
+        <tr><td>题号</td><td>章</td><td>节</td><td>知识点</td></tr>
+        <foreach name="fillQuestionIds" item="_fillId">
+            <if condition="isset($fillPointMap[$_fillId])">
+                <foreach name="fillPointMap[$_fillId]" item="point" key="index">
+                    <tr>
+                        <if condition="$index eq 0">
+                            <td rowspan="{$fillPointMap[$_fillId]|count}"
+                                style="vertical-align: middle">{$_fillId}</td>
+                        </if>
+                        <td>{$point['chapterName']}</td>
+                        <td>{$point['parent_point']}</td>
+                        <td>{$point['point']}</td>
+                    </tr>
+                </foreach>
+                <else/>
+                <tr>
+                    <td>{$_fillId}</td>
+                    <td>---</td>
+                    <td>---</td>
+                    <td>---</td>
+                </tr>
+            </if>
+        </foreach>
     </table>
 
 </div>
