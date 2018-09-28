@@ -106,4 +106,13 @@ class TemplateController extends Controller
             return false;
         }
     }
+
+    protected function ajaxCodeReturn($code, $message, $data = array()) {
+        $return = array(
+            'code' => $code,
+            'message' => $message,
+            'data' => $data
+        );
+        $this->ajaxReturn($return, "JSON");
+    }
 }

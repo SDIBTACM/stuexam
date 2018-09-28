@@ -2,6 +2,7 @@
 
 namespace Teacher\Convert;
 
+use Constant\ReqResult\Result;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -18,20 +19,25 @@ class GenerateExamConvert {
 
     public static function generateProblem() {
 
-        $generateFilePath = TEMP_PATH . "examList.txt";
+        $generateFilePath = RUNTIME_PATH . "ExamTemp/examList.txt";
+        $generateProgramPath = RUNTIME_PATH . "ExamTemp/generateCode";
 
         $lastProblemType = 0;
         $problemMap = array();
 
+        if (!file_exists($generateProgramPath)) {
+            return Result::errorResult("生成算法不存在! 每次生成必须使用最新上传的生成文件");
+        }
+
         if (!file_exists($generateFilePath)) {
-            return $problemMap;
+            return Result::errorResult("文件不存在, 无法生成试卷");
         }
 
         $fp = @fopen($generateFilePath, "r");
         if ($fp) {
             while (!feof($fp)) {
                 $line = trim(fgets($fp));
-                if (strpos($line, '题') !== false) {
+                if (self::isProblemSplitter($line) || strpos($line, '题') !== false) {
                     $lastProblemType = self::getProblemType($line);
                 } else if (self::isConcernedLine($line)) {
                     if ($lastProblemType <= 0) {
@@ -46,19 +52,33 @@ class GenerateExamConvert {
                 }
             }
             fclose($fp);
+        } else {
+            return Result::errorResult("读取题目列表文件失败");
         }
 
-        return $problemMap;
+        return Result::successResultWithData($problemMap);
+    }
+
+    private static function isProblemSplitter($line) {
+        if (strpos($line, "A:") !== false || strpos($line, "B:") !== false ||
+            strpos($line, "C:") !== false || strpos($line, "D:") !== false) {
+            return true;
+        }
+        return false;
     }
 
     private static function getProblemType($line) {
-        if (strpos($line, ChooseBaseModel::CHOOSE_PROBLEM_NAME)) {
+        if (strpos($line, "A:") !== false ||
+            strpos($line, ChooseBaseModel::CHOOSE_PROBLEM_NAME) !== false) {
             return ChooseBaseModel::CHOOSE_PROBLEM_TYPE;
-        } else if (strpos($line, JudgeBaseModel::JUDGE_PROBLEM_NAME)) {
+        } else if (strpos($line, "B:") !== false ||
+            strpos($line, JudgeBaseModel::JUDGE_PROBLEM_NAME) !== false) {
             return JudgeBaseModel::JUDGE_PROBLEM_TYPE;
-        } else if (strpos($line, FillBaseModel::FILL_PROBLEM_NAME)) {
+        } else if (strpos($line, "C:") !== false ||
+            strpos($line, FillBaseModel::FILL_PROBLEM_NAME) !== false) {
             return FillBaseModel::FILL_PROBLEM_TYPE;
-        } else if (strpos($line, ProblemService::PROGRAM_PROBLEM_NAME)) {
+        } else if (strpos($line, "D:") !== false ||
+            strpos($line, ProblemService::PROGRAM_PROBLEM_NAME) !== false) {
             return ProblemService::PROGRAM_PROBLEM_TYPE;
         } else {
             return 0;

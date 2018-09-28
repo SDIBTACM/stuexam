@@ -139,14 +139,14 @@ function checkScore($score) {
 }
 
 function dbg($vars) {
-    if (C('ISDEBUG')) {
+    if (defined("IS_DEBUG") && IS_DEBUG) {
         dump($vars);
         echo "<hr/>";
     }
 }
 
 function ddbg($vars) {
-    if (C('ISDEBUG')) {
+    if (defined("IS_DEBUG") && IS_DEBUG) {
         dump($vars);
         echo "<hr/>";
         exit;

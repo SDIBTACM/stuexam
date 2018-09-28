@@ -31,6 +31,7 @@
         <!-- navbar-header-end -->
         <div class="collapse navbar-collapse" id="header-navbar">
             <ul class="nav navbar-nav">
+                <li id="navAutoExam"><a href="{:U('Teacher/Configuration/generateExam')}">自动出卷</a></li>
                 <li id='navpoint'><a href="{:U('/Teacher/Configuration/keyPoint')}">知识点配置</a></li>
                 <li><a href="{:U('/Teacher/Quiz/showList')}">回到考试管理</a></li>
                 <li><a href="/JudgeOnline/">返回OJ</a></li>
@@ -54,7 +55,11 @@
     var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
     var getChildrenNodeLink = "{:U('Teacher/Configuration/getChildrenPointByParentId')}";
     $(function () {
-//        var url = window.location.href;
-        $("#navpoint").addClass('active');
+       var url = window.location.href;
+        if (url.indexOf('generateExam') !== -1 || url.indexOf("generateexam") !== -1) {
+            $("#navAutoExam").addClass('active');
+        } else {
+            $("#navpoint").addClass('active');
+        }
     });
 </script>

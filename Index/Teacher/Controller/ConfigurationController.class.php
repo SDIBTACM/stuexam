@@ -10,12 +10,13 @@ namespace Teacher\Controller;
 
 
 use Basic\Log;
+use Teacher\Convert\GenerateExamConvert;
 use Teacher\Model\KeyPointBaseModel;
 use Teacher\Model\QuestionPointBaseModel;
 use Teacher\Service\ExamService;
+use Think\Upload;
 
-class ConfigurationController extends TemplateController
-{
+class ConfigurationController extends TemplateController {
     public function _initialize() {
         parent::_initialize();
         if (!$this->isSuperAdmin()) {
@@ -124,6 +125,93 @@ class ConfigurationController extends TemplateController
     }
 
     public function generateExam() {
-        echo json_encode(ExamService::instance()->autoGenerateExam());
+        $data = S("generatorExamResult");
+
+        if (empty($data)) {
+            $data = array(
+                'total' => array(0, 0, 0, 0, 0),
+                'failCount' => 0,
+                'failDetail' => array(
+                    0 => array('count' => 0, 'message' => '---'),
+                    1 => array('count' => 0, 'message' => '---'),
+                    2 => array('count' => 0, 'message' => '---'),
+                    3 => array('count' => 0, 'message' => '---')
+                ),
+                'examId' => 0,
+                'examUrl' => "---"
+            );
+        }
+
+        $this->zadd("lastGenerateData", $data);
+
+        $this->auto_display('generate', 'configlayout');
+    }
+
+    public function doGenerate() {
+        if (!IS_AJAX) {
+            $this->ajaxCodeReturn(4004, "请求错误");
+            return;
+        }
+
+        $shellPath = 'Public/generator.sh';
+        $codePath = RUNTIME_PATH . "ExamTemp";
+
+        $result = trim(shell_exec($shellPath . " " . $codePath));
+
+        if ($result == 500) {
+            $this->ajaxCodeReturn(4004, "参数错误请联系管理员");
+        } else if ($result == 404) {
+            $this->ajaxCodeReturn(4004, "生成算法文件不存在, 请先上传");
+        } else if ($result != 0) {
+            $this->ajaxCodeReturn(4004, "生成算法编译时发生错误");
+        } else {
+            $generateResult = ExamService::instance()->autoGenerateExam();
+            if (!$generateResult->getStatus()) {
+                $this->ajaxCodeReturn(4004, $generateResult->getMessage());
+            } else {
+                $data = $generateResult->getData();
+                $option = array("type" => "File");
+                S("generatorExamResult", $data, $option);
+
+                if ($data['failCount'] > 0) {
+                    $this->ajaxCodeReturn(2002, "部分题目添加失败", $data);
+                } else {
+                    shell_exec("rm " . $codePath . "/generateCode*");
+                    $this->ajaxCodeReturn(1001, "题目全部添加成功", $data);
+                }
+            }
+        }
+    }
+
+    public function uploadGenerator() {
+
+        if (!IS_AJAX) {
+            $return = array();
+            $return['code'] = 4004;
+            $return['message'] = "请求不合法";
+            $this->ajaxReturn($return, 'JSON');
+        }
+
+        $config = array(
+            'maxSize' => 5242880,
+            'rootPath' => RUNTIME_PATH,
+            'savePath' => 'ExamTemp/',
+            'saveName' => 'generateCode',
+            'exts' => array('c', 'cpp'),
+            'autoSub' => false,
+            'replace' => true, //存在同名是否覆盖
+        );
+
+        $upload = new Upload($config);
+        $res = $upload->upload();
+        if (!$res) {
+            $this->ajaxCodeReturn(4004, $upload->getError());
+        } else {
+            $this->ajaxCodeReturn(1001, '上传成功');
+        }
+    }
+
+    public function test() {
+        $this->ajaxCodeReturn(1001, GenerateExamConvert::generateProblem());
     }
 }

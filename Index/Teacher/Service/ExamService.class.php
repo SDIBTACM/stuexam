@@ -162,7 +162,18 @@ class ExamService {
     }
 
     public function autoGenerateExam() {
-        $problemMap = GenerateExamConvert::generateProblem();
+
+        $convertResult = GenerateExamConvert::generateProblem();
+
+        if (! $convertResult instanceof Result) {
+            return Result::errorResult("生成试卷发生错误,类型不匹配");
+        }
+
+        if (!$convertResult->getStatus()) {
+            return $convertResult;
+        }
+
+        $problemMap = $convertResult->getData();
         if (empty($problemMap)) {
             return Result::errorResult("生成的题目列表为空");
         }
@@ -170,8 +181,18 @@ class ExamService {
         $examConfig = ExamConvert::generateDefaultExamConfig();
         $examId = ExamBaseModel::instance()->insertData($examConfig);
 
+        if ($examId <= 0) {
+            return Result::errorResult("考试生成失败, 请重试");
+        }
+
         $total = array(0, 0, 0, 0, 0);
-        $failed = array();
+        $failCount = 0;
+        $failDetail = array(
+            0 => array('count' => 0, 'message' => ''),
+            1 => array('count' => 0, 'message' => ''),
+            2 => array('count' => 0, 'message' => ''),
+            3 => array('count' => 0, 'message' => '')
+        );
 
         foreach ($problemMap as $problemType => $problemList) {
             $total[$problemType] = count($problemList);
@@ -181,25 +202,33 @@ class ExamService {
                 $result = $this->generateQuestion($problemType, $problemList, $examId);
                 if ($result instanceof Result) {
                     if (!$result->getStatus()) {
-                        $failed[$problemType]['count'] = $result->getData();
-                        $failed[$problemType]['message'] = $result->getMessage();
+                        $failCount += $result->getData();
+                        $failDetail[$problemType]['count'] = $result->getData();
+                        $failDetail[$problemType]['message'] = $result->getMessage();
                     }
                 }
             }
         }
-        var_dump(json_encode($total));
-        var_dump(json_encode($failed));
-        return Result::successResult();
+
+        $data = array(
+            'total' => $total,
+            'failCount' => $failCount,
+            'failDetail' => $failDetail,
+            'examId' => $examId,
+            'examUrl' => U("Teacher/Quiz/index", array('eid' => $examId))
+        );
+
+        return Result::successResultWithData($data);
     }
 
     private function generateQuestion($problemType, $problemList, $examId) {
-        $failed = 0;
+        $failCount = 0;
         $message = "";
         foreach ($problemList as $privateCode) {
             // 验证 code 是否存在
             $res = ProblemService::instance()->getByPrivateCode($problemType, $privateCode);
             if (empty($res)) {
-                $failed++;
+                $failCount++;
                 $message .= "$privateCode: 编号不存在\n";
             } else {
                 if ($problemType == ChooseBaseModel::CHOOSE_PROBLEM_TYPE) {
@@ -217,16 +246,16 @@ class ExamService {
                 );
                 $insertFlag = M('exp_question')->add($data);
                 if (!$insertFlag) {
-                    $failed++;
+                    $failCount++;
                     $message .= "$privateCode: 添加到考券时失败, 需要人为添加";
                 }
             }
         }
-        if ($failed > 0) {
+        if ($failCount > 0) {
             $result = new Result();
             $result->setStatus(false);
             $result->setMessage($message);
-            $result->setData($failed);
+            $result->setData($failCount);
             return $result;
         } else {
             return Result::successResult();

@@ -40,7 +40,7 @@ class Log
      * before record message, it will check IS_DEBUG status
      */
     public static function debug($message) {
-        $isDebug = C('IS_DEBUG');
+        $isDebug = IS_DEBUG;
         if ($isDebug === false) return;
         @self::saveLog($message, __FUNCTION__, func_get_args());
     }
