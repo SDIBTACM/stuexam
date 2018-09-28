@@ -173,10 +173,11 @@ class ConfigurationController extends TemplateController {
                 $option = array("type" => "File");
                 S("generatorExamResult", $data, $option);
 
+                shell_exec("rm -f " . $codePath . "/generateCode*");
+
                 if ($data['failCount'] > 0) {
                     $this->ajaxCodeReturn(2002, "部分题目添加失败", $data);
                 } else {
-                    shell_exec("rm " . $codePath . "/generateCode*");
                     $this->ajaxCodeReturn(1001, "题目全部添加成功", $data);
                 }
             }
