@@ -212,7 +212,7 @@ class ConfigurationController extends TemplateController {
         }
     }
 
-    public function test() {
+    public function testGenerate() {
         $this->ajaxCodeReturn(1001, GenerateExamConvert::generateProblem());
     }
 }

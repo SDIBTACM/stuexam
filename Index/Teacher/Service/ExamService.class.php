@@ -247,7 +247,7 @@ class ExamService {
                 $insertFlag = M('exp_question')->add($data);
                 if (!$insertFlag) {
                     $failCount++;
-                    $message .= "$privateCode: 添加到考券时失败, 需要人为添加";
+                    $message .= "$privateCode: 添加到考券时失败, 需要人为添加\n";
                 }
             }
         }

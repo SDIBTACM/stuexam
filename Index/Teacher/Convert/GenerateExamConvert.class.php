@@ -30,7 +30,7 @@ class GenerateExamConvert {
         }
 
         if (!file_exists($generateFilePath)) {
-            return Result::errorResult("文件不存在, 无法生成试卷");
+            return Result::errorResult("题目列表文件不存在, 无法生成试卷");
         }
 
         $fp = @fopen($generateFilePath, "r");
