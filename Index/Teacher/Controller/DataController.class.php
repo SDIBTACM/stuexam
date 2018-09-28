@@ -163,17 +163,27 @@ class DataController extends TemplateController
 
         foreach ($chooseProblem as $_choose) {
             $chooseQuestionIds[] = $_choose['choose_id'];
-            $chooseResultMap[$_choose['choose_id']]['rightPerson'] = $this->getEachQuestionRightPerson(
-                $this->eid, $_choose['choose_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer']
+            $_resultMap = array(
+                'id' => $_choose['choose_id'],
+                'rightPerson' => $this->getEachQuestionRightPerson(
+                    $this->eid, $_choose['choose_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer']
+                ),
+                'privateCode' => $_choose['private_code']
             );
-            $chooseResultMap[$_choose['choose_id']]['privateCode'] = $_choose['private_code'];
+            $chooseResultMap[] = $_resultMap;
         }
         foreach ($judgeProblem as $_judge) {
             $judgeQuestionIds[] = $_judge['judge_id'];
-            $judgeResultMap[$_judge['judge_id']]['rightPerson'] = $this->getEachQuestionRightPerson(
-                $this->eid, $_judge['judge_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer']
+
+            $_resultMap = array(
+                'id' => $_judge['judge_id'],
+                'rightPerson' => $this->getEachQuestionRightPerson(
+                    $this->eid, $_judge['judge_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer']
+                ),
+                'privateCode' => $_judge['private_code']
             );
-            $judgeResultMap[$_judge['judge_id']]['privateCode'] = $_judge['private_code'];
+
+            $judgeResultMap[] = $_resultMap;
         }
         foreach ($fillProblem as $_fill) {
             $fillQuestionIds[] = $_fill['fill_id'];
