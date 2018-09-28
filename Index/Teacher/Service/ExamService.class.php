@@ -178,8 +178,21 @@ class ExamService {
             return Result::errorResult("生成的题目列表为空");
         }
 
-        $examConfig = ExamConvert::generateDefaultExamConfig();
-        $examId = ExamBaseModel::instance()->insertData($examConfig);
+        $where = array('title' => "自动生成试卷占位符", 'visible' => 'Y');
+        $exam = ExamBaseModel::instance()->queryOne($where, array('exam_id'));
+        if (empty($exam)) {
+            $examConfig = ExamConvert::generateDefaultExamConfig();
+            $examId = ExamBaseModel::instance()->insertData($examConfig);
+        } else {
+            $examId = $exam['exam_id'];
+            // 删除这个考试关联的所有信息
+            $where = array('exam_id' => $examId);
+            // 删除绑定的题目
+            M('exp_question')->where($where)->delete();
+            //M('ex_stuanswer')->where($where)->delete();
+            //M('ex_student')->where($where)->delete();
+            sleep(1);
+        }
 
         if ($examId <= 0) {
             return Result::errorResult("考试生成失败, 请重试");
