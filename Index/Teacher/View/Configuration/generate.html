@@ -11,10 +11,11 @@
     <p id="help-block-generator-exam" class="text-info"></p>
     <table class="table table-bordered">
         <tr><td colspan="3"><h3 id="generateExamTitle">上一次自动生成考试的信息</h3></td></tr>
-        <tr><td colspan="3" class="text-danger">
+        <tr><td colspan="3" class="text-danger">请先阅读以下注意点: <br/>
         1. 自动生成的考试在考试管理中可以看到, 默认考试名称为「自动生成试卷占位符」<br/>
-        2. 每次成功生成考试之后, 之前的生成算法代码会自动删除, 想再次生成的话需要重新上传生成代码<br/>
-        3. 如果出现部分题目添加成功的情况, 会在表格中有失败的解释说明, 对于失败的题目你需要手动添加, 但是生成代码依旧会被删除</td></tr>
+        2. 如果已存在名为「自动生成试卷占位符」的考试, 那么新自动生成的试卷会直接覆盖它, 如果需要保留, 请及时改名<br/>
+        3. 每次成功生成考试之后, 之前的生成算法代码会自动删除, 想再次生成的话需要重新上传生成代码<br/>
+        4. 如果出现部分题目添加成功的情况, 会在表格中有失败的解释说明, 对于失败的题目你需要手动添加, 但是生成代码依旧会被删除</td></tr>
         <tr><td width="30%">考试链接</td>
             <td id="generateExamUrl" width="10%">
                 <if condition="$lastGenerateData['examId'] gt 0">
