@@ -9,10 +9,7 @@
 namespace Home\Controller;
 
 use Home\Model\AnswerModel;
-use Home\Model\ExamAdminModel;
-
 use Teacher\Model\FillBaseModel;
-
 use Teacher\Service\ExamService;
 use Teacher\Service\FillService;
 use Teacher\Service\ProblemService;
@@ -38,7 +35,7 @@ class FillController extends QuestionController
 
         $fillArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
         $fillAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillSeq = ExamAdminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+        $fillSeq = getProblemSequence(count($fillAns), $this->randnum);
 
         $this->zadd('fillarr', $fillArr);
         $this->zadd('fillsx', $fillSeq);
@@ -57,8 +54,11 @@ class FillController extends QuestionController
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $inArr['fillsum'] = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $this->examBase);
+        $fillSum = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $this->examBase);
+        $inArr['fillsum'] = $fillSum;
         StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
+
+        $this->fillSumScore = $fillSum;
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }

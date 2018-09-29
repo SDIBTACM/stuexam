@@ -12,6 +12,14 @@ namespace Teacher\Model;
 abstract class GeneralModel extends BasicBaseModel
 {
 
+    public function countNumber($where, $field = null) {
+        if ($field != null) {
+            return $this->getDao()->where($where)->count($field);
+        } else {
+            return $this->getDao()->where($where)->count();
+        }
+    }
+
     public function queryOne($where, $field = array()) {
         if (empty($where)) {
             return null;

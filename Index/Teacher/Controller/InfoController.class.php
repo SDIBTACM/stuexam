@@ -244,10 +244,8 @@ class InfoController extends TemplateController
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
 
-        $rightstr = "e$eid";
-        $cnt1 = M('ex_privilege')
-            ->where("user_id='%s' and rightstr='%s'", $userId, $rightstr)
-            ->count();
+        $where = array('user_id' => $userId, 'rightstr' => "e$eid");
+        $cnt1 = PrivilegeBaseModel::instance()->countNumber($where);
         if ($cnt1 == 0) {
             $this->echoError('Student ID is Wrong!');
             return false;
@@ -255,9 +253,8 @@ class InfoController extends TemplateController
         if (time() < $start_timeC) {
             $this->echoError('Exam Not Start');
         }
-        $mark = M('ex_student')
-            ->where("exam_id=%d and user_id='%s'", $eid, $userId)
-            ->count();
+        $where = array("exam_id" => $eid, "user_id" => $userId);
+        $mark = StudentBaseModel::instance()->countNumber($where);
         $this->rejudgePaper($userId, $eid, $start_timeC, $end_timeC, $mark);
         return true;
     }

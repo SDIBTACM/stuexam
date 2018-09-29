@@ -1,6 +1,6 @@
 <?php
 
-function makesx($myarr, $start, $finish, $stunum) {
+function makeSequence($myarr, $start, $finish, $stunum) {
     $num = $finish - $start + 1;
     $fac = array(1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800);
     $rightnum = $stunum % $fac[$num];
@@ -17,4 +17,18 @@ function makesx($myarr, $start, $finish, $stunum) {
     unset($tmp);
     unset($fac);
     return $myarr;
+}
+
+function getProblemSequence($numProblem, $randnum) {
+    $arr = array();
+    for ($i = 0; $i < $numProblem;) {
+        if ($i + 11 <= $numProblem) {
+            $arr = makeSequence($arr, $i, $i + 10, $randnum);
+            $i = $i + 11;
+        } else {
+            $arr = makeSequence($arr, $i, $numProblem - 1, $randnum);
+            break;
+        }
+    }
+    return $arr;
 }

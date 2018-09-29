@@ -16,6 +16,8 @@ use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\QuestionBaseModel;
+use Teacher\Model\StudentAnswerModel;
+use Teacher\Model\StudentBaseModel;
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 
@@ -112,15 +114,22 @@ class DataController extends TemplateController
             $sqladd = " AND `user_id` like '$student%'";
         }
 
-        $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")->count();
-        $realnum = M('ex_student')->where("exam_id=$this->eid $sqladd and score>=0")->count();
+        $where = "rightstr='e$this->eid' $sqladd";
+        $totalnum = PrivilegeBaseModel::instance()->countNumber($where);
+        $where = "exam_id=$this->eid $sqladd and score>=0";
+        $realnum = StudentBaseModel::instance()->countNumber($where);
         $row = SqlExecuteHelper::Teacher_GetEachScoreDistribution($realnum, $this->eid, $sqladd);
 
-        $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
-        $fd[] = M('ex_student')->where("score>=60 and score<70 and exam_id=$this->eid $sqladd")->count();
-        $fd[] = M('ex_student')->where("score>=70 and score<80 and exam_id=$this->eid $sqladd")->count();
-        $fd[] = M('ex_student')->where("score>=80 and score<90 and exam_id=$this->eid $sqladd")->count();
-        $fd[] = M('ex_student')->where("score>=90 and score<=100 and exam_id=$this->eid $sqladd")->count();
+        $where = "score>=0  and score<60 and exam_id=$this->eid $sqladd";
+        $fd[] = StudentBaseModel::instance()->countNumber($where);
+        $where = "score>=60 and score<70 and exam_id=$this->eid $sqladd";
+        $fd[] = StudentBaseModel::instance()->countNumber($where);
+        $where = "score>=70 and score<80 and exam_id=$this->eid $sqladd";
+        $fd[] = StudentBaseModel::instance()->countNumber($where);
+        $where = "score>=80 and score<90 and exam_id=$this->eid $sqladd";
+        $fd[] = StudentBaseModel::instance()->countNumber($where);
+        $where = "score>=90 and score<=100 and exam_id=$this->eid $sqladd";
+        $fd[] = StudentBaseModel::instance()->countNumber($where);
 
         $query = array(
             'exam_id' => $this->eid,
@@ -201,7 +210,7 @@ class DataController extends TemplateController
             'type' => $type,
             'answer' => $rightAnswer
         );
-        return M('ex_stuanswer')->distinct('user_id')->where($where)->count();
+        return StudentAnswerModel::instance()->countNumber($where, "distinct user_id");
     }
 
     private function getEachProgramAvgScore($programIds, $personCnt, $sqladd) {

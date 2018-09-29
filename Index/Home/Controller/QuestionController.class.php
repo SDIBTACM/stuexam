@@ -132,8 +132,6 @@ class QuestionController extends TemplateController
     }
 
     protected function checkActionAfterSubmit() {
-        $this->initExamUserScore();
-
         $chooseOk = !($this->chooseCount > 0 && $this->chooseSumScore == -1);
         $judgeOk = !($this->judgeCount > 0 && $this->judgeSumScore == -1);
         $fillOk = !($this->fillCount > 0 && $this->fillSumScore == -1);

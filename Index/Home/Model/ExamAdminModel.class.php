@@ -90,30 +90,6 @@ class ExamAdminModel
     }
 
     /**
-     * 获取题目的打乱顺序
-     * @param  number $eid 考试编号
-     * @param  number $type 题目类型
-     * @param  number $randnum 学生的随机码
-     * @return array           打乱的顺序数组
-     */
-    public function getProblemSequence($eid, $type, $randnum) {
-        $arr = array();
-        $numproblem = M('exp_question')
-            ->where('exam_id=%d and type=%d', $eid, $type)
-            ->count('question_id');
-        for ($i = 0; $i < $numproblem;) {
-            if ($i + 11 <= $numproblem) {
-                $arr = makesx($arr, $i, $i + 10, $randnum);
-                $i = $i + 11;
-            } else {
-                $arr = makesx($arr, $i, $numproblem - 1, $randnum);
-                break;
-            }
-        }
-        return $arr;
-    }
-
-    /**
      * 判断用户是否在权限列表
      * @param  string $userId 用户ID
      * @param  number $eid 比赛编号

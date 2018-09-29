@@ -117,7 +117,7 @@ class IndexController extends TemplateController
             'user_id' => $userId,
             'rightstr' => "wa$examId"
         );
-        $hasPrivilege = M("ex_privilege")->where($where)->count();
+        $hasPrivilege = PrivilegeBaseModel::instance()->countNumber($where);
         if ($hasPrivilege > 0 || $this->isTeacher()) {
             // 获取题目信息
             $row = ExamBaseModel::instance()->getById($examId);
