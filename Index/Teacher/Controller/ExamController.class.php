@@ -5,6 +5,7 @@ namespace Teacher\Controller;
 use Basic\Log;
 use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ChooseBaseModel;
+use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
@@ -35,7 +36,9 @@ class ExamController extends TemplateController {
             $this->echoError('You have no privilege of this exam~');
         }
 
-        $allscore = ExamService::instance()->getBaseScoreByExamId($this->eid);
+        $allscore = ExamBaseModel::instance()->getById($this->eid,
+            array('choosescore', 'judgescore', 'fillscore', 'prgans', 'prgfill', 'programscore')
+        );
         $chooseans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $judgeans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
         $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);

@@ -218,12 +218,11 @@ class DataController extends TemplateController
                 continue;
             }
 
-            $allScore = ExamService::instance()->getBaseScoreByExamId($examId);
             $examBase = ExamBaseModel::instance()->getById($examId);
             $sTime = $examBase['start_time'];
             $eTime = $examBase['end_time'];
 
-            $programScore = $allScore['programscore'];
+            $programScore = $examBase['programscore'];
 
             $res = SqlExecuteHelper::Teacher_GetEachProgramAvgScore(
                 $programScore, $personCnt, $programId, $sTime, $eTime, $examId, $sqladd
@@ -247,14 +246,12 @@ class DataController extends TemplateController
         $this->isCanWatchInfo($eid);
 
         $users = trim($_GET['users']);
-        $row = ExamBaseModel::instance()->getExamInfoById($eid, array('title'));
+        $row = ExamBaseModel::instance()->getById($eid);
 
         $_res = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($users, $eid);
         if (empty($_res)) {
             $this->echoError("The student have no privilege to take part in it");
         }
-
-        $allscore = ExamService::instance()->getBaseScoreByExamId($eid);
 
         $choosearr = ExamService::instance()->getUserAnswer($eid, $users, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $judgearr = ExamService::instance()->getUserAnswer($eid, $users, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
@@ -272,7 +269,7 @@ class DataController extends TemplateController
             }
         }
         $this->zadd('title', $row['title']);
-        $this->zadd('allscore', $allscore);
+        $this->zadd('allscore', $row);
         $this->zadd('choosearr', $choosearr);
         $this->zadd('judgearr', $judgearr);
         $this->zadd('fillarr', $fillarr);

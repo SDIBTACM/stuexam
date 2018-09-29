@@ -101,7 +101,7 @@ class IndexController extends TemplateController
         $examId = I('get.eid', 0, 'intval');
         $userId = $this->userInfo['user_id'];
         $field = array('title', 'start_time', 'end_time');
-        $row = ExamBaseModel::instance()->getExamInfoById($examId, $field);
+        $row = ExamBaseModel::instance()->getById($examId, $field);
         if (empty($row)) {
             $this->alertError("考试不存在", U('/Home/Index/score'));
         }
@@ -120,9 +120,7 @@ class IndexController extends TemplateController
         $hasPrivilege = M("ex_privilege")->where($where)->count();
         if ($hasPrivilege > 0 || $this->isTeacher()) {
             // 获取题目信息
-            $row = ExamBaseModel::instance()->getExamInfoById($examId, array('title'));
-
-            $allQuestionScore = ExamService::instance()->getBaseScoreByExamId($examId);
+            $row = ExamBaseModel::instance()->getById($examId);
 
             $chooseUserAnswer = ExamService::instance()->getUserAnswer($examId, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
             $judgeUserAnswer = ExamService::instance()->getUserAnswer($examId, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
@@ -145,7 +143,7 @@ class IndexController extends TemplateController
             $this->removeAllFillUserRightAnswer($fillUserAnswer, $fillRightAnswer, $fillRightAnswer2);
 
             $this->zadd('title', $row['title']);
-            $this->zadd('allscore', $allQuestionScore);
+            $this->zadd('allscore', $row);
             $this->zadd('choosearr', $chooseUserAnswer);
             $this->zadd('judgearr', $judgeUserAnswer);
             $this->zadd('fillarr', $fillUserAnswer);

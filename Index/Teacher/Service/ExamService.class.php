@@ -33,7 +33,7 @@ class ExamService {
     public function updateExamInfo() {
         $reqResult = new Result();
         $examId = intval($_POST['examid']);
-        $_examInfo = ExamBaseModel::instance()->getExamInfoById($examId, array('creator'));
+        $_examInfo = ExamBaseModel::instance()->getById($examId, array('creator'));
         if (empty($_examInfo) || !PrivilegeHelper::isExamOwner($_examInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("You have no privilege to modify it!");
@@ -121,19 +121,6 @@ class ExamService {
         }
         M()->execute($query);
         return true;
-    }
-
-    public function getBaseScoreByExamId($eid) {
-        $field = array(
-            'choosescore',
-            'judgescore',
-            'fillscore',
-            'prgans',
-            'prgfill',
-            'programscore'
-        );
-        $allScore = ExamBaseModel::instance()->getExamInfoById($eid, $field);
-        return $allScore;
     }
 
     public function getUserAnswer($eid, $users, $type) {

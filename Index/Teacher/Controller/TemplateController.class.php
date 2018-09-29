@@ -26,7 +26,7 @@ class TemplateController extends \Home\Controller\TemplateController
             return true;
         }
         $field = array('creator');
-        $res = ExamBaseModel::instance()->getExamInfoById(intval($eid), $field);
+        $res = ExamBaseModel::instance()->getById(intval($eid), $field);
         return !empty($res) && PrivilegeHelper::isExamOwner($res['creator']);
     }
 
@@ -38,7 +38,7 @@ class TemplateController extends \Home\Controller\TemplateController
      */
     protected function isCanWatchInfo($eid, $isReturn = false) {
         $field = array('creator','isprivate', 'end_time');
-        $res = ExamBaseModel::instance()->getExamInfoById(intval($eid), $field);
+        $res = ExamBaseModel::instance()->getById(intval($eid), $field);
 
         $hasPrivilege = false;
         if ($res['isprivate'] == PrivilegeBaseModel::PROBLEM_PUBLIC && $this->isCreator()) {

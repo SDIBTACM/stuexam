@@ -36,15 +36,13 @@ class JudgeController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $judgearr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $judgeans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $judgesx = ExamAdminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
+        $judgeArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $judgeAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $judgeSeq = ExamAdminModel::instance()->getProblemSequence($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE, $this->randnum);
 
-        $this->zadd('allscore', $allBaseScore);
-        $this->zadd('judgearr', $judgearr);
-        $this->zadd('judgesx', $judgesx);
-        $this->zadd('judgeans', $judgeans);
+        $this->zadd('judgearr', $judgeArr);
+        $this->zadd('judgesx', $judgeSeq);
+        $this->zadd('judgeans', $judgeAns);
         $this->zadd('questionName', JudgeBaseModel::JUDGE_PROBLEM_NAME);
         $this->zadd('problemType', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
 
@@ -57,10 +55,11 @@ class JudgeController extends QuestionController
     }
 
     public function submitPaper() {
-        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $userId = $this->userInfo['user_id'];
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $inArr['judgesum'] = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($this->examId, $userId, $allScore['judgescore']);
+        $inArr['judgesum'] = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId(
+            $this->examId, $userId, $this->examBase['judgescore']
+        );
         StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));

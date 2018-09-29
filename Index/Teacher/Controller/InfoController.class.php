@@ -6,7 +6,6 @@ use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\StudentBaseModel;
 use Teacher\Service\ChooseService;
-use Teacher\Service\ExamService;
 use Teacher\Service\FillService;
 use Teacher\Service\JudgeService;
 use Teacher\Service\ProblemService;
@@ -94,7 +93,7 @@ class InfoController extends TemplateController
         if (!empty($userIds2Submit)) {
             $userIds2Submit = array_unique($userIds2Submit);
             $field = array('start_time', 'end_time');
-            $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
+            $prirow = ExamBaseModel::instance()->getById($eid, $field);
             $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
             $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
 
@@ -214,7 +213,7 @@ class InfoController extends TemplateController
         $eid = intval($_POST['eid']);
 
         if (I('post.rjall')) {
-            $prirow = ExamBaseModel::instance()->getExamInfoById($eid, array('start_time', 'end_time'));
+            $prirow = ExamBaseModel::instance()->getById($eid, array('start_time', 'end_time'));
             $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
             $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
             $userlist = M('ex_student')->field('user_id')->where('exam_id=%d', $eid)->select();
@@ -241,7 +240,7 @@ class InfoController extends TemplateController
 
     private function doJudgeOne($eid, $userId) {
         $field = array('start_time', 'end_time');
-        $prirow = ExamBaseModel::instance()->getExamInfoById($eid, $field);
+        $prirow = ExamBaseModel::instance()->getById($eid, $field);
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
 
@@ -265,8 +264,9 @@ class InfoController extends TemplateController
 
     private function rejudgePaper($userId, $eid, $start_timeC, $end_timeC, $mark) {
 
-        $allscore = ExamService::instance()->getBaseScoreByExamId($eid);
-
+        $allscore = ExamBaseModel::instance()->getById($eid,
+            array('choosescore', 'judgescore', 'fillscore', 'prgans', 'prgfill', 'programscore')
+        );
         $choosesum = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($eid, $userId, $allscore['choosescore']);
         $judgesum = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($eid, $userId, $allscore['judgescore']);
         $fillsum = FillService::instance()->doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore);

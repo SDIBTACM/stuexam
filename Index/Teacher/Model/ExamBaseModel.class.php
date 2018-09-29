@@ -45,7 +45,7 @@ class ExamBaseModel extends GeneralModel
         return self::$_instance;
     }
 
-    public function getExamInfoById($examId, $field = array()) {
+    public function getById($examId, $field = array()) {
         $where = array(
             'exam_id' => $examId,
             'visible' => 'Y'

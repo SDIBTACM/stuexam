@@ -8,11 +8,10 @@
 
 namespace Home\Controller;
 
+use Basic\Log;
 use Home\Helper\SqlExecuteHelper;
-use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
-use Basic\Log;
 
 class ProgramController extends QuestionController
 {
@@ -46,16 +45,14 @@ class ProgramController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $programans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
+        $programAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
 
-        foreach ($programans as &$pans) {
+        foreach ($programAns as &$pans) {
             $pans['pFillNum'] = $this->getProgramFillNum($pans['program_id']);
         }
         unset($pans);
 
-        $this->zadd('allscore', $allBaseScore);
-        $this->zadd('programans', $programans);
+        $this->zadd('programans', $programAns);
         $this->zadd('questionName', ProblemService::PROGRAM_PROBLEM_NAME);
         $this->zadd('problemType', ProblemService::PROGRAM_PROBLEM_TYPE);
 
@@ -65,12 +62,11 @@ class ProgramController extends QuestionController
     public function submitPaper() {
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
-        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $inArr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
         $inArr['judgesum'] = ($this->judgeSumScore == -1 ? 0 : $this->judgeSumScore);
         $inArr['fillsum'] = ($this->fillSumScore == -1 ? 0 : $this->fillSumScore);
         $inArr['programsum'] = ProblemService::instance()->doRejudgeProgramByExamIdAndUserId(
-            $this->examId, $this->userInfo['user_id'], $allScore['programscore'], $start_timeC, $end_timeC);
+            $this->examId, $this->userInfo['user_id'], $this->examBase['programscore'], $start_timeC, $end_timeC);
         $inArr['score'] = $inArr['choosesum'] + $inArr['judgesum'] + $inArr['fillsum'] + $inArr['programsum'];
         StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inArr);

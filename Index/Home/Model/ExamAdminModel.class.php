@@ -31,7 +31,7 @@ class ExamAdminModel
      * @param  number $eid 比赛编号
      * @param  string $user_id 用户ID]
      * @param  boolean $judgeHaveTaken 是否判断已经参加考试过
-     * @return Result        返回数字表示没有权限，否则有
+     * @return Result  如果成功返回该考试的信息
      */
 
     public function checkExamPrivilege($eid, $user_id, $judgeHaveTaken = false) {
@@ -40,8 +40,7 @@ class ExamAdminModel
             return Result::errorResult("You have no privilege!");
         }
 
-        $field = array('title', 'start_time', 'end_time', 'isvip', 'visible');
-        $row = ExamBaseModel::instance()->getExamInfoById($eid, $field);
+        $row = ExamBaseModel::instance()->getById($eid);
         if (empty($row)) {
             return Result::errorResult("No Such Exam!");
         }

@@ -36,15 +36,13 @@ class FillController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
-        $fillarr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillans = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillsx = ExamAdminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
+        $fillArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
+        $fillAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $fillSeq = ExamAdminModel::instance()->getProblemSequence($this->examId, FillBaseModel::FILL_PROBLEM_TYPE, $this->randnum);
 
-        $this->zadd('allscore', $allBaseScore);
-        $this->zadd('fillarr', $fillarr);
-        $this->zadd('fillsx', $fillsx);
-        $this->zadd('fillans', $fillans);
+        $this->zadd('fillarr', $fillArr);
+        $this->zadd('fillsx', $fillSeq);
+        $this->zadd('fillans', $fillAns);
         $this->zadd('questionName', FillBaseModel::FILL_PROBLEM_NAME);
         $this->zadd('problemType', FillBaseModel::FILL_PROBLEM_TYPE);
 
@@ -58,9 +56,8 @@ class FillController extends QuestionController
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $inArr['fillsum'] = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $allScore);
+        $inArr['fillsum'] = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $this->examBase);
         StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));

@@ -16,11 +16,11 @@
                         </div>
                     </div>
                     <if condition="$fillans[$fsx]['kind'] eq 1">
-                        <pre><font color='red'>({$allscore['fillscore']*$fillans[$fsx]['answernum']} 分)</font>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
+                        <pre><span class="label label-danger">{$row['fillscore']*$fillans[$fsx]['answernum']} 分</span>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                         <elseif condition="$fillans[$fsx]['kind'] eq 2"/>
-                        <pre><font color='red'>({$allscore['prgans']} 分)</font>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
+                        <pre><span class="label label-danger">{$row['prgans']} 分</span>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                         <else/>
-                        <pre><font color='red'>({$allscore['prgfill']} 分)</font>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
+                        <pre><span class="label label-danger">{$row['prgfill']} 分</span>{$QuestionIndex+1}.{$fillans[$fsx]['question']|nl2br}</pre>
                     </if>
                 </div>
                 <div class="panel-body">

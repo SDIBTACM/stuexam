@@ -15,7 +15,7 @@
                             <div class="myOpacity pull-left">{$Think.session.user_id}</div>
                         </div>
                     </div>
-                    <pre><font color='red'>({$allscore['judgescore']} 分)</font>{$QuestionIndex+1}.{$judgeans[$jsx]['question']|nl2br}</pre>
+                    <pre><span class="label label-danger">{$row['judgescore']} 分</span>{$QuestionIndex+1}.{$judgeans[$jsx]['question']|nl2br}</pre>
                 </div>
                 <div class="panel-body">
                     <p>
