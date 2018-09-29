@@ -10,6 +10,7 @@ namespace Teacher\Model;
 
 
 use Constant\ExamDbConfig\FillTableConfig;
+use Home\Helper\SqlExecuteHelper;
 
 class FillBaseModel extends GeneralModel
 {
@@ -45,13 +46,7 @@ class FillBaseModel extends GeneralModel
     }
 
     public function getFillProblems4Exam($eid) {
-        $type = self::FILL_PROBLEM_TYPE;
-        $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind`" .
-                " FROM `ex_fill`,`exp_question`" .
-		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_fill`.`fill_id`=`exp_question`.`question_id`" .
-                " ORDER BY `fill_id`";
-        $ans = M()->query($sql);
-        return $ans;
+        return SqlExecuteHelper::Teacher_GetFillProblem4Exam($eid, self::FILL_PROBLEM_TYPE);
     }
 
     public function getFillAnswerByFillId($fillId) {
@@ -61,5 +56,17 @@ class FillBaseModel extends GeneralModel
             ->order('answer_id')
             ->select();
         return $ans;
+    }
+
+    public function getByPrivateCode($privateCode) {
+        if (empty($privateCode)) {
+            return array();
+        }
+
+        $where = array(
+            'private_code' => $privateCode
+        );
+
+        return $this->queryOne($where);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Home\Controller;
 
+use Home\Helper\PrivilegeHelper;
 use Think\Controller;
 
 class TemplateController extends Controller
@@ -79,31 +80,27 @@ class TemplateController extends Controller
     }
 
     protected function isSuperAdmin() {
-        $isadmin = session('administrator');
-        return !empty($isadmin);
+        return PrivilegeHelper::isSuperAdmin();
     }
 
     protected function isCreator() {
-        if ($this->isSuperAdmin()) {
-            return true;
-        }
-        $isCreator = session('contest_creator');
-        return !empty($isCreator);
+        return PrivilegeHelper::isCreator();
     }
 
     protected function isProblemSetter() {
-        if ($this->isSuperAdmin()) {
-            return true;
-        }
-        $isSetter = session('problem_editor');
-        return !empty($isSetter);
+        return PrivilegeHelper::isProblemSetter();
     }
 
     protected function isTeacher() {
-        if ($this->isSuperAdmin() || $this->isCreator() || $this->isProblemSetter()) {
-            return true;
-        } else {
-            return false;
-        }
+        return PrivilegeHelper::isTeacher();
+    }
+
+    protected function ajaxCodeReturn($code, $message, $data = array()) {
+        $return = array(
+            'code' => $code,
+            'message' => $message,
+            'data' => $data
+        );
+        $this->ajaxReturn($return, "JSON");
     }
 }

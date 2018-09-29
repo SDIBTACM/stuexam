@@ -1,0 +1,150 @@
+<div class="container exam_content">
+    <h2>自动出卷</h2>
+    <form class="form-inline" enctype="multipart/form-data" id="generateCodeForm">
+        <div class="form-group">
+            <input type="file" name="generateCode" class="form-control btn-default">
+        </div>
+        <button type="button" id="generatorSubmit" class="btn btn-info">上传生成代码</button>
+        <p id="help-block-generator">文件大小不能超过5M, 后缀名只能是c、cpp</p>
+    </form>
+    <button type="button" id="generateExam" class="btn btn-success">开始生成试卷</button>
+    <p id="help-block-generator-exam" class="text-info"></p>
+    <table class="table table-bordered">
+        <tr><td colspan="3"><h3 id="generateExamTitle">上一次自动生成考试的信息</h3></td></tr>
+        <tr><td colspan="3" class="text-danger">请先阅读以下注意点: <br/>
+        1. 自动生成的考试在考试管理中可以看到, 默认考试名称为「自动生成试卷占位符」<br/>
+        2. 如果已存在名为「自动生成试卷占位符」的考试, 那么新自动生成的试卷会直接覆盖它, 如果需要保留, 请及时改名<br/>
+        3. 每次成功生成考试之后, 之前的生成算法代码会自动删除, 想再次生成的话需要重新上传生成代码<br/>
+        4. 如果出现部分题目添加成功的情况, 会在表格中有失败的解释说明, 对于失败的题目你需要手动添加, 但是生成代码依旧会被删除</td></tr>
+        <tr><td width="30%">考试链接</td>
+            <td id="generateExamUrl" width="10%">
+                <if condition="$lastGenerateData['examId'] gt 0">
+                    <a target="_blank" href="{$lastGenerateData['examUrl']}">
+                        点击修改考试基础信息
+                    </a>
+                    <else/>
+                    ---
+                </if>
+            </td>
+            <td width="60%">---</td>
+        </tr>
+        <tr>
+            <td width="10%">选择题添加总数</td>
+            <td id="generateChooseTotal" width="30%">{$lastGenerateData['total'][1]}</td>
+            <td width="60%">---</td>
+        </tr>
+        <tr>
+            <td width="30%">选择题添加失败数</td>
+            <td id="generateChooseFail" width="10%">{$lastGenerateData['failDetail'][1]['count']}</td>
+            <td id="generateChooseFailMessage" width="60%">{$lastGenerateData['failDetail'][1]['message']|default='---'|nl2br}</td>
+        </tr>
+        <tr>
+            <td width="30%">判断题添加总数</td>
+            <td id="generateJudgeTotal" width="10%">{$lastGenerateData['total'][2]}</td>
+            <td width="60%">---</td>
+        </tr>
+        <tr>
+            <td width="30%">判断题添加失败数</td>
+            <td id="generateJudgeFail" width="10%">{$lastGenerateData['failDetail'][2]['count']}</td>
+            <td id="generateJudgeFailMessage" width="60%">{$lastGenerateData['failDetail'][2]['message']|default='---'}</td>
+        </tr>
+        <tr>
+            <td width="30%">填空题添加总数</td>
+            <td id="generateFillTotal" width="10%">{$lastGenerateData['total'][3]}</td>
+            <td width="60%">---</td>
+        </tr>
+        <tr>
+            <td width="30%">填空题添加失败数</td>
+            <td id="generateFillFail" width="10%">{$lastGenerateData['failDetail'][3]['count']}</td>
+            <td id="generateFillFailMessage" width="60%">{$lastGenerateData['failDetail'][3]['message']|default='---'}</td>
+        </tr>
+        <tr>
+            <td width="30%">程序题添加总数</td>
+            <td id="generateProgramTotal" width="10%">{$lastGenerateData['total'][4]}</td>
+            <td width="60%">---</td>
+        </tr>
+
+    </table>
+</div>
+<script type="text/javascript">
+    var uploadGenerateUrl = "{:U('Teacher/Configuration/uploadGenerator')}";
+    var generateExamUrl = "{:U('Teacher/Configuration/doGenerate')}";
+    $("#generatorSubmit").click(function () {
+        var data = new FormData($('#generateCodeForm')[0]);
+        var generateText = $('#help-block-generator');
+        $.ajax({
+            url: uploadGenerateUrl,
+            type: 'POST',
+            cache: false,//关闭缓存
+            data: data,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (data) {
+                if (data.code === 1001) {
+                    generateText.addClass("text-success");
+                } else {
+                    generateText.addClass("text-danger");
+                }
+                generateText.html(data.message);
+                setTimeout(function () {
+                    generateText.removeClass();
+                    generateText.html("文件大小不能超过5M, 后缀名只能是c、cpp");
+                }, 2e3);
+            },
+            error: function () {
+                alert("上传过程中失败");
+            }
+        });
+    });
+    
+    $("#generateExam").click(function () {
+        var generateExamText = $('#help-block-generator-exam');
+        $.ajax({
+            url: generateExamUrl,
+            type: 'POST',
+            dataType: "json",
+            beforeSend: function() {
+                generateExamText.html("正在生成中, 请不要重复点击...");
+                $("#generateExam").attr("disabled", true);
+            },
+            success: function (returnData) {
+                console.log(returnData);
+                var data = returnData.data;
+                if (returnData.code === 1001 || returnData.code === 2002) {
+                    $("#generateExamTitle").html("本次自动生成考试的信息");
+
+                    if (data.examId > 0) {
+                        $("#generateExamUrl").html("<a target='_blank' href='" + data.examUrl +"'>点击修改考试基础信息</a>");
+                    } else {
+                        $("#generateExamUrl").html("---");
+                    }
+
+                    $("#generateChooseTotal").html(data.total[1]);
+                    $("#generateChooseFail").html(data.failDetail[1]['count']);
+                    $("#generateChooseFailMessage").html(data.failDetail[1]['message']);
+
+                    $("#generateJudgeTotal").html(data.total[2]);
+                    $("#generateJudgeFail").html(data.failDetail[2]['count']);
+                    $("#generateJudgeFailMessage").html(data.failDetail[2]['message']);
+
+                    $("#generateFillTotal").html(data.total[3]);
+                    $("#generateFillFail").html(data.failDetail[3]['count']);
+                    $("#generateFillFailMessage").html(data.failDetail[3]['message']);
+
+                    $("#generateProgramTotal").html(data.total[4]);
+                } else {
+                    alert(returnData.message);
+                }
+                generateExamText.html("");
+            },
+            error: function () {
+                alert("请求失败");
+            },
+            complete: function() {
+                $("#generateExam").attr("disabled", false);
+            }
+        });
+    });
+    
+</script>

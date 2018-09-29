@@ -49,7 +49,7 @@ class KeyPointBaseModel extends GeneralModel
     }
 
     public function getAllPoint() {
-        return $this->getDao()->select();
+        return $this->getDao()->order(array("id asc"))->select();
     }
 
     public function getByIds($ids) {

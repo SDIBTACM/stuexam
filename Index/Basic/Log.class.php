@@ -40,7 +40,7 @@ class Log
      * before record message, it will check IS_DEBUG status
      */
     public static function debug($message) {
-        $isDebug = C('IS_DEBUG');
+        $isDebug = IS_DEBUG;
         if ($isDebug === false) return;
         @self::saveLog($message, __FUNCTION__, func_get_args());
     }
@@ -98,7 +98,7 @@ class Log
         $trace = self::dealBacktrace();
         $message = self::parseMessage($message, $arguments);
 
-        $millSecs = date('Y-m-d H:i:s') . '.' . sprintf("04%d",(int)(microtime(true) * 10000) % 10000);
+        $millSecs = date('Y-m-d H:i:s') . '.' . sprintf("%-04d",(int)(microtime(true) * 10000) % 10000);
         $logMsg = sprintf("%s [%s] [%s] [%s] [%s:%s] - %s",
             $millSecs, getmypid(), $level, $trace['class'], $trace['function'], $trace['line'], $message);
 

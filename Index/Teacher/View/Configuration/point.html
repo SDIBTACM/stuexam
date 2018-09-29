@@ -87,6 +87,9 @@
             var that = $(this);
             var pointId = that.data('point');
             var res = prompt("请输入要修改成的值", "");
+            if (res == null) {
+                return;
+            }
             $.ajax({
                 url: changePointDescLink,
                 type: "POST",

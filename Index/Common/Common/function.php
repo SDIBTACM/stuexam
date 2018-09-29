@@ -1,36 +1,4 @@
 <?php
-function checkAdmin($val, $creator = null, $priflag = null) {
-    if ($val == 5) {
-        if (!(isset($_SESSION['administrator']) || $creator == $_SESSION['user_id'] || $priflag != 0))
-            return false;
-        return true;
-    } else if ($val == 4) {
-        if (!(isset($_SESSION['administrator']) || $creator == $_SESSION['user_id']))
-            return false;
-        else
-            return true;
-    } else if ($val == 3) {
-        if (!(isset($_SESSION['administrator'])
-            || isset($_SESSION['contest_creator'])
-            || isset($_SESSION['problem_editor']))
-        ) {
-            return false;
-        }
-        return true;
-    } else if ($val == 2) {
-        if (!(isset($_SESSION['administrator'])
-            || isset($_SESSION['contest_creator']))
-        ) {
-            return false;
-        }
-        return true;
-    } else if ($val == 1) {
-        if (isset($_SESSION['administrator']))
-            return true;
-        else
-            return false;
-    }
-}
 
 function splitpage($table, $searchsql = "") {
     $page = I('get.page', 1, 'intval');
@@ -118,16 +86,6 @@ function sqlFilter($value) {
     return $value;
 }
 
-function resultReturn($code, $msg = '') {
-    $return = array();
-    $return['code'] = $code;
-    $return['result'] = $msg;
-    $result = json_encode($return);
-    header('inner-size: ' . strlen($result));
-    echo $result;
-    exit;
-}
-
 function checkScore($score) {
     if (is_null($score)) {
         return '';
@@ -139,14 +97,14 @@ function checkScore($score) {
 }
 
 function dbg($vars) {
-    if (C('ISDEBUG')) {
+    if (defined("IS_DEBUG") && IS_DEBUG) {
         dump($vars);
         echo "<hr/>";
     }
 }
 
 function ddbg($vars) {
-    if (C('ISDEBUG')) {
+    if (defined("IS_DEBUG") && IS_DEBUG) {
         dump($vars);
         echo "<hr/>";
         exit;

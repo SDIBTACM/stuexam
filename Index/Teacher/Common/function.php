@@ -1,7 +1,7 @@
 <?php
 function getexamsearch($userId) {
 
-    $isadmin = checkAdmin(1);
+    $isadmin = \Home\Helper\PrivilegeHelper::isSuperAdmin();
     if ($isadmin === false) {
         $sql = "`visible`='Y' AND (`isprivate`=0 or `creator` like '$userId')";
     } else {
@@ -34,7 +34,7 @@ function getproblemsearch($idKey, $problemType) {
     // 查询创建者
     $creator = I('get.creator', '', 'htmlspecialchars');
     $problem = I('get.problem', 0, 'intval');
-    if ($problem != 0 && !checkAdmin(1)) {
+    if ($problem != 0 && !\Home\Helper\PrivilegeHelper::isSuperAdmin()) {
         /** 如果非管理员查询的是私有或者隐藏提库 则默认查询的是他本身 **/
         $creator = $_SESSION['user_id'];
     }
@@ -47,7 +47,7 @@ function getproblemsearch($idKey, $problemType) {
     $sql = $sql . " AND question_type = $questionType";
 
     // 查询题目类型
-    if ($problem < 0 || $problem > 2 || (!checkAdmin(1) && $problem == 2)) {
+    if ($problem < 0 || $problem > 2 || (!\Home\Helper\PrivilegeHelper::isSuperAdmin() && $problem == 2)) {
         $problem = 0;
     }
     $sql = $sql . " AND isprivate = $problem";

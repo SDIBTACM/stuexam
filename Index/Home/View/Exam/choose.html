@@ -8,7 +8,7 @@
         <foreach name='choosesx' item='csx' key='QuestionIndex'>
             <div class="panel panel-default">
                 <div class="panel-heading" style="position: relative">
-                    <pre><font color='red'>({$allscore['choosescore']} 分)</font>{$QuestionIndex+1}.{$chooseans[$csx]['question']|nl2br}</pre>
+                    <pre><span class="label label-danger">{$row['choosescore']} 分</span>{$QuestionIndex+1}.{$chooseans[$csx]['question']|nl2br}</pre>
                     <div style="position: absolute; width: 100%; height: 100%;  z-index: 20; font-size: 15px; top: 0; left: 0;">
                         <div class="myOpacity pull-left">{$Think.session.user_id}</div>
                         <div class="myOpacity pull-left">{$Think.session.user_id}</div>

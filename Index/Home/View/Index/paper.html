@@ -15,7 +15,7 @@
     <h4>一.选择题</h4>
     <foreach name='chooseans' item='cans' key='numofchoose'>
         <div class="panel panel-default">
-            <div class="panel-heading"><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$cans['question']|nl2br}</div>
+            <div class="panel-heading"><span class="label label-danger">{$allscore['choosescore']} 分</span>{$numofchoose+1}.{$cans['question']|nl2br}</div>
             <div class="panel-body">
                 <p>(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
             </div>
@@ -36,7 +36,7 @@
     <h4>二.判断题</h4>
     <foreach name='judgeans' item='jans' key='numofjudge'>
         <div class="panel panel-default">
-            <div class="panel-heading"><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</div>
+            <div class="panel-heading"><span class="label label-danger">{$allscore['judgescore']} 分</span>{$numofjudge+1}.{$jans['question']|nl2br}</div>
             <div class="panel-body"><strong>我的答案:
                 <php>
                     $myanswer = isset($judgearr[ $jans['judge_id'] ]) ? $judgearr[ $jans['judge_id'] ] : "未选";
@@ -53,11 +53,11 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <if condition="$fans['kind'] eq 1">
-                    <font color='red'>({$allscore['fillscore']*$fans['answernum']} 分)</font>
+                    <span class="label label-danger">{$allscore['fillscore']*$fans['answernum']} 分</span>
                     <elseif condition="$fans['kind'] eq 2" />
-                    <font color='red'>({$allscore['prgans']} 分)</font>
+                    <span class="label label-danger">{$allscore['prgans']} 分</span>
                     <else/>
-                    <font color='red'>({$allscore['prgfill']} 分)</font>
+                    <span class="label label-danger">{$allscore['prgfill']} 分</span>
                 </if>
                 {$numoffill+1}.{$fans['question']|nl2br}</div>
             <div class="panel-body">

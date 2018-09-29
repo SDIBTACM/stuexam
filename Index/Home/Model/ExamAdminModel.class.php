@@ -2,6 +2,8 @@
 namespace Home\Model;
 
 use Constant\ReqResult\Result;
+use Home\Helper\PrivilegeHelper;
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\StudentBaseModel;
@@ -29,17 +31,16 @@ class ExamAdminModel
      * @param  number $eid 比赛编号
      * @param  string $user_id 用户ID]
      * @param  boolean $judgeHaveTaken 是否判断已经参加考试过
-     * @return Result        返回数字表示没有权限，否则有
+     * @return Result  如果成功返回该考试的信息
      */
 
     public function checkExamPrivilege($eid, $user_id, $judgeHaveTaken = false) {
         $hasPrivilege = $this->getPrivilege($user_id, $eid);
-        if (!(checkAdmin(2) || $hasPrivilege)) {
+        if (!(PrivilegeHelper::isCreator() || $hasPrivilege)) {
             return Result::errorResult("You have no privilege!");
         }
 
-        $field = array('title', 'start_time', 'end_time', 'isvip', 'visible');
-        $row = ExamBaseModel::instance()->getExamInfoById($eid, $field);
+        $row = ExamBaseModel::instance()->getById($eid);
         if (empty($row)) {
             return Result::errorResult("No Such Exam!");
         }
@@ -47,10 +48,7 @@ class ExamAdminModel
         if (C('OJ_VIP_CONTEST') && $row['isvip'] == 'Y') {
             $today = date('Y-m-d');
             $ip1 = $_SERVER['REMOTE_ADDR'];
-            $sql = "SELECT user_id FROM loginlog WHERE user_id='$user_id' AND `time`>='$today' AND ip<>'$ip1' AND " .
-                "user_id NOT IN( SELECT user_id FROM privilege WHERE rightstr='administrator' " .
-                "or rightstr='contest_creator') ORDER BY `time` DESC limit 0,1";
-            $tmpRow = M()->query($sql);
+            $tmpRow = SqlExecuteHelper::Home_GetUserLoginLog($user_id, $today, $ip1);
             if ($tmpRow) {
                 return Result::errorResult("Do not login in diff machine,Please Contact administrator");
             }

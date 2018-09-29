@@ -36,7 +36,6 @@ class ChooseController extends QuestionController
 
         $this->start2Exam();
 
-        $allBaseScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $chooseArr = ExamService::instance()->getUserAnswer(
             $this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $chooseAns = ProblemService::instance()->getProblemsAndAnswer4Exam(
@@ -44,7 +43,6 @@ class ChooseController extends QuestionController
         $chooseSeq = ExamAdminModel::instance()->getProblemSequence(
             $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $this->randnum);
 
-        $this->zadd('allscore', $allBaseScore);
         $this->zadd('choosearr', $chooseArr);
         $this->zadd('choosesx', $chooseSeq);
         $this->zadd('chooseans', $chooseAns);
@@ -61,10 +59,11 @@ class ChooseController extends QuestionController
     }
 
     public function submitPaper() {
-        $allScore = ExamService::instance()->getBaseScoreByExamId($this->examId);
         $userId = $this->userInfo['user_id'];
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $inArr['choosesum'] = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($this->examId, $userId, $allScore['choosescore']);
+        $inArr['choosesum'] = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId(
+            $this->examId, $userId, $this->examBase['choosescore']
+        );
         StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
         $this->checkActionAfterSubmit();
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));

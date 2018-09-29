@@ -5,25 +5,41 @@
     }
 </style>
 <div class="container exam_content papershow" style='text-align:left'>
-<h2>试卷一览</h2>
+<h2 style='text-align:center'>试卷一览</h2>
 <include file='Public:sideheader' />
 	<input type="hidden" id="examid" value="{$eid}">
 <h4>一.选择题</h4>
 <foreach name='chooseans' item='cans' key='numofchoose'>
 <div class="panel panel-default">
-	<div class="panel-heading"><pre><font color='red'>({$allscore['choosescore']} 分)</font>{$numofchoose+1}.{$cans['question']|nl2br}</pre></div>
+	<div class="panel-heading">
+		<if condition="isset($choosePointMap[$cans['choose_id']])">
+			<foreach name="choosePointMap[$cans['choose_id']]" item="pointMap">
+				<span class="label label-info">{$pointMap['chapterName']} - {$pointMap['parent_point']} - {$pointMap['point']}</span><br/>
+			</foreach>
+		</if>
+		<pre><span class='text-danger'>({$allscore['choosescore']} 分)</span>{$numofchoose+1}.{$cans['question']|nl2br}</pre>
+	</div>
 	<div class="panel-body">
 		<p class="Qtext">(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
 		<p><strong>正确答案:{$cans['answer']}</strong></p>
 	</div>
-	<div class="panel-footer"><a href="javascript:void(0);" class="deltoexam" data-pid="{$cans['choose_id']}" data-type="1">[去除该题]</a></div>
+	<div class="panel-footer">
+		<a href="javascript:void(0);" class="deltoexam" data-pid="{$cans['choose_id']}" data-type="1">[去除该题]</a>
+	</div>
 </div>
 </foreach>
 
 <h4>二.判断题</h4>
 <foreach name='judgeans' item='jans' key='numofjudge'>
 	<div class="panel panel-default">
-		<div class="panel-heading"><pre><font color='red'>({$allscore['judgescore']} 分)</font>{$numofjudge+1}.{$jans['question']|nl2br}</pre></div>
+		<div class="panel-heading">
+			<if condition="isset($judgePointMap[$jans['judge_id']])">
+				<foreach name="judgePointMap[$jans['judge_id']]" item="pointMap">
+					<span class="label label-info">{$pointMap['chapterName']} - {$pointMap['parent_point']} - {$pointMap['point']}</span><br/>
+				</foreach>
+			</if>
+			<pre><span class='text-danger'>({$allscore['judgescore']} 分)</span>{$numofjudge+1}.{$jans['question']|nl2br}</pre>
+		</div>
 		<div class="panel-body"><strong>正确答案:{$jans['answer']}</strong></div>
 		<div class="panel-footer"><a href="javascript:void(0);" class="deltoexam" data-pid="{$jans['judge_id']}" data-type="2">[去除该题]</a></div>
 	</div>
@@ -33,14 +49,19 @@
 <foreach name='fillans' item='fans' key='numoffill'>
 	<div class="panel panel-default">
 		<div class="panel-heading">
+			<if condition="isset($fillPointMap[$fans['fill_id']])">
+				<foreach name="fillPointMap[$fans['fill_id']]" item="pointMap">
+					<span class="label label-info">{$pointMap['chapterName']} - {$pointMap['parent_point']} - {$pointMap['point']}</span><br/>
+				</foreach>
+			</if>
 			<if condition="$fans['kind'] eq 1">
-				<pre><font color='red'>({$allscore['fillscore']*$fans['answernum']} 分)</font>{$numoffill+1}.{$fans['question']|nl2br}</pre>
+				<pre><span class='text-danger'>({$allscore['fillscore']*$fans['answernum']} 分)</span>{$numoffill+1}.{$fans['question']|nl2br}</pre>
 				<php>$fillnum+=$fans['answernum'];</php>
 			<elseif condition="$fans['kind'] eq 2" />
-				<pre><font color='red'>({$allscore['prgans']} 分)</font>{$numoffill+1}.{$fans['question']|nl2br}</pre>
+				<pre><span class='text-danger'>({$allscore['prgans']} 分)</span>{$numoffill+1}.{$fans['question']|nl2br}</pre>
 				<php>$prgansnum+=1;</php>
 			<else/>
-				<pre><font color='red'>({$allscore['prgfill']} 分)</font>{$numoffill+1}.{$fans['question']|nl2br}</pre>
+				<pre><span class='text-danger'>({$allscore['prgfill']} 分)</span>{$numoffill+1}.{$fans['question']|nl2br}</pre>
 				<php>$prgfillnum+=1;</php>
 			</if>
 		</div>
@@ -59,7 +80,7 @@
 <h4>四.程序设计题</h4>
 <foreach name='programans' item='pans' key='numofprogram'>
 	<div class="panel panel-default">
-		<div class="panel-heading"><font color='red'>({$allscore['programscore']} 分)</font>
+		<div class="panel-heading"><span class='text-danger'>({$allscore['programscore']} 分)</span>
 		{$numofprogram+1}.{$pans['title']|nl2br}</div>
 		<div class="panel-body">
 			<h4>Description</h4>

@@ -10,6 +10,7 @@ namespace Teacher\Controller;
 
 
 use Basic\Log;
+use Home\Helper\PrivilegeHelper;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\QuestionBaseModel;
@@ -48,11 +49,11 @@ class QuizController extends AbsEventController {
     protected function getDetail() {
         $examId = I('get.eid', 0, 'intval');
         if ($examId > 0) {
-            $examInfo = ExamBaseModel::instance()->getExamInfoById($examId);
+            $examInfo = ExamBaseModel::instance()->getById($examId);
             if (empty($examInfo)) {
                 $this->echoError('No Such Exam!');
             }
-            if (!$this->isOwner4ExamByUserId($examInfo['creator'])) {
+            if (!PrivilegeHelper::isExamOwner($examInfo['creator'])) {
                 $this->echoError('You have no privilege!');
             }
             $examConfig = getExamConfig($examId);
@@ -86,11 +87,11 @@ class QuizController extends AbsEventController {
 
     public function copyOneExam() {
         $eid = I('get.eid', 0, 'intval');
-        $row = ExamBaseModel::instance()->getExamInfoById($eid);
+        $row = ExamBaseModel::instance()->getById($eid);
         if (empty($row)) {
             $this->echoError("No Such Exam!");
         }
-        if (!$this->isOwner4ExamByUserId($row['creator'])) {
+        if (!PrivilegeHelper::isExamOwner($row['creator'])) {
             $this->echoError('You have no privilege!');
         } else {
             // copy exam's base info

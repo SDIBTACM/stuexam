@@ -1,13 +1,13 @@
 <?php
 namespace Home\Model;
 
+use Basic\Log;
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\QuestionBaseModel;
 use Teacher\Service\ProblemService;
-
-use Basic\Log;
 
 class AnswerModel
 {
@@ -140,9 +140,7 @@ class AnswerModel
 
     private function getQuestion4ExamByType($eid, $type) {
         if ($type == FillBaseModel::FILL_PROBLEM_TYPE) {
-            $query = "SELECT `fill_id`,`answer_id` FROM `fill_answer` WHERE `fill_id` IN
-				( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='$type')";
-            $arr = M()->query($query);
+            $arr = SqlExecuteHelper::Home_GetFillQuestionForExam($eid, $type);
         } else {
             $arr = QuestionBaseModel::instance()->getQuestionIds4ExamByType($eid, $type);
         }
@@ -165,9 +163,7 @@ class AnswerModel
         $questionIdStr = '\'' . $questionIdStr . '\'';
 
         // oj的pass_rate对于正确的时候不准, 添加这个作为容错处理, 获取所有已经对了的题目
-        $rightProgramQuery = "select distinct(problem_id) as problem_id from solution where problem_id in ($questionIdStr) and " .
-            "user_id='$user_id' and result=4 and in_date>'$start_timeC' and in_date<'$end_timeC'";
-        $rightIdAns = M()->query($rightProgramQuery);
+        $rightIdAns = SqlExecuteHelper::Home_GetPerfectProgramResult($user_id, $questionIdStr, $start_timeC, $end_timeC);
         $rightIds = array();
         foreach ($rightIdAns as $p) {
             $rightIds[] = $p['problem_id'];
@@ -182,9 +178,7 @@ class AnswerModel
 
         $otherIdStr = implode('\',\'', $otherIds);
         $questionIdStr = '\'' . $otherIdStr . '\'';
-        $query = "select problem_id, max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
-            "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
-        $data = M()->query($query);
+        $data = SqlExecuteHelper::Home_GetProgramResultData($questionIdStr, $user_id, $start_timeC, $end_timeC);
 
         foreach ($data as $d) {
             if ($d['rate'] >= 0.98) {

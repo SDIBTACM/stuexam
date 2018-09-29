@@ -9,6 +9,7 @@
 namespace Teacher\Controller;
 
 
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
@@ -41,11 +42,7 @@ class DataController extends TemplateController
         }
 
         $userId = I('get.uid', 0, 'trim');
-        $query = "SELECT `title`,`exam`.`exam_id`,`score`,`choosesum`,`judgesum`,`fillsum`,`programsum` " .
-            "FROM `exam`,`ex_student` WHERE `ex_student`.`user_id`='" . $userId .
-            "' AND `ex_student`.`exam_id`=`exam`.`exam_id` AND score >= 0";
-        $scoreList = M()->query($query);
-
+        $scoreList = SqlExecuteHelper::Teacher_GetUserScoreList($userId);
         $this->ajaxReturn($scoreList, 'JSON');
     }
 
@@ -66,10 +63,7 @@ class DataController extends TemplateController
         $unames = array();
         $programCount = array();
 
-        $query = "select user_id, count(distinct question_id) as cnt" .
-            " from ex_stuanswer where exam_id = ".  $this->eid .
-            " and type = 4 and answer_id = 1 and answer = 4 group by user_id order by cnt desc";
-        $acCount = M()->query($query);
+        $acCount = SqlExecuteHelper::Teacher_GetUserAcceptProgramCnt4Exam($this->eid);
         foreach($acCount as $ac) {
             $programCount[$ac['user_id']] = $ac['cnt'];
             $users[] = $ac['user_id'];
@@ -120,13 +114,7 @@ class DataController extends TemplateController
 
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")->count();
         $realnum = M('ex_student')->where("exam_id=$this->eid $sqladd and score>=0")->count();
-
-        $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,".
-            "MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,".
-            "MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`, SUM(`choosesum`) / $realnum as `chooseavg`,".
-            "SUM(`judgesum`) / $realnum as `judgeavg`,SUM(`fillsum`) / $realnum as `fillavg`,SUM(`programsum`) / $realnum as `programavg`,".
-            "SUM(`score`) / $realnum as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
-        $row = M()->query($query);
+        $row = SqlExecuteHelper::Teacher_GetEachScoreDistribution($realnum, $this->eid, $sqladd);
 
         $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=60 and score<70 and exam_id=$this->eid $sqladd")->count();
@@ -150,7 +138,70 @@ class DataController extends TemplateController
         $this->zadd("programIds", $programIds);
         $this->zadd("programAvgScore", $programAvgScore);
 
+        $chooseProblem = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $judgeProblem = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $fillProblem = ProblemService::instance()->getProblemsAndAnswer4Exam($this->eid, FillBaseModel::FILL_PROBLEM_TYPE);
+
+        $chooseQuestionIds = array();
+        $judgeQuestionIds = array();
+        $fillQuestionIds = array();
+
+        $chooseResultMap = array();
+        $judgeResultMap = array();
+
+        foreach ($chooseProblem as $_choose) {
+            $chooseQuestionIds[] = $_choose['choose_id'];
+            $_resultMap = array(
+                'id' => $_choose['choose_id'],
+                'rightPerson' => $this->getEachQuestionRightPerson(
+                    $this->eid, $_choose['choose_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer']
+                ),
+                'privateCode' => $_choose['private_code']
+            );
+            $chooseResultMap[] = $_resultMap;
+        }
+        foreach ($judgeProblem as $_judge) {
+            $judgeQuestionIds[] = $_judge['judge_id'];
+
+            $_resultMap = array(
+                'id' => $_judge['judge_id'],
+                'rightPerson' => $this->getEachQuestionRightPerson(
+                    $this->eid, $_judge['judge_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer']
+                ),
+                'privateCode' => $_judge['private_code']
+            );
+
+            $judgeResultMap[] = $_resultMap;
+        }
+        foreach ($fillProblem as $_fill) {
+            $fillQuestionIds[] = $_fill['fill_id'];
+        }
+
+        $this->zadd('chooseResultMap', $chooseResultMap);
+        $this->zadd('judgeResultMap', $judgeResultMap);
+        $this->zadd('fillQuestionIds', $fillQuestionIds);
+
+        $this->zadd('choosePointMap', ProblemService::instance()->getQuestionPoint(
+            $chooseQuestionIds, ChooseBaseModel::CHOOSE_PROBLEM_TYPE
+        ));
+        $this->zadd('judgePointMap', ProblemService::instance()->getQuestionPoint(
+            $judgeQuestionIds, JudgeBaseModel::JUDGE_PROBLEM_TYPE
+        ));
+        $this->zadd('fillPointMap', ProblemService::instance()->getQuestionPoint(
+            $fillQuestionIds, FillBaseModel::FILL_PROBLEM_TYPE
+        ));
+
         $this->auto_display();
+    }
+
+    private function getEachQuestionRightPerson($examId, $questionId, $type, $rightAnswer) {
+        $where = array(
+            'exam_id' => $examId,
+            'question_id' => $questionId,
+            'type' => $type,
+            'answer' => $rightAnswer
+        );
+        return M('ex_stuanswer')->distinct('user_id')->where($where)->count();
     }
 
     private function getEachProgramAvgScore($programIds, $personCnt, $sqladd) {
@@ -167,21 +218,15 @@ class DataController extends TemplateController
                 continue;
             }
 
-            $allScore = ExamService::instance()->getBaseScoreByExamId($examId);
             $examBase = ExamBaseModel::instance()->getById($examId);
             $sTime = $examBase['start_time'];
             $eTime = $examBase['end_time'];
 
-            $programScore = $allScore['programscore'];
+            $programScore = $examBase['programscore'];
 
-            $sql = "select (sum(rate) * $programScore / $personCnt) as r from (" .
-                "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
-                "where problem_id=$programId and pass_rate > 0 and " .
-                "in_date>='$sTime' and in_date<='$eTime' and user_id in (select user_id from ex_privilege where rightstr='e$examId') " .
-                "$sqladd group by user_id" .
-                ") t";
-
-            $res = M()->query($sql);
+            $res = SqlExecuteHelper::Teacher_GetEachProgramAvgScore(
+                $programScore, $personCnt, $programId, $sTime, $eTime, $examId, $sqladd
+            );
             if (empty($res)) {
                 $ans[$programId] = 0;
             } else {
@@ -201,14 +246,12 @@ class DataController extends TemplateController
         $this->isCanWatchInfo($eid);
 
         $users = trim($_GET['users']);
-        $row = ExamBaseModel::instance()->getExamInfoById($eid, array('title'));
+        $row = ExamBaseModel::instance()->getById($eid);
 
         $_res = PrivilegeBaseModel::instance()->getPrivilegeByUserIdAndExamId($users, $eid);
         if (empty($_res)) {
             $this->echoError("The student have no privilege to take part in it");
         }
-
-        $allscore = ExamService::instance()->getBaseScoreByExamId($eid);
 
         $choosearr = ExamService::instance()->getUserAnswer($eid, $users, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
         $judgearr = ExamService::instance()->getUserAnswer($eid, $users, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
@@ -226,7 +269,7 @@ class DataController extends TemplateController
             }
         }
         $this->zadd('title', $row['title']);
-        $this->zadd('allscore', $allscore);
+        $this->zadd('allscore', $row);
         $this->zadd('choosearr', $choosearr);
         $this->zadd('judgearr', $judgearr);
         $this->zadd('fillarr', $fillarr);
