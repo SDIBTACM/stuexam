@@ -10,6 +10,7 @@ namespace Teacher\Model;
 
 
 use Constant\ExamDbConfig\ChooseTableConfig;
+use Home\Helper\SqlExecuteHelper;
 
 class ChooseBaseModel extends GeneralModel
 {
@@ -50,13 +51,7 @@ class ChooseBaseModel extends GeneralModel
      * @return mixed
      */
     public function getChooseProblems4Exam($eid) {
-        $type = self::CHOOSE_PROBLEM_TYPE;
-        $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer`,`private_code`".
-                " FROM `ex_choose`,`exp_question`".
-		        " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_choose`.`choose_id`=`exp_question`.`question_id`".
-                " ORDER BY `choose_id`";
-        $ans = M()->query($sql);
-        return $ans;
+        return SqlExecuteHelper::Teacher_GetChooseProblem4Exam($eid, self::CHOOSE_PROBLEM_TYPE);
     }
 
     public function getByPrivateCode($privateCode) {

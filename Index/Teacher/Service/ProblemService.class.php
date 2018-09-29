@@ -1,12 +1,13 @@
 <?php
 namespace Teacher\Service;
 
+use Basic\Log;
 use Constant\Constants\Chapter;
+use Home\Helper\SqlExecuteHelper;
 use Home\Model\AnswerModel;
 use Teacher\Model\ChooseBaseModel;
-use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\FillBaseModel;
-use Basic\Log;
+use Teacher\Model\JudgeBaseModel;
 use Teacher\Model\KeyPointBaseModel;
 use Teacher\Model\QuestionPointBaseModel;
 
@@ -79,9 +80,7 @@ class ProblemService
     }
 
     public function getProgramProblems4Exam($eid) {
-        $sql = "SELECT `question_id` as `program_id`,`title`,`description`,`input`,`output`,`sample_input`,`sample_output` FROM `exp_question`,`problem` WHERE `exam_id`='$eid' AND `type`='4' AND `question_id`=`problem_id` order by exp_qid asc";
-        $ans = M()->query($sql);
-        return $ans;
+        return SqlExecuteHelper::Teacher_GetProgramProblem4Exam($eid);
     }
 
     public function syncProgramAnswer($userId, $eid, $pid, $judgeResult, $passRate) {

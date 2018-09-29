@@ -9,6 +9,7 @@
 namespace Teacher\Controller;
 
 
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\FillBaseModel;
@@ -41,11 +42,7 @@ class DataController extends TemplateController
         }
 
         $userId = I('get.uid', 0, 'trim');
-        $query = "SELECT `title`,`exam`.`exam_id`,`score`,`choosesum`,`judgesum`,`fillsum`,`programsum` " .
-            "FROM `exam`,`ex_student` WHERE `ex_student`.`user_id`='" . $userId .
-            "' AND `ex_student`.`exam_id`=`exam`.`exam_id` AND score >= 0";
-        $scoreList = M()->query($query);
-
+        $scoreList = SqlExecuteHelper::Teacher_GetUserScoreList($userId);
         $this->ajaxReturn($scoreList, 'JSON');
     }
 
@@ -66,10 +63,7 @@ class DataController extends TemplateController
         $unames = array();
         $programCount = array();
 
-        $query = "select user_id, count(distinct question_id) as cnt" .
-            " from ex_stuanswer where exam_id = ".  $this->eid .
-            " and type = 4 and answer_id = 1 and answer = 4 group by user_id order by cnt desc";
-        $acCount = M()->query($query);
+        $acCount = SqlExecuteHelper::Teacher_GetUserAcceptProgramCnt4Exam($this->eid);
         foreach($acCount as $ac) {
             $programCount[$ac['user_id']] = $ac['cnt'];
             $users[] = $ac['user_id'];
@@ -120,13 +114,7 @@ class DataController extends TemplateController
 
         $totalnum = M('ex_privilege')->where("rightstr='e$this->eid' $sqladd")->count();
         $realnum = M('ex_student')->where("exam_id=$this->eid $sqladd and score>=0")->count();
-
-        $query = "SELECT COUNT(*) as `realnum`,MAX(`choosesum`) as `choosemax`,MAX(`judgesum`) as `judgemax`,MAX(`fillsum`) as `fillmax`,".
-            "MAX(`programsum`) as `programmax`,MIN(`choosesum`) as `choosemin`,MIN(`judgesum`) as `judgemin`,MIN(`fillsum`) as `fillmin`,".
-            "MIN(`programsum`) as `programmin`,MAX(`score`) as `scoremax`,MIN(`score`) as `scoremin`, SUM(`choosesum`) / $realnum as `chooseavg`,".
-            "SUM(`judgesum`) / $realnum as `judgeavg`,SUM(`fillsum`) / $realnum as `fillavg`,SUM(`programsum`) / $realnum as `programavg`,".
-            "SUM(`score`) / $realnum as `scoreavg` FROM `ex_student` WHERE `exam_id`='$this->eid' $sqladd AND `score` >= 0";
-        $row = M()->query($query);
+        $row = SqlExecuteHelper::Teacher_GetEachScoreDistribution($realnum, $this->eid, $sqladd);
 
         $fd[] = M('ex_student')->where("score>=0  and score<60 and exam_id=$this->eid $sqladd")->count();
         $fd[] = M('ex_student')->where("score>=60 and score<70 and exam_id=$this->eid $sqladd")->count();
@@ -237,14 +225,9 @@ class DataController extends TemplateController
 
             $programScore = $allScore['programscore'];
 
-            $sql = "select (sum(rate) * $programScore / $personCnt) as r from (" .
-                "select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
-                "where problem_id=$programId and pass_rate > 0 and " .
-                "in_date>='$sTime' and in_date<='$eTime' and user_id in (select user_id from ex_privilege where rightstr='e$examId') " .
-                "$sqladd group by user_id" .
-                ") t";
-
-            $res = M()->query($sql);
+            $res = SqlExecuteHelper::Teacher_GetEachProgramAvgScore(
+                $programScore, $personCnt, $programId, $sTime, $eTime, $examId, $sqladd
+            );
             if (empty($res)) {
                 $ans[$programId] = 0;
             } else {

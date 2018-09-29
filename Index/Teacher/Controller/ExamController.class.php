@@ -3,6 +3,7 @@
 namespace Teacher\Controller;
 
 use Basic\Log;
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -144,11 +145,7 @@ class ExamController extends TemplateController {
 
         $isExamEnd = (time() > strtotime($prirow['end_time']) ? true : false);
 
-        $query = "SELECT `stu`.`user_id`,`stu`.`nick`,`choosesum`,`judgesum`,`fillsum`,`programsum`,`score`,`extrainfo` " .
-            "FROM (SELECT `users`.`user_id`,`users`.`nick`,`extrainfo` FROM `ex_privilege`,`users` WHERE `ex_privilege`.`user_id`=`users`.`user_id` AND " .
-            "`ex_privilege`.`rightstr`=\"e$this->eid\" )stu left join `ex_student` on `stu`.`user_id`=`ex_student`.`user_id` AND " .
-            "`ex_student`.`exam_id`='$this->eid' $sqladd";
-        $row = M()->query($query);
+        $row = SqlExecuteHelper::Teacher_GetUserScoreList4Exam($this->eid, $sqladd);
 
         $seeWAStudentMap = $this->getAllStudentMapCanSeeWrongAnswer($this->eid);
         $hasSubmit = 0;
@@ -223,25 +220,13 @@ class ExamController extends TemplateController {
         M('ex_privilege')->where($where)->delete();
 
         // 重新添加
-        $flag = true;
-        $query = "";
-        foreach ($userIdList as $userId) {
-            if ($flag) {
-                $flag = false;
-                $query = "INSERT INTO `ex_privilege`(`user_id`,`rightstr`,`randnum`, `extrainfo`) VALUES('" . trim($userId) . "','".$rightStr."',0,0)";
-            } else {
-                $query = $query . ",('" . trim($userId) . "','".$rightStr."',0,0)";
-            }
-        }
-        M()->execute($query);
+        SqlExecuteHelper::Teacher_AddUserPrivilege($userIdList, $rightStr);
         $this->ajaxReturn(array());
     }
 
     private function getAllStudentMapCanSeeWrongAnswer($examId) {
         $field = array('user_id');
-        $where = array(
-            'rightstr' => "wa$examId"
-        );
+        $where = array('rightstr' => "wa$examId");
         $allStudent = PrivilegeBaseModel::instance()->queryAll($where, $field);
         $answer = array();
         foreach ($allStudent as $student) {

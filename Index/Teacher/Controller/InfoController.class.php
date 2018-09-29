@@ -4,6 +4,7 @@ namespace Teacher\Controller;
 use Basic\Log;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
+use Teacher\Model\StudentBaseModel;
 use Teacher\Service\ChooseService;
 use Teacher\Service\ExamService;
 use Teacher\Service\FillService;
@@ -272,13 +273,22 @@ class InfoController extends TemplateController
         $programsum = ProblemService::instance()->doRejudgeProgramByExamIdAndUserId($eid, $userId, $allscore['programscore'], $start_timeC, $end_timeC);
 
         $sum = $choosesum + $judgesum + $fillsum + $programsum;
-        if ($mark == 0) { // if the student has not submitted the paper
-            $sql = "INSERT INTO `ex_student` VALUES('" . $userId . "','$eid','$sum','$choosesum','$judgesum','$fillsum','$programsum')";
-            M()->execute($sql);
+
+        $data = array(
+            'score' => $sum,
+            'choosesum' => $choosesum,
+            'judgesum' => $judgesum,
+            'fillsum' => $fillsum,
+            'programsum' => $programsum
+        );
+
+        if ($mark == 0) {
+            // if the student has not submitted the paper
+            $data['user_id'] = $userId;
+            $data['exam_id'] = $eid;
+            StudentBaseModel::instance()->insertData($data);
         } else {
-            $sql = "UPDATE `ex_student` SET `score`='$sum',`choosesum`='$choosesum',`judgesum`='$judgesum',`fillsum`='$fillsum',`programsum`='$programsum'
-			WHERE `user_id`='" . $userId . "' AND `exam_id`='$eid'";
-            M()->execute($sql);
+            StudentBaseModel::instance()->updateStudentScore($eid, $userId, $data);
         }
         Log::info("user id: {} exam id: {} stuid:{}, require: rejudge one paper, result: success",
             $this->userInfo['user_id'], $eid, $userId);

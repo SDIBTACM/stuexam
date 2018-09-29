@@ -8,6 +8,7 @@
 
 namespace Home\Controller;
 
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Service\ExamService;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
@@ -237,8 +238,7 @@ class ProgramController extends QuestionController
 
         $user_id = $this->userInfo['user_id'];
 
-        $sql = "SELECT `in_date` FROM `solution` WHERE `user_id`='" . $user_id . "' AND `in_date`>NOW()-10 ORDER BY `in_date` DESC LIMIT 1";
-        $row = M()->query($sql);
+        $row = SqlExecuteHelper::Home_GetLastSubmitDate($user_id);
         if ($row) {
             echo "别交的太快，再检查检查吧~~<br>";
             exit(0);
@@ -254,10 +254,9 @@ class ProgramController extends QuestionController
         );
         $insert_id = M('solution')->add($sourceCode);
 
-        $sql = "INSERT INTO `source_code`(`solution_id`,`source`) VALUES('$insert_id','$source')";
-        M()->execute($sql);
-        $sql = "UPDATE `problem` SET `in_date`=NOW() WHERE `problem_id`=$pid";
-        M()->execute($sql);
+        SqlExecuteHelper::Home_SubmitSourceCode($insert_id, $source);
+        SqlExecuteHelper::Home_UpdateProblemInDate($pid);
+
         $colorarr = C('judge_color');
         $resultarr = C('judge_result');
         $color = $colorarr[0];

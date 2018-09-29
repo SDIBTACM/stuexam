@@ -1,6 +1,7 @@
 <?php
 namespace Home\Controller;
 
+use Home\Helper\SqlExecuteHelper;
 use Home\Model\ExamAdminModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\ExamBaseModel;
@@ -68,10 +69,7 @@ class IndexController extends TemplateController
         $user_id = $this->userInfo['user_id'];
         $row = M('users')->field('nick,email,reg_time')
             ->where("user_id='%s'", $user_id)->find();
-        $query = "SELECT `title`,`exam`.`exam_id`,`score`,`choosesum`,`judgesum`,`fillsum`,`programsum` " .
-            "FROM `exam`,`ex_student` WHERE `ex_student`.`user_id`='" . $user_id . "' AND `exam`.`visible`='Y' " .
-            "AND `ex_student`.`exam_id`=`exam`.`exam_id` AND score >= 0 ORDER BY `exam`.`exam_id` DESC";
-        $score = M()->query($query);
+        $score = SqlExecuteHelper::Home_GetUserScore($user_id);
 
         $where = array(
             'user_id' => $user_id,

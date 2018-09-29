@@ -9,6 +9,7 @@
 namespace Teacher\Controller;
 
 
+use Home\Helper\PrivilegeHelper;
 use Teacher\Model\PrivilegeBaseModel;
 
 abstract class AbsQuestionController extends AbsEventController {
@@ -85,7 +86,7 @@ abstract class AbsQuestionController extends AbsEventController {
             return true;
         } else {
             if ($private != PrivilegeBaseModel::PROBLEM_SYSTEM) {
-                return $this->isOwner4ExamByUserId($creator);
+                return PrivilegeHelper::isExamOwner($creator);
             } else {
                 return false;
             }

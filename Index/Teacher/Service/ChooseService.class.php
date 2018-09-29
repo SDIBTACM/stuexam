@@ -1,12 +1,13 @@
 <?php
 namespace Teacher\Service;
 
+use Basic\Log;
 use Constant\ReqResult\Result;
+use Home\Helper\PrivilegeHelper;
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Convert\ChooseConvert;
-
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
-use Basic\Log;
 
 class ChooseService
 {
@@ -31,11 +32,11 @@ class ChooseService
         $chooseid = I('post.chooseid', 0, 'intval');
         $field = array('creator', 'isprivate', 'private_code');
         $_chooseInfo = ChooseBaseModel::instance()->getById($chooseid, $field);
-        if (empty($_chooseInfo) || !checkAdmin(4, $_chooseInfo['creator'])) {
+        if (empty($_chooseInfo) || !PrivilegeHelper::isExamOwner($_chooseInfo['creator'])) {
             return Result::errorResult("您没有权限进行此操作!");
         }
 
-        if ($_chooseInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !checkAdmin(1)) {
+        if ($_chooseInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !PrivilegeHelper::isSuperAdmin()) {
             return Result::errorResult("您没有权限进行此操作!");
         }
 
@@ -102,9 +103,7 @@ class ChooseService
     public function doRejudgeChooseByExamIdAndUserId($eid, $userId, $chooseScore) {
         $chooseSum = 0;
         $choosearr = ExamService::instance()->getUserAnswer($eid, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $query = "SELECT `choose_id`,`answer` FROM `ex_choose` WHERE `choose_id` IN
-		(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1')";
-        $row = M()->query($query);
+        $row = SqlExecuteHelper::Teacher_GetChooseAnswer4Exam($eid);
         if ($row) {
             foreach ($row as $key => $value) {
                 if (isset($choosearr[$value['choose_id']])) {

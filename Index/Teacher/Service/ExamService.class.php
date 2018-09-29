@@ -4,6 +4,7 @@ namespace Teacher\Service;
 
 use Basic\Log;
 use Constant\ReqResult\Result;
+use Home\Helper\PrivilegeHelper;
 use Teacher\Convert\ExamConvert;
 use Teacher\Convert\GenerateExamConvert;
 use Teacher\Model\ChooseBaseModel;
@@ -33,7 +34,7 @@ class ExamService {
         $reqResult = new Result();
         $examId = intval($_POST['examid']);
         $_examInfo = ExamBaseModel::instance()->getExamInfoById($examId, array('creator'));
-        if (empty($_examInfo) || !checkAdmin(4, $_examInfo['creator'])) {
+        if (empty($_examInfo) || !PrivilegeHelper::isExamOwner($_examInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("You have no privilege to modify it!");
             Log::info("user id: {} exam id: {}, require: change exam info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $examId);

@@ -3,6 +3,7 @@
 namespace Teacher\Controller;
 
 use Basic\Log;
+use Home\Helper\SqlExecuteHelper;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Model\JudgeBaseModel;
@@ -79,9 +80,7 @@ class ProblemController extends QuestionBaseController {
                 } else {
                     $pList = implode(',', $problemIds);
                 }
-                $sql = "select defunct, author, problem_id from problem where problem_id in ($pList)";
-
-                $res = M()->query($sql);
+                $res = SqlExecuteHelper::Teacher_GetProgramList($pList);
                 $validProblemCnt = 0;
 
                 foreach ($res as $r) {
