@@ -24,8 +24,7 @@ use Teacher\Service\StudentService;
 
 use Basic\Log;
 
-class QuestionController extends TemplateController
-{
+class QuestionController extends TemplateController {
 
     public $examId = null;
     public $examBase = null;
@@ -47,8 +46,10 @@ class QuestionController extends TemplateController
 
     public function _initialize() {
         parent::_initialize();
-        $this->checkLoginIp();
         $this->preExamQuestion();
+
+        $this->checkLoginIp();
+
         $this->initExamQuestionCount();
         $this->initExamUserScore();
         $this->addExamBaseInfo();
@@ -198,25 +199,21 @@ class QuestionController extends TemplateController
     }
 
     private function checkLoginIp() {
-        //if ($this->isTeacher()) return true;
-        $allowLoginIpList = $this->getAllowLoginIpList();
-        if (0 == count($allowLoginIpList)) return true;
+        if ($this->isTeacher() || $this->examBase['isiplimit'] > 0) {
+            return true;
+        }
+        $arr = getExamConfig($this->examId);
+        $allowLoginIpList = is_array($arr['allow_login_ip_list']) ? $arr['allow_login_ip_list'] : array();
+        if (0 == count($allowLoginIpList)) {
+            return true;
+        }
 
         foreach ($allowLoginIpList as $item) {
             $item = explode("/", $item);
-            if (compareIpWithSubnetMask($_SERVER['REMOTE_ADDR'], $item[0], $item[1])) return true;
+            if (compareIpWithSubnetMask($_SERVER['REMOTE_ADDR'], $item[0], $item[1])) {
+                return true;
+            }
         }
-        return $this->alertError("You not allow login from this ip, Please contact to your teacher");
+        return $this->alertError("You are not allowed to login from this ip, Please contact to your teacher");
     }
-
-    private function getAllowLoginIpList() {
-        $res = ExamBaseModel::instance()->getById(I('get.eid'), array('isiplimit'));
-        $arr = array();
-        if ($res['isiplimit']) {
-            $arr = getExamConfig(I('get.eid'));
-            $arr = $arr['allow_login_ip_list'];
-        }
-        return !is_array($arr) ? array() : $arr;
-    }
-
 }
