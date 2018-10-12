@@ -83,7 +83,7 @@ class ProblemService
         return SqlExecuteHelper::Teacher_GetProgramProblem4Exam($eid);
     }
 
-    public function syncProgramAnswer($userId, $eid, $pid, $judgeResult, $passRate) {
+    public function syncProgramAnswer($userId, $eid, $pid, $judgeResult, $passRate, $sTime, $eTime) {
         Log::info("user id: {} , exam id: {} , problem id: {} , answer: {} , pass rate: {}", $userId, $eid, $pid, $judgeResult, $passRate === null ? "1.00" : $passRate);
         $dao = M('ex_stuanswer');
         $where = array(
@@ -108,16 +108,40 @@ class ProblemService
         } else {
             Log::info("Program result need to update");
             $_ans = $res['answer'];
-            if (strcmp($_ans, "4") != 0) {
-                $data = array();
+            $data = array();
+            // 如果原先的是 Accept
+            if (strcmp($_ans, "4") == 0) {
+                if ($judgeResult == 4) {
+                    // 现在的也是 Accept, 则不处理
+                    return 1;
+                } else {
+                    // 如果现在不是 Accept, 反查一下, 判断是 rejudge 还是学生重复提交了
+                    $where = array(
+                        'problem_id' => $pid, 'user_id' => $userId, 'result' => 4,
+                        'in_date' => array(array('gt', $sTime), array('lt', $eTime))
+                    );
+                    $row_cnt = M('solution')->field(array('result'))->where($where)->find();
+                    if (!empty($row_cnt)) {
+                        //先查询是否有 result = 4的, 有则返回
+                        return 1;
+                    } else {
+                        // 没有则取 passRate 最高值
+                        $_programJudge = SqlExecuteHelper::Home_GetProgramResultData(strval($pid), $userId, $sTime, $eTime);
+                        if (is_array($_programJudge)) {
+                            $data['answer'] = $_programJudge[0]['rate'] >= 0.98 ? "4" : strval($_programJudge['rate']);
+                        }
+                    }
+                }
+            } else {
+                // 如果原先的就不是 Accept, 对比现在跟之前, 存储的最高值
                 if ($judgeResult == 4) {
                     $data['answer'] = "4";
                 } else if ($passRate > doubleval($_ans)) {
                     $data['answer'] = strval($passRate);
                 }
-                if (!empty($data)) {
-                    return $dao->where($where)->data($data)->save();
-                }
+            }
+            if (!empty($data)) {
+                return $dao->where($where)->data($data)->save();
             }
         }
         return 1;
@@ -138,9 +162,13 @@ class ProblemService
 
         foreach($programStatus as $pid => $value) {
             if ($value == 1) {
-                ProblemService::instance()->syncProgramAnswer($userId, $eid, $pid, 4, null);
+                ProblemService::instance()->syncProgramAnswer(
+                    $userId, $eid, $pid, 4, null, $startTime, $endTime
+                );
             } else {
-                ProblemService::instance()->syncProgramAnswer($userId, $eid, $pid, -1, $value);
+                ProblemService::instance()->syncProgramAnswer(
+                    $userId, $eid, $pid, -1, $value, $startTime, $endTime
+                );
             }
         }
     }

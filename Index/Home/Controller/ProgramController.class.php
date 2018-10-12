@@ -162,7 +162,9 @@ class ProgramController extends QuestionController
             ->find();
         if (!empty($row_cnt)) {
             Log::info("user id: {} , problem id: {} , has result for: {}", $userId, $id, $row_cnt);
-            $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, 4, null);
+            $_res = ProblemService::instance()->syncProgramAnswer(
+                $userId, $this->examId, $id, 4, null, $start_timeC, $end_timeC
+            );
             Log::info("user id: {} , problem id: {} , sync answer res: {}", $userId, $id, $_res);
             if ($_res > 0) {
                 echo "<font color='blue' size='3px'>此题已正确,请不要重复提交</font>";
@@ -187,7 +189,9 @@ class ProgramController extends QuestionController
             } else {
                 Log::info("user id: {} , problem id: {} , solution: {}", $userId, $id, $trow);
                 $ans = $trow['result'];
-                $_res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $id, $ans, $trow['pass_rate']);
+                $_res = ProblemService::instance()->syncProgramAnswer(
+                    $userId, $this->examId, $id, $ans, $trow['pass_rate'], $start_timeC, $end_timeC
+                );
                 Log::info("user id: {} , problem id: {} , sync answer res: {}", $userId, $id, $_res);
                 if ($_res < 0) {
                     $this->echoError("<font color='blue' size='3px'>不知道发生了什么,请刷新页面重试~</font>");
@@ -221,7 +225,9 @@ class ProgramController extends QuestionController
             ->find();
         if (!empty($row_cnt)) {
             Log::info("user id: {} , problem id: {}, program answer: {}", $userId, $pid, $row_cnt);
-            $res = ProblemService::instance()->syncProgramAnswer($userId, $this->examId, $pid, 4, null);
+            $res = ProblemService::instance()->syncProgramAnswer(
+                $userId, $this->examId, $pid, 4, null, $start_timeC, $end_timeC
+            );
             Log::info("user id: {} , problem id: {}, sync answer res: {}", $userId, $pid, $res);
             $this->echoError(4);
         } else {
