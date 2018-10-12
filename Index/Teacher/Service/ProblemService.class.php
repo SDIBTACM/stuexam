@@ -128,7 +128,7 @@ class ProblemService
                         // 没有则取 passRate 最高值
                         $_programJudge = SqlExecuteHelper::Home_GetProgramResultData(strval($pid), $userId, $sTime, $eTime);
                         if (is_array($_programJudge)) {
-                            $data['answer'] = $_programJudge[0]['rate'] >= 0.98 ? "4" : strval($_programJudge['rate']);
+                            $data['answer'] = $_programJudge[0]['rate'] >= 0.98 ? "4" : strval($_programJudge[0]['rate']);
                         }
                     }
                 }
