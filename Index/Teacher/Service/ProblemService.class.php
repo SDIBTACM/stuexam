@@ -116,11 +116,11 @@ class ProblemService
                     return 1;
                 } else {
                     // 如果现在不是 Accept, 反查一下, 判断是 rejudge 还是学生重复提交了
-                    $where = array(
+                    $_judgeWhere = array(
                         'problem_id' => $pid, 'user_id' => $userId, 'result' => 4,
                         'in_date' => array(array('gt', $sTime), array('lt', $eTime))
                     );
-                    $row_cnt = M('solution')->field(array('result'))->where($where)->find();
+                    $row_cnt = M('solution')->field(array('result'))->where($_judgeWhere)->find();
                     if (!empty($row_cnt)) {
                         //先查询是否有 result = 4的, 有则返回
                         return 1;
