@@ -104,7 +104,9 @@ class SqlExecuteHelper {
     public static function Teacher_GetUserAcceptProgramCnt4Exam($eid) {
         $sql = "select user_id, count(distinct question_id) as cnt" .
             " from ex_stuanswer where exam_id = " . $eid .
-            " and type = 4 and answer_id = 1 and answer = 4 group by user_id order by cnt desc";
+            " and type = 4 and answer_id = 1 and answer = 4" .
+            " and question_id in (select question_id from exp_question where exam_id = $eid and type = 4 )" .
+            " group by user_id order by cnt desc";
         return M()->query($sql);
     }
 
