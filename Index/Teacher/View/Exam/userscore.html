@@ -4,7 +4,7 @@
     <input type="hidden" name="eid" id="eid" value="{$eid}"/>
 
     <div class="actionList pull-right" style="margin-bottom: 10px">
-        <button class='btn btn-default'
+        <button class='btn btn-info'
                 onclick="suredo('{:U("Teacher/Info/submitAllPaper", array("eid" => $eid,"sortdnum" => $dsortnum,"sortanum" => $asortnum) )}','确认帮所有考生提交试卷嘛?')">
             <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
             一键全部交卷
@@ -13,9 +13,13 @@
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
             选择删除分数
         </button>
-        <button id="oneClickDistribute" class='btn btn-default'>
+        <button id="oneClickDistribute" class='btn btn-info'>
             <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
             选择分发错题
+        </button>
+        <button id="oneClickRecover" class='btn btn-danger'>
+            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+            回收错题权限
         </button>
     </div>
 
@@ -280,6 +284,36 @@
                     alert("sorry,something error");
                 }
             });
+        });
+
+        $("#oneClickRecover").click(function() {
+            var userIdList =[];
+            var recoverUrl = "{:U('Teacher/Exam/recoverPaper')}";
+            $(".delCheck").each(function () {
+                if (this.checked) {
+                    var uid = $(this).data('userid');
+                    userIdList.push(uid);
+                }
+            });
+            if (userIdList.length === 0) {
+                alert("请选择需要回收错题权限的学生");
+                return;
+            }
+            console.log(userIdList.join(","));
+            var eid = $("#examId").val();
+            $.ajax({
+                url : recoverUrl,
+                type: "GET",
+                dataType: "json",
+                data: {"userIdList":userIdList.join(","), "eid":eid},
+                success : function() {
+                    location.reload(true);
+                },
+                error: function() {
+                    alert("sorry,something error");
+                }
+            });
+
         });
 
         var userScoreListUrl = "{:U('Teacher/Data/userScoreList')}";

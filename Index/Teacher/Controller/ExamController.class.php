@@ -227,6 +227,28 @@ class ExamController extends TemplateController {
         $this->ajaxReturn(array());
     }
 
+    public function recoverPaper() {
+        if (!$this->isOwner4ExamByExamId($this->eid)) {
+            $this->echoError('You have no privilege of this exam~');
+        }
+
+        $userIdListStr = I('get.userIdList', '');
+        $userIdList = explode(",", $userIdListStr);
+        if (empty($userIdList)) {
+            $this->ajaxReturn(array());
+        }
+
+        // 删除这些中已有的
+        $rightStr = 'wa' . $this->eid;
+        $where = array(
+            "user_id" => array('in', $userIdList),
+            "rightstr" => $rightStr
+        );
+        M('ex_privilege')->where($where)->delete();
+
+        $this->ajaxReturn(array());
+    }
+
     private function getAllStudentMapCanSeeWrongAnswer($examId) {
         $field = array('user_id');
         $where = array('rightstr' => "wa$examId");
