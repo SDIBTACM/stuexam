@@ -4,10 +4,9 @@
     <input type="hidden" name="eid" id="eid" value="{$eid}"/>
 
     <div class="actionList pull-right" style="margin-bottom: 10px">
-        <button class='btn btn-info'
-                onclick="suredo('{:U("Teacher/Info/submitAllPaper", array("eid" => $eid,"sortdnum" => $dsortnum,"sortanum" => $asortnum) )}','确认帮所有考生提交试卷嘛?')">
+        <button id="oneClickSubmit" class='btn btn-info'>
             <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
-            一键全部交卷
+            选择提交试卷
         </button>
         <button id="oneClickDel" class='btn btn-danger'>
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -33,9 +32,8 @@
             <th width=6%>判断题<input type="checkbox" name="typeRadio" value="judge" /></th>
             <th width=6%>填空题<input type="checkbox" name="typeRadio" value="fill" /></th>
             <th width=6%>程序题<input type="checkbox" name="typeRadio" value="program" /></th>
-            <th width=6%>总成绩<input type="checkbox" name="typeRadio" value="all" checked="checked"/></th>
+            <th width=6%>总成绩<input type="checkbox" name="typeRadio" value="all" /></th>
             <th width=7%>试卷</th>
-            <th width=6%>操作</th>
             <th width="5%">错题可见</th>
             <th width=4%>请选择</th>
         </tr>
@@ -93,16 +91,13 @@
                     </button>
                 </td>
                 <td></td>
-                <td></td>
                 <td>
                     <input type="checkbox" name="allCheck" id="allCheck">全选<br/>
                     <input type="checkbox" name="rejectCheck" id="rejectCheck">反选
                 </td>
             </form>
         </tr>
-        <form name="checkForm" id="checkSubmit" action="{:U('Info/DelAllUserScore')}" method="post">
             <input type="hidden" name="eid" value="{$eid}" id="examId"/>
-            <input type="hidden" name="type" value="all" id="delType">
             <foreach name='row' item='r' key='k'>
                 <tr>
                     <td>{$k+1}</td>
@@ -116,28 +111,17 @@
 
                     <if condition="$r['hasTakenIn'] eq 0">
                             <td><span class='label label-default'>未参加</span></td>
-                            <td>无</td>
                         <else/>
                             <if condition="$r['hasSubmit'] eq 1">
                                 <td><a class='label label-info'
                                        href="{:U('Teacher/Data/showPaper',array('users'=>$r['user_id'],'eid'=>$eid))}">已交卷>></a>
                                 </td>
-                                <td><a class='label label-danger'
-                                       href="#" data-skip="{:U('Teacher/Info/delscore',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}"
-                                       onclick="checkWhetherDel(this)">删除分数 X</a>
-                                </td>
                                 <else/>
                                     <if condition="$isEnd eq true">
                                         <td><span class='label label-warning'>未交卷</span></td>
-                                        <td><a class='label label-success'
-                                               href="{:U('Teacher/Info/submitpaper',array('users'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">提交试卷>></a>
-                                        </td>
                                         <else/>
                                         <td><a class='label label-danger'
                                                href="{:U('Teacher/Data/showPaper',array('users'=>$r['user_id'],'eid'=>$eid))}">正在考试>></a>
-                                        </td>
-                                        <td><a class='label label-warning'
-                                               href="{:U('Teacher/Info/hardSubmit',array('userId'=>$r['user_id'],'eid'=>$eid, 'sortdnum' => $dsortnum,'sortanum' => $asortnum))}">强制交卷>></a>
                                         </td>
                                     </if>
                             </if>
@@ -152,7 +136,6 @@
                     </td>
                 </tr>
             </foreach>
-        </form>
         </tbody>
     </table>
 
@@ -172,30 +155,16 @@
 </div>
 <script type="text/javascript">
     var scoreurl = "{:U('Teacher/Exam/userscore')}"; // use in js
-    function checkWhetherDel(the) {
-        var skipLink = $(the).data("skip");
-        var _typeAndName = getTypeAndNameSelect();
-        if (_typeAndName.length == 0) {
-            return;
-        }
-        var typeAndName = _typeAndName.split("|");
-        var typeStr = typeAndName[0];
-        var nameStr = typeAndName[1];
-        var c = confirm('确定要删除选定考生的#' + nameStr +'#嘛?');
-        if (c) {
-            window.location.href=skipLink + "?type=" + typeStr;
-        }
-    }
 
     function getSelectNameByType(type) {
         var name;
-        if (type == "choose") {
+        if (type === "choose") {
             name = "选择题分数"
-        } else if (type == "judge") {
+        } else if (type === "judge") {
             name = "判断题分数";
-        } else if (type == "fill") {
+        } else if (type === "fill") {
             name = "填空题分数";
-        } else if (type == "program") {
+        } else if (type === "program") {
             name = "程序题分数";
         } else {
             name = "总成绩";
@@ -212,13 +181,73 @@
             var name = getSelectNameByType(type);
             nameList.push(name);
         });
-        if (typeList.length == 0) {
+        if (typeList.length === 0) {
             alert("请选择需要删除的题目类型!");
             return "";
         }
         var typeStr = typeList.join(",");
         var nameStr = nameList.join(",");
         return typeStr + "|" + nameStr;
+    }
+
+    function getCheckedUserIdList() {
+        var userIdList =[];
+        $(".delCheck").each(function () {
+            if (this.checked) {
+                var uid = $(this).data('userid');
+                userIdList.push(uid);
+            }
+        });
+        console.log(userIdList.join(","));
+        return userIdList;
+    }
+
+    function oneClickCharge(ajaxUrl, actionName, userIdList, needType, needConfirm) {
+        if (userIdList.length === 0) {
+            alert("请选择需要" + actionName +"的学生");
+            return;
+        }
+
+        var typeStr = "", nameStr = "";
+        if (needType) {
+            var _typeAndName = getTypeAndNameSelect();
+            if (_typeAndName.length === 0) {
+                return;
+            }
+            var typeAndName = _typeAndName.split("|");
+            typeStr = typeAndName[0];
+            nameStr = typeAndName[1];
+        }
+
+        var confirmFlag = true;
+        if (needConfirm) {
+            confirmFlag = confirm('确定要' + actionName + '选定考生的#' + nameStr +'#嘛?');
+        }
+
+        if (!confirmFlag) {
+            return;
+        }
+
+        var eid = $("#examId").val();
+        $.ajax({
+            url : ajaxUrl,
+            type: "GET",
+            dataType: "json",
+            data: {"userIdList":userIdList.join(","), "eid":eid, "type" : typeStr},
+            success : function(returnData) {
+                returnData.code === 1001 ? location.reload(true) : alert(returnData.message);
+            },
+            error: function() {
+                alert("sorry,something error");
+            }
+        });
+    }
+
+    function checkWhetherDel(the) {
+        var userIdList = [];
+        userIdList.push($(the).data('userid'));
+        var deleteUserScoreUrl = "{:U('Teacher/BatchDeal/deleteUserScore')}";
+        oneClickCharge(deleteUserScoreUrl, "删除", userIdList, true, true);
     }
 
     $(function () {
@@ -242,78 +271,24 @@
             });
         });
 
-        $("#oneClickDel").click(function () {
-            var _typeAndName = getTypeAndNameSelect();
-            if (_typeAndName.length == 0) {
-                return;
-            }
-            var typeAndName = _typeAndName.split("|");
-            var typeStr = typeAndName[0];
-            var nameStr = typeAndName[1];
-            $("#delType").val(typeStr);
-            var c = confirm('确定要删除选定考生的#' + nameStr +'#嘛?');
-            if (c) {
-                $("#checkSubmit").submit();
-            }
+        $("#oneClickSubmit").click(function() {
+            var submitUserPaperUrl = "{:U('Teacher/BatchDeal/submitUserPaper')}";
+            oneClickCharge(submitUserPaperUrl, "提交", getCheckedUserIdList(), true, true);
         });
-        
+
+        $("#oneClickDel").click(function () {
+            var deleteUserScoreUrl = "{:U('Teacher/BatchDeal/deleteUserScore')}";
+            oneClickCharge(deleteUserScoreUrl, "删除", getCheckedUserIdList(), true, true);
+        });
+
         $("#oneClickDistribute").click(function () {
-            var userIdList =[];
-            var distributeUrl = "{:U('Teacher/Exam/distributePaper')}";
-            $(".delCheck").each(function () {
-                if (this.checked) {
-                   var uid = $(this).data('userid');
-                   userIdList.push(uid);
-                }
-            });
-            if (userIdList.length === 0) {
-                alert("请选择需要分发错题的学生");
-                return;
-            }
-            console.log(userIdList.join(","));
-            var eid = $("#examId").val();
-            $.ajax({
-                url : distributeUrl,
-                type: "GET",
-                dataType: "json",
-                data: {"userIdList":userIdList.join(","), "eid":eid},
-                success : function() {
-                    location.reload(true);
-                },
-                error: function() {
-                    alert("sorry,something error");
-                }
-            });
+            var distributeUrl = "{:U('Teacher/BatchDeal/distributePaper')}";
+            oneClickCharge(distributeUrl, "分发错题", getCheckedUserIdList(), false, false);
         });
 
         $("#oneClickRecover").click(function() {
-            var userIdList =[];
-            var recoverUrl = "{:U('Teacher/Exam/recoverPaper')}";
-            $(".delCheck").each(function () {
-                if (this.checked) {
-                    var uid = $(this).data('userid');
-                    userIdList.push(uid);
-                }
-            });
-            if (userIdList.length === 0) {
-                alert("请选择需要回收错题权限的学生");
-                return;
-            }
-            console.log(userIdList.join(","));
-            var eid = $("#examId").val();
-            $.ajax({
-                url : recoverUrl,
-                type: "GET",
-                dataType: "json",
-                data: {"userIdList":userIdList.join(","), "eid":eid},
-                success : function() {
-                    location.reload(true);
-                },
-                error: function() {
-                    alert("sorry,something error");
-                }
-            });
-
+            var recoverUrl = "{:U('Teacher/BatchDeal/recoverPaper')}";
+            oneClickCharge(recoverUrl, "回收错题权限", getCheckedUserIdList(), false, false);
         });
 
         var userScoreListUrl = "{:U('Teacher/Data/userScoreList')}";

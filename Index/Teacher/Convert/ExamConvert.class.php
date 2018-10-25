@@ -54,6 +54,13 @@ class ExamConvert
         $arr['start_time'] = "1970-01-01 09:00:00";
         $arr['end_time'] = "1970-01-02 12:00:00";
         $arr['creator'] = $_SESSION['user_id'];
+        array_merge($arr, self::generateDefaultScore());
+        return $arr;
+    }
+
+    public static function generateDefaultScore() {
+        $arr = array();
+
         $arr['choosescore'] = 1;
         $arr['judgescore'] = 1;
         $arr['fillscore'] = 1;

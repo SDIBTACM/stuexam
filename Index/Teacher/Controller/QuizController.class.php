@@ -11,6 +11,7 @@ namespace Teacher\Controller;
 
 use Basic\Log;
 use Home\Helper\PrivilegeHelper;
+use Teacher\Convert\ExamConvert;
 use Teacher\Model\ExamBaseModel;
 use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\QuestionBaseModel;
@@ -56,8 +57,10 @@ class QuizController extends AbsEventController {
             if (!PrivilegeHelper::isExamOwner($examInfo['creator'])) {
                 $this->echoError('You have no privilege!');
             }
-            $this->zadd('row', $examInfo);
+        } else {
+            $examInfo = ExamConvert::generateDefaultScore();
         }
+        $this->zadd('row', $examInfo);
     }
 
     protected function getList() {

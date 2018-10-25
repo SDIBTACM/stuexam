@@ -1,4 +1,5 @@
 <?php
+
 namespace Teacher\Controller;
 
 use Basic\Log;
@@ -10,140 +11,10 @@ use Teacher\Service\FillService;
 use Teacher\Service\JudgeService;
 use Teacher\Service\ProblemService;
 
-class InfoController extends TemplateController
-{
+class InfoController extends TemplateController {
 
     public function _initialize() {
         parent::_initialize();
-    }
-
-    public function delscore() {
-        if (!(isset($_GET['eid']) && isset($_GET['users']))) {
-            Log::info("user id: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
-            $this->echoError('Wrong Path');
-            return;
-        }
-
-        $eid = intval(trim($_GET['eid']));
-        $typeStr = I('type', 'all');
-        $sortanum = I('get.sortanum', 0, 'intval');
-        $sortdnum = I('get.sortdnum', 0, 'intval');
-        $users = trim($_GET['users']);
-        if (!$this->isOwner4ExamByExamId($eid)) {
-            Log::info("user id: {} exam id: {} stuid: {}, require: del one score, result: FAIL, reason: no privilege", $this->userInfo['user_id'], $users, $eid);
-            $this->echoError('You have no privilege to do it!');
-            return;
-        }
-
-        $where = array(
-            'exam_id' => $eid,
-            'user_id' => $users
-        );
-        $typeList = $this->getTypeList($typeStr);
-        foreach ($typeList as $type) {
-            $this->delScoreByType($type, $where);
-        }
-        Log::info("user id: {} exam id: {} stuid: {}, require: del one score, result: success", $this->userInfo['user_id'], $users, $eid);
-        $this->redirect("Exam/userscore", array(
-            'eid' => $eid,
-            'sortdnum' => $sortdnum,
-            'sortanum' => $sortanum
-        ));
-    }
-
-    public function submitAllPaper() {
-        $eid = I('get.eid', 0, 'intval');
-        if (empty($eid)) {
-            Log::info("user id: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
-            $this->alertError('Invaild Exam');
-            return;
-        }
-
-        $sortanum = I('get.sortanum', 0, 'intval');
-        $sortdnum = I('get.sortdnum', 0, 'intval');
-        if (!$this->isOwner4ExamByExamId($eid)) {
-            Log::info("user id: {} exam: {}, require: submit all paper, result: FAIL, reason: no privilege", $this->userInfo['user_id'], $eid);
-            $this->echoError('You have no privilege to do it!');
-        }
-
-        $allTakeIn = PrivilegeBaseModel::instance()->getTakeInExamUsersByExamId($eid);
-
-        $allHaveScore = M('ex_student')->distinct('user_id')->field('user_id,score')
-            ->where('exam_id=%d', $eid)->select();
-
-        $haveScoreUserIds = array();
-        $userIds2Submit = array();
-        $negScoreUserId = array();
-
-        foreach ($allHaveScore as $uid) {
-            if ($uid['score'] >= 0) {
-                $haveScoreUserIds[] = strtolower($uid['user_id']);
-            } else {
-                $negScoreUserId[strtolower($uid['user_id'])] = 1;
-            }
-        }
-
-        foreach ($allTakeIn as $userId) {
-            $_userId = strtolower($userId['user_id']);
-            if (!in_array($_userId, $haveScoreUserIds)) {
-                $userIds2Submit[] = $_userId;
-            }
-        }
-
-        if (!empty($userIds2Submit)) {
-            $userIds2Submit = array_unique($userIds2Submit);
-            $field = array('start_time', 'end_time');
-            $prirow = ExamBaseModel::instance()->getById($eid, $field);
-            $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
-            $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
-
-            foreach ($userIds2Submit as $_uid) {
-                $mark = isset($negScoreUserId[$_uid]) ? 1 : 0;
-                $this->rejudgePaper($_uid, $eid, $start_timeC, $end_timeC, $mark);
-                usleep(10000);
-            }
-        }
-        Log::info("user id: {} exam: {}, require: submit all paper, result: success", $this->userInfo['user_id'], $eid);
-
-        $this->redirect("Exam/userscore", array(
-            'eid' => $eid,
-            'sortdnum' => $sortdnum,
-            'sortanum' => $sortanum
-        ));
-    }
-
-    public function DelAllUserScore() {
-        $eid = I('post.eid', 0, 'intval');
-        $typeStr = I('post.type', 'all');
-        if (empty($eid)) {
-            Log::info("user id: {} url error, url data: {}, ", $this->userInfo['user_id'], $_SERVER['REQUEST_URI']);
-            $this->echoError("bad exam id");
-            return;
-        }
-        if (!$this->isOwner4ExamByExamId($eid)) {
-            Log::info("user id: {} exam id: {}, require: del all score, result: FAIL, reason: no privilege",
-                $this->userInfo['user_id'], $eid);
-            $this->echoError('You have no privilege to do it!');
-        }
-        unset($_POST['type']);
-        unset($_POST['eid']);
-
-        $userIds = array();
-        foreach ($_POST as $k => $v) {
-            $userIds[] = mb_substr($k, 5);
-        }
-        if (!empty($userIds)) {
-            $where = array(
-                'exam_id' => $eid,
-                'user_id' => array('in', $userIds)
-            );
-            $typeList = $this->getTypeList($typeStr);
-            foreach ($typeList as $type) {
-                $this->delScoreByType($type, $where);
-            }
-        }
-        Log::info("user id: {} exam id: {}, require: del all score, result: success", $this->userInfo['user_id'], $eid);
-        $this->redirect("Exam/userscore", array('eid' => $eid));
     }
 
     public function submitpaper() {
@@ -290,39 +161,6 @@ class InfoController extends TemplateController
         Log::info("user id: {} exam id: {} stuid:{}, require: rejudge one paper, result: success",
             $this->userInfo['user_id'], $eid, $userId);
         ProblemService::instance()->doFixStuAnswerProgramRank($eid, $userId, $start_timeC, $end_timeC);
-    }
-
-    private function getTypeList($typeStr) {
-        $typeList = explode(',', $typeStr);
-        if (in_array('all', $typeList)) {
-            $typeList = array('all');
-        }
-        return $typeList;
-    }
-
-    private function delScoreByType($type, $where) {
-        switch ($type) {
-            case "choose" : {
-                M('ex_student')->where($where)->save(array("choosesum" => -1, "score" => -1));
-                break;
-            }
-            case "judge" : {
-                M('ex_student')->where($where)->save(array("judgesum" => -1, "score" => -1));
-                break;
-            }
-            case "fill" : {
-                M('ex_student')->where($where)->save(array("fillsum" => -1, "score" => -1));
-                break;
-            }
-            case "program" : {
-                M('ex_student')->where($where)->save(array("programsum" => -1, "score" => -1));
-                break;
-            }
-            default : {
-                M('ex_student')->where($where)->delete();
-                break;
-            }
-        }
     }
 }
 
