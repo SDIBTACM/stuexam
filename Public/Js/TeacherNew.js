@@ -45,3 +45,13 @@ function deleteProblem2Exam(url, examId, problemId, type, that, isSelect) {
         }
     });
 }
+
+function isShowIpLimit() {
+    var selectValue = $("#isiplimit").val();
+    if (selectValue == 0) {
+        $("#iplist-input").hide();
+    } else {
+        $("#iplist-input").show();
+    }
+
+}
