@@ -182,7 +182,7 @@
             nameList.push(name);
         });
         if (typeList.length === 0) {
-            alert("请选择需要删除的题目类型!");
+            //alert("请选择需要删除的题目类型!");
             return "";
         }
         var typeStr = typeList.join(",");
@@ -212,6 +212,7 @@
         if (needType) {
             var _typeAndName = getTypeAndNameSelect();
             if (_typeAndName.length === 0) {
+                alert("请选择需要" + actionName + "的题目类型!");
                 return;
             }
             var typeAndName = _typeAndName.split("|");
