@@ -199,7 +199,7 @@ class QuestionController extends TemplateController {
     }
 
     private function checkLoginIp() {
-        if ($this->isTeacher() || $this->examBase['isiplimit'] > 0) {
+        if ($this->isTeacher() || $this->examBase['isiplimit'] <= 0) {
             return true;
         }
         $arr = getExamConfig($this->examId);
