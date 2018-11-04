@@ -110,8 +110,10 @@ class DataController extends TemplateController
         $this->isCanWatchInfo($this->eid);
         $student = I('get.student', '', 'htmlspecialchars');
         $sqladd = '';
+        $sqlArray = array();
         if (!empty($student)) {
             $sqladd = " AND `user_id` like '$student%'";
+            $sqlArray = array('user_id' => array('like', "$student%"));
         }
 
         $where = "rightstr='e$this->eid' $sqladd";
@@ -163,7 +165,9 @@ class DataController extends TemplateController
             $_resultMap = array(
                 'id' => $_choose['choose_id'],
                 'rightPerson' => $this->getEachQuestionRightPerson(
-                    $this->eid, $_choose['choose_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer']
+                    $this->eid, $_choose['choose_id'],
+                    ChooseBaseModel::CHOOSE_PROBLEM_TYPE, $_choose['answer'],
+                    $sqlArray
                 ),
                 'privateCode' => $_choose['private_code']
             );
@@ -175,7 +179,9 @@ class DataController extends TemplateController
             $_resultMap = array(
                 'id' => $_judge['judge_id'],
                 'rightPerson' => $this->getEachQuestionRightPerson(
-                    $this->eid, $_judge['judge_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer']
+                    $this->eid, $_judge['judge_id'],
+                    JudgeBaseModel::JUDGE_PROBLEM_TYPE, $_judge['answer'],
+                    $sqlArray
                 ),
                 'privateCode' => $_judge['private_code']
             );
@@ -203,21 +209,27 @@ class DataController extends TemplateController
         $this->auto_display();
     }
 
-    private function getEachQuestionRightPerson($examId, $questionId, $type, $rightAnswer) {
+    private function getEachQuestionRightPerson($examId, $questionId, $type, $rightAnswer, $sqlArray) {
         $where = array(
             'exam_id' => $examId,
             'question_id' => $questionId,
             'type' => $type,
             'answer' => $rightAnswer
         );
+        if (!empty($sqlArray)) {
+            $where = array_merge($where, $sqlArray);
+        }
         return StudentAnswerModel::instance()->countNumber($where, "distinct user_id");
     }
 
     private function getEachProgramAvgScore($programIds, $personCnt, $sqladd) {
 
         $examId = $this->eid;
-        $ans = array();
+        $examBase = ExamBaseModel::instance()->getById($examId);
+        $sTime = $examBase['start_time'];
+        $eTime = $examBase['end_time'];
 
+        $ans = array();
         foreach($programIds as $_programId) {
 
             $programId = $_programId['question_id'];
@@ -226,10 +238,6 @@ class DataController extends TemplateController
                 $ans[$programId] = 0;
                 continue;
             }
-
-            $examBase = ExamBaseModel::instance()->getById($examId);
-            $sTime = $examBase['start_time'];
-            $eTime = $examBase['end_time'];
 
             $programScore = $examBase['programscore'];
 

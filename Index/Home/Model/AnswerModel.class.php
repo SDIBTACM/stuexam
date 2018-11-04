@@ -178,7 +178,7 @@ class AnswerModel
 
         $otherIdStr = implode('\',\'', $otherIds);
         $questionIdStr = '\'' . $otherIdStr . '\'';
-        $data = SqlExecuteHelper::Home_GetProgramResultData($questionIdStr, $user_id, $start_timeC, $end_timeC);
+        $data = SqlExecuteHelper::Home_GetProgramResultPassRate($questionIdStr, $user_id, $start_timeC, $end_timeC);
 
         foreach ($data as $d) {
             if ($d['rate'] >= 0.98) {

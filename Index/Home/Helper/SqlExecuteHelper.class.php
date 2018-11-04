@@ -39,7 +39,7 @@ class SqlExecuteHelper {
         return M()->query($sql);
     }
 
-    public static function Home_GetProgramResultData($questionIdStr, $user_id, $start_timeC, $end_timeC) {
+    public static function Home_GetProgramResultPassRate($questionIdStr, $user_id, $start_timeC, $end_timeC) {
         $sql = "SELECT " . "problem_id, max(pass_rate) as rate from solution where problem_id in ($questionIdStr) and " .
             "user_id='$user_id' and in_date>'$start_timeC' and in_date<'$end_timeC' group by problem_id";
         return M()->query($sql);
@@ -79,8 +79,8 @@ class SqlExecuteHelper {
 
     public static function Teacher_GetEachProgramAvgScore($programScore, $personCnt, $programId, $sTime, $eTime, $examId, $sqladd) {
         $sql = "select (sum(rate) * $programScore / $personCnt) as r " .
-            "from ( select user_id, if(max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
-            "where problem_id=$programId and pass_rate > 0 and " .
+            "from ( select user_id, if(min(result)=4 or max(pass_rate)=0.99, 1, max(pass_rate)) as rate from solution " .
+            "where problem_id=$programId and (result = 4 or pass_rate > 0) and " .
             "in_date>='$sTime' and in_date<='$eTime' and user_id in (select user_id from ex_privilege where rightstr='e$examId') " .
             "$sqladd group by user_id" .
             ") t";
@@ -114,7 +114,7 @@ class SqlExecuteHelper {
         $sql = "SELECT `ex_choose`.`choose_id`,`question`,`ams`,`bms`,`cms`,`dms`,`answer`,`private_code`" .
             " FROM `ex_choose`,`exp_question`" .
             " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_choose`.`choose_id`=`exp_question`.`question_id`" .
-            " ORDER BY `choose_id`";
+            " ORDER BY `private_code`, `choose_id`";
         return M()->query($sql);
     }
 
@@ -129,7 +129,7 @@ class SqlExecuteHelper {
         $sql = "SELECT `ex_judge`.`judge_id`,`question`,`answer`,`private_code`" .
             " FROM `ex_judge`,`exp_question`" .
             " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_judge`.`judge_id`=`exp_question`.`question_id`" .
-            " ORDER BY `judge_id`";
+            " ORDER BY `private_code`, `judge_id`";
         return M()->query($sql);
     }
 
@@ -144,7 +144,7 @@ class SqlExecuteHelper {
         $sql = "SELECT `ex_fill`.`fill_id`,`question`,`answernum`,`kind`,`private_code`" .
             " FROM `ex_fill`,`exp_question`" .
             " WHERE `exam_id`='$eid' AND `type`='$type' AND `ex_fill`.`fill_id`=`exp_question`.`question_id`" .
-            " ORDER BY `fill_id`";
+            " ORDER BY `private_code`, `fill_id`";
         return M()->query($sql);
     }
 
