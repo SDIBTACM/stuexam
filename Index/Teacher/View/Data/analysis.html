@@ -92,8 +92,8 @@
     </table>
 
     <table class="table-bordered table table-bordered">
-        <tr class="info"><td colspan="6"><h3>选择题章节知识点分布</h3></td></tr>
-        <tr><td>序号</td><td>编号</td><td>章</td><td>节</td><td>知识点</td><td>正确率(正确人数/实考人数)</td></tr>
+        <tr class="info"><td colspan="7"><h3>选择题章节知识点分布</h3></td></tr>
+        <tr><td>序号</td><td>编号</td><td>章</td><td>节</td><td>知识点</td><td>正确人数/实考人数</td><td>正确率</td></tr>
         <foreach name="chooseResultMap" key="_index" item="resultMap">
             <if condition="isset($choosePointMap[$resultMap['id']])">
                 <foreach name="choosePointMap[$resultMap['id']]" item="point" key="index">
@@ -113,6 +113,16 @@
                             <td rowspan="{$choosePointMap[$resultMap['id']]|count}"
                                 style="vertical-align: middle">{$resultMap['rightPerson']} / {$row['realnum']}</td>
                         </if>
+                        <if condition="$index eq 0">
+                            <td rowspan="{$choosePointMap[$resultMap['id']]|count}"
+                                style="vertical-align: middle">
+                                <if condition="$row['realnum'] eq 0">
+                                    0.00%
+                                    <else/>
+                                    {$resultMap['rightPerson']*100/$row['realnum']|round=###,2}%
+                                </if>
+                            </td>
+                        </if>
                     </tr>
                 </foreach>
                 <else/>
@@ -123,6 +133,13 @@
                         <td>---</td>
                         <td>---</td>
                         <td>{$resultMap['rightPerson']} / {$row['realnum']}</td>
+                        <td>
+                            <if condition="$row['realnum'] eq 0">
+                                0.00%
+                                <else/>
+                                {$resultMap['rightPerson']*100/$row['realnum']|round=###,2}%
+                            </if>
+                        </td>
                     </tr>
             </if>
         </foreach>
