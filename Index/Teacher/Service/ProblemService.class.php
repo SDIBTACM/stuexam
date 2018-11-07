@@ -98,7 +98,7 @@ class ProblemService
         $res = $dao->field($field)->where($where)->find();
         // 如果沒有保存
         if (empty($res)) {
-            Log::warn("empty record need to add");
+            Log::info("empty record need to add");
             if ($judgeResult != 4) {
                 $where['answer'] = strval($passRate);
             } else {

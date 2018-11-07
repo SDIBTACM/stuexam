@@ -60,8 +60,10 @@ class BatchDealController extends TemplateController {
 
         $typeStr = I('type', 'all');
         $typeList = $this->getTypeList($typeStr);
-
+        Log::info('user: {}, request: submit paper', $this->userInfo['user_id']);
         foreach ($this->userIdList as $userId) {
+            Log::info('user: {}, student_id: {}, exam id: {}, type: {}, request: submit paper',
+                $this->userInfo['user_id'], $userId, $examInfo, $typeList);
             $this->doSubmitOnePerson($userId, $typeList, $examInfo, false);
         }
 

@@ -154,6 +154,7 @@ class ExamService {
         $convertResult = GenerateExamConvert::generateProblem();
 
         if (! $convertResult instanceof Result) {
+            Log::warn("user id: {}, require: generate exam result: FAIL, more: {}", $_SESSION['user_id'], 'type error');
             return Result::errorResult("生成试卷发生错误,类型不匹配");
         }
 
@@ -163,6 +164,7 @@ class ExamService {
 
         $problemMap = $convertResult->getData();
         if (empty($problemMap)) {
+            Log::warn("user id: {}, require: generate exam result: FAIL, more: {}", $_SESSION['user_id'], 'empty problem map');
             return Result::errorResult("生成的题目列表为空");
         }
 
@@ -183,6 +185,7 @@ class ExamService {
         }
 
         if ($examId <= 0) {
+            Log::error("user id: {}, require: generate exam result: FAIL, more: {}", $_SESSION['user_id'], 'ERROR');
             return Result::errorResult("考试生成失败, 请重试");
         }
 

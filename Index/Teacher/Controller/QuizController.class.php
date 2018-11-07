@@ -55,10 +55,14 @@ class QuizController extends AbsEventController {
                 $this->echoError('No Such Exam!');
             }
             if (!PrivilegeHelper::isExamOwner($examInfo['creator'])) {
+                Log::info("user id: {} {} exam id: {}, result: get detail, result: FAIL! reason: privilege",
+                    $this->userInfo['user_id'], __FUNCTION__, $examId);
                 $this->echoError('You have no privilege!');
             }
         } else {
             $examInfo = ExamConvert::generateDefaultScore();
+            Log::info("user id: {} {} exam id: {}, result: get detail, result: success",
+                $this->userInfo['user_id'], __FUNCTION__, $examId);
         }
         $this->zadd('row', $examInfo);
     }
