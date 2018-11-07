@@ -158,14 +158,18 @@ class ConfigurationController extends TemplateController {
         $result = trim(shell_exec($shellPath . " " . $codePath));
 
         if ($result == 500) {
+            Log::warn('user id: {}, request: do generator, result: FAIL, more: {}', $this->userInfo['user_id'], 'error');
             $this->ajaxCodeReturn(4004, "参数错误请联系管理员");
         } else if ($result == 404) {
+            Log::warn('user id: {}, request: do generator, result: FAIL, more: {}', $this->userInfo['user_id'], 'file not exist');
             $this->ajaxCodeReturn(4004, "生成算法文件不存在, 请先上传");
         } else if ($result != 0) {
+            Log::warn('user id: {}, request: do generator, result: FAIL, more: {}', $this->userInfo['user_id'], 'compile error');
             $this->ajaxCodeReturn(4004, "生成算法编译时发生错误");
         } else {
             $generateResult = ExamService::instance()->autoGenerateExam();
             if (!$generateResult->getStatus()) {
+                Log::warn('user id: {}, request: upload generator, result: FAIL, more: {}', $this->userInfo['user_id'], $generateResult->getMessage());
                 $this->ajaxCodeReturn(4004, $generateResult->getMessage());
             } else {
                 $data = $generateResult->getData();
@@ -175,8 +179,10 @@ class ConfigurationController extends TemplateController {
                 shell_exec("rm -f " . $codePath . "/generateCode*");
 
                 if ($data['failCount'] > 0) {
+                    Log::warn('user id: {}, request: do generator, result: FAIL, more: {}', $this->userInfo['user_id'], $generateResult->getMessage());
                     $this->ajaxCodeReturn(2002, "部分题目添加失败", $data);
                 } else {
+                    Log::info('user id: {}, request: do generator, result: success', $this->userInfo['user_id']);
                     $this->ajaxCodeReturn(1001, "题目全部添加成功", $data);
                 }
             }
@@ -205,8 +211,10 @@ class ConfigurationController extends TemplateController {
         $upload = new Upload($config);
         $res = $upload->upload();
         if (!$res) {
+            Log::warn('user id: {}, request: upload generator, result: FAIL, more: {}', $this->userInfo['user_id'], $upload->getError());
             $this->ajaxCodeReturn(4004, $upload->getError());
         } else {
+            Log::info('user id: {}, request: upload generator, result: success');
             $this->ajaxCodeReturn(1001, '上传成功');
         }
     }
