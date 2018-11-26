@@ -44,10 +44,15 @@
                             <div class="col-md-2">
                                 <select id="language{$pans['program_id']}" name="language{$pans['program_id']}"
                                         class='form-control'>
-                                    <option value="0">C</option>
-                                    <option value="1" selected>C++</option>
-                                    <option value="2">Pascal</option>
-                                    <option value="3">Java</option>
+                                    <if condition="empty($supportLanguage[$pans['program_id']]) or in_array(0, $supportLanguage[$pans['program_id']])">
+                                        <option value="0" selected>C</option>
+                                    </if>
+                                    <if condition="empty($supportLanguage[$pans['program_id']]) or in_array(1, $supportLanguage[$pans['program_id']])">
+                                        <option value="1" selected>C++</option>
+                                    </if>
+                                    <if condition="empty($supportLanguage[$pans['program_id']]) or in_array(3, $supportLanguage[$pans['program_id']])">
+                                        <option value="3" selected>Java</option>
+                                    </if>
                                 </select>
                             </div>
                             <div class="col-md-2">

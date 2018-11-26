@@ -76,4 +76,13 @@ class QuestionBaseModel extends GeneralModel
         );
         return $this->getDao()->where($where)->delete();
     }
+
+    public function getQuestionsWithExtra4ExamByType($eid, $type) {
+        $where = array(
+            'exam_id' => $eid,
+            'type' => $type
+        );
+        $field = array('question_id', 'extra');
+        return $this->queryAll($where, $field, array('exp_qid asc'));
+    }
 }

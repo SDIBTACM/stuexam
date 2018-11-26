@@ -46,15 +46,22 @@ class ProgramController extends QuestionController
         $this->start2Exam();
 
         $programAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
-
+        $supportLanguage = array();
         foreach ($programAns as &$pans) {
             $pans['pFillNum'] = $this->getProgramFillNum($pans['program_id']);
+            if (!empty($pans['extra'])) {
+                $extra = json_decode($pans['extra'], true);
+                if (isset($extra['language'])) {
+                    $supportLanguage[$pans['program_id']] = explode(",", $extra['language']);
+                }
+            }
         }
         unset($pans);
 
         $this->zadd('programans', $programAns);
         $this->zadd('questionName', ProblemService::PROGRAM_PROBLEM_NAME);
         $this->zadd('problemType', ProblemService::PROGRAM_PROBLEM_TYPE);
+        $this->zadd('supportLanguage', $supportLanguage);
 
         $this->auto_display('Exam:program', 'exlayout');
     }

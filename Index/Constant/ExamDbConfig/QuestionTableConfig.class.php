@@ -17,6 +17,7 @@ class QuestionTableConfig
         'exp_qid' => 'int',
         'exam_id' => 'int',
         'question_id' => 'int',
-        'type' => 'tinyint'
+        'type' => 'tinyint',
+        'extra' => 'varchar'
     );
 }

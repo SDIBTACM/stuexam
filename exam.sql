@@ -186,6 +186,7 @@ CREATE TABLE `exp_question` (
   `exam_id` int(11) NOT NULL COMMENT '考试编号',
   `question_id` int(11) NOT NULL COMMENT '题目id',
   `type` tinyint(4) NOT NULL COMMENT '题目类型:1:选择题;2判断题;3:填空题;4:编程题',
+  `extra` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`exp_qid`),
   UNIQUE KEY `examId_qId_type` (`exam_id`,`question_id`,`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='考题和考试关联表';

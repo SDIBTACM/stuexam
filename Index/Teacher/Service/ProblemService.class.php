@@ -32,7 +32,7 @@ class ProblemService
         return self::$_instance;
     }
 
-    public function addProgram2Exam($eid, $problemIds) {
+    public function addProgram2Exam($eid, $problemIds, $supportLanguage = array()) {
         if ($eid <= 0) {
             return false;
         }
@@ -47,6 +47,13 @@ class ProblemService
                 'type' => ProblemService::PROGRAM_PROBLEM_TYPE,
                 'question_id' => $programId
             );
+            if (isset($supportLanguage[$programId])) {
+                $json = json_encode(array('language' => $supportLanguage[$programId]));
+                $data['extra'] = $json;
+            } else {
+                $data['extra'] = '{}';
+            }
+
             $dataList[] = $data;
             M('problem')->where('problem_id=%d', $programId)
                 ->data(array("defunct" => "Y"))->save();

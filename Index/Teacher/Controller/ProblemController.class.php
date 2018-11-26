@@ -67,12 +67,17 @@ class ProblemController extends QuestionBaseController {
                 $ansNumber = I('post.numanswer', 0, 'intval');
 
                 $problemIds = array();
+                $supportLanguage = array();
                 for ($i = 1; $i <= $ansNumber; $i++) {
                     $programId = test_input($_POST["answer$i"]);
                     if (!is_numeric($programId)) {
                         continue;
                     } else {
                         $problemIds[] = intval($programId);
+                    }
+                    $supportLanguageKey = "language$i";
+                    if (isset($_POST[$supportLanguageKey])) {
+                        $supportLanguage[$programId] = implode(",", $_POST[$supportLanguageKey]);
                     }
                 }
                 if ($ansNumber == 0) {
@@ -95,7 +100,7 @@ class ProblemController extends QuestionBaseController {
                 if ($validProblemCnt != $ansNumber) {
                     $this->echoError('其中一些题目您没有权限添加哦~');
                 }
-                $flag = ProblemService::instance()->addProgram2Exam($eid, $problemIds);
+                $flag = ProblemService::instance()->addProgram2Exam($eid, $problemIds, $supportLanguage);
                 if ($flag === true) {
                     Log::info("user: {} exam id: {}, require: add program problem to eaxm, result: success", $this->userInfo['user_id'], $eid);
                     $this->success('程序题添加成功', U('Teacher/Problem/addProgramProblem', array('eid' => $eid, 'type' => 4)), 2);
@@ -105,13 +110,25 @@ class ProblemController extends QuestionBaseController {
                 }
             }
         } else {
-            $ansRow = QuestionBaseModel::instance()->getQuestionIds4ExamByType($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
+            $ansRow = QuestionBaseModel::instance()->getQuestionsWithExtra4ExamByType($this->eid, ProblemService::PROGRAM_PROBLEM_TYPE);
+
+            $supportLanguage = array();
+            foreach ($ansRow as $_ans) {
+                if (!empty($_ans['extra'])) {
+                    $extra = json_decode($_ans['extra'], true);
+                    if (isset($extra['language'])) {
+                        $supportLanguage[$_ans['question_id']] = explode(",", $extra['language']);
+                    }
+                }
+            }
+
             $answerNumC = count($ansRow);
             $key = set_post_key();
             $widgets = array(
                 'mykey' => $key,
                 'ansrow' => $ansRow,
-                'answernumC' => $answerNumC
+                'answernumC' => $answerNumC,
+                'supportLanguage' => $supportLanguage
             );
             $this->ZaddWidgets($widgets);
             $this->auto_display('program');

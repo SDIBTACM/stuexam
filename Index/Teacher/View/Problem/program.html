@@ -19,9 +19,34 @@
 		<div class="col-md-8" id="Content">
 		<if condition="isset($answernumC) and $answernumC gt 0">
 			<foreach name='ansrow' item='ar' key='k'>
-				<div class="col-md-4" id="divans{$k+1}">
-				<input type="text" class="form-control" 
-				name="answer{$k+1}" id="answer{$k+1}" value="{$ar['question_id']}">
+				<div class="col-md-5" id="divans{$k+1}">
+					<input type="text" class="form-control" name="answer{$k+1}" id="answer{$k+1}" value="{$ar['question_id']}">
+				</div>
+				<div class="col-md-5 form-group" id="div_language{$k+1}">
+					<label class="checkbox-inline">
+						<input type="checkbox" name="language{$k+1}[]" value="0"
+						<php>
+							if(empty($supportLanguage[$ar['question_id']]) || in_array(0, $supportLanguage[$ar['question_id']])) {
+								echo "checked";
+							}
+						</php>>C
+					</label>
+					<label class="checkbox-inline">
+						<input type="checkbox" name="language{$k+1}[]" value="1"
+						<php>
+							if(empty($supportLanguage[$ar['question_id']]) || in_array(1, $supportLanguage[$ar['question_id']])) {
+								echo "checked";
+							}
+						</php> >C++
+					</label>
+					<label class="checkbox-inline">
+						<input type="checkbox" name="language{$k+1}[]" value="3"
+						<php>
+							if(empty($supportLanguage[$ar['question_id']]) || in_array(3, $supportLanguage[$ar['question_id']])) {
+								echo "checked";
+							}
+						</php> >JAVA
+					</label>
 				</div>
 			</foreach>
 		</if>
@@ -44,10 +69,10 @@
 $(function(){
 	$("#exam_program").addClass('active');
 	$(".add-input").click(function() {
-		addinput();
+        addProgramInput();
 	});
     $(".del-input").click(function() {
-        delinput();
+        removeProgramInput();
     });
 });
 </script>
