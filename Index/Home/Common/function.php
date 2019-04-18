@@ -44,10 +44,23 @@ function compareIpWithSubnetMask($src, $beCompare, $mask = 0) {
     } else if (filter_var($src, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) &&
         filter_var($beCompare, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) && $mask <= 128) { // ipv6
 
-        $srcBin = sprintf("%0128s",base_convert(bin2hex(inet_pton($src)), 16, 2));
-        $beCompareBin = sprintf("%0128s",base_convert(bin2hex(inet_pton($beCompare)), 16, 2));
+        $bytesAddr = unpack('n*', @inet_pton($src));
+        $bytesTest = unpack('n*', @inet_pton($beCompare));
 
-        return (strncmp($srcBin, $beCompareBin, $mask) == 0);
+        if (!$bytesAddr || !$bytesTest) {
+            return false;
+        }
+
+        for ($i = 1, $ceil = ceil($mask / 16); $i <= $ceil; ++$i) {
+            $left = $mask - 16 * ($i - 1);
+            $left = ($left <= 16) ? $left : 16;
+            $mask2 = ~(0xffff >> $left) & 0xffff;
+            if (($bytesAddr[$i] & $mask2) != ($bytesTest[$i] & $mask2)) {
+                return false;
+            }
+        }
+
+        return true;
 
     } else { // ?
         return false;
