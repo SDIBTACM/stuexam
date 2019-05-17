@@ -75,6 +75,7 @@
     {$mypage|showpagelast=###,U("Teacher/Judge/toExam",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
 </div>
 <script type="text/javascript">
+    showAddAllOrDeleteAll();
     $(function () {
         $("#exam_judge").addClass('active');
         $('[data-toggle="popover"]').popover();

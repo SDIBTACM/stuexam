@@ -84,6 +84,7 @@
     {$mypage|showpagelast=###,U("Teacher/Fill/toExam",array('eid'=>$eid,'type'=>$type)),"$extraQuery"}
 </div>
 <script type="text/javascript">
+    showAddAllOrDeleteAll();
     $(function () {
         $("#exam_fill").addClass('active');
         $('[data-toggle="popover"]').popover();
