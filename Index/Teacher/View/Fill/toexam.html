@@ -21,7 +21,14 @@
             <th>创建者</th>
             <th>所属题库</th>
             <th>题型</th>
-            <th>操作</th>
+            <th>
+                <a href="javascript:void(0);" onclick="$('.addtoexam').click();" id="addAll" style="display: none">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+                <a href='javascript:void(0);' onclick="$('.deltoexam').click();" id="delAll" style="display: none" >
+                    <span class='glyphicon glyphicon-remove' style='color: darkred;' ></span>
+                </a>
+            </th>
         </thread>
         <tbody>
         <foreach name='row' item='r' key='k'>

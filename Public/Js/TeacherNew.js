@@ -11,6 +11,7 @@ function addProblem2Exam(url, examId, problemId, type, that) {
             var str = '<a href="javascript:void(0);" class="deltoexam" data-pid="' + problemId +
                 '" data-type="' + type + '"> <span class="glyphicon glyphicon-remove" style="color: darkred"></span> </a>';
             $(that).parent().html(str);
+            showAddAllOrDeleteAll()
         },
         error: function () {
             alert("添加题目失败, 请刷新重试");
@@ -35,6 +36,7 @@ function deleteProblem2Exam(url, examId, problemId, type, that, isSelect) {
                     var str = '<a href="javascript:void(0);" class="addtoexam" data-pid="' + problemId +
                         '" data-type="' + type + '"> <span class="glyphicon glyphicon-plus"></span> </a>';
                     $(that).parent().html(str);
+                    showAddAllOrDeleteAll();
                 }
             } else {
                 alert(t);
@@ -88,4 +90,14 @@ function removeProgramInput() {
     var e = numAnswer.val();
     e > 0 ? ($("#divans" + e).remove(), $("#div_language"+ e).remove(), e--, numAnswer.val(e)) :
         alert("Nothing to be deleted")
+}
+
+function showAddAllOrDeleteAll() {
+    if ($(".addtoexam").length === 0) {
+        $("#addAll").css("display", "none");
+        $("#delAll").css("display", "block");
+    } else {
+        $("#delAll").css("display", "none");
+        $("#addAll").css("display", "block");
+    }
 }
