@@ -10,5 +10,18 @@
 	define('APP_DEBUG', true);
 	define('IS_DEBUG', false); // log 模块 debug 控制
 
+    $gitHead = file_get_contents('.git/HEAD', false, NULL, 5);
+    if ($gitHead != '') {
+        $gitHeadHashFile = '.git/' . trim($gitHead);
+        $gitHash = trim(file_get_contents($gitHeadHashFile));
+    }
+    if ($gitHash == '') {
+        $gitHash = md5(time());
+    }
+
+    define("STATIC_FILE_VERSION", $gitHash);
+    define("STATIC_FILE_VERSION_SHORT", substr($gitHash, 0, 6));
+    define("SFV", STATIC_FILE_VERSION_SHORT);
+
 	require './ThinkPHP/ThinkPHP.php';
 ?>

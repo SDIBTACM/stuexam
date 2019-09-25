@@ -26,6 +26,7 @@ class TemplateController extends Controller
         $this->controller = strtolower(CONTROLLER_NAME);
         $this->action = strtolower(ACTION_NAME);
 
+        $this->assign('SFV', SFV);
         $this->initSqlInjectionFilter();
         $this->initLoginUserInfo();
     }

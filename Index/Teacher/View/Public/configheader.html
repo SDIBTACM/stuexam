@@ -7,12 +7,12 @@
     <meta name="description" content="程序设计考试 山东工商学院">
     <meta name="keywords" content="Exam,SDIBT,山东工商学院,程序设计考试">
     <!-- yours css -->
-    <css file="__PUBLIC__/Css/examsys.min.css"/>
+    <css file="__PUBLIC__/Css/examsys.min.css?v={$SFV}"/>
     <!-- Bootstrap -->
-    <css file="__PUBLIC__/Css/bootstrap.min.css"/>
+    <css file="__PUBLIC__/Css/bootstrap.min.css?v={$SFV}"/>
     <!--[if lt IE 9]>
-    <script src="__PUBLIC__/Js/html5shiv.min.js"></script>
-    <script src="__PUBLIC__/Js/respond.min.js"></script>
+    <script src="__PUBLIC__/Js/html5shiv.min.js?v={$SFV}"></script>
+    <script src="__PUBLIC__/Js/respond.min.js?v={$SFV}"></script>
     <![endif]-->
 </head>
 <body>
@@ -48,9 +48,9 @@
 </div>
 <!-- navbar end -->
 
-<js file="__PUBLIC__/Js/jquery-1.11.2.min.js"/>
-<js file="__PUBLIC__/Js/Teacher.min.js"/>
-<js file="__PUBLIC__/Js/configuration.js"/>
+<js file="__PUBLIC__/Js/jquery-1.11.2.min.js?v={$SFV}"/>
+<js file="__PUBLIC__/Js/Teacher.min.js?v={$SFV}"/>
+<js file="__PUBLIC__/Js/configuration.js?v={$SFV}"/>
 <script>
     var getParentNodeLink = "{:U('Teacher/Configuration/getParentPointByChapterId')}";
     var getChildrenNodeLink = "{:U('Teacher/Configuration/getChildrenPointByParentId')}";
