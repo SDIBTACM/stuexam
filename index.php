@@ -10,9 +10,9 @@
 	define('APP_DEBUG', true);
 	define('IS_DEBUG', false); // log 模块 debug 控制
 
-    $gitHead = file_get_contents('.git/HEAD', false, NULL, 5);
+    $gitHead = trim(file_get_contents('.git/HEAD', false, NULL, 5));
     if ($gitHead != '') {
-        $gitHeadHashFile = '.git/' . trim($gitHead);
+        $gitHeadHashFile = '.git/' . $gitHead;
         $gitHash = trim(file_get_contents($gitHeadHashFile));
     }
     if ($gitHash == '') {
