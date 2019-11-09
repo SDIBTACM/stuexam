@@ -101,19 +101,25 @@ class ChooseService
     }
 
     public function doRejudgeChooseByExamIdAndUserId($eid, $userId, $chooseScore) {
+        $userScoreDetail = $this->getUserChooseScoreDetailInExam($eid,$userId, $chooseScore);
         $chooseSum = 0;
-        $choosearr = ExamService::instance()->getUserAnswer($eid, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        $row = SqlExecuteHelper::Teacher_GetChooseAnswer4Exam($eid);
-        if ($row) {
-            foreach ($row as $key => $value) {
-                if (isset($choosearr[$value['choose_id']])) {
-                    $myanswer = $choosearr[$value['choose_id']];
-                    if ($myanswer == $value['answer'])
-                        $chooseSum += $chooseScore;
-                }
-            }
+        foreach ($userScoreDetail as $value) {
+            $chooseSum += $value;
         }
         return $chooseSum;
-        //choose over
+    }
+
+    public function getUserChooseScoreDetailInExam($eid, $userId, $chooseScore) {
+        $chooseAnswerForUser = ExamService::instance()->getUserAnswer($eid, $userId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $chooseAnswerForExam = SqlExecuteHelper::Teacher_GetChooseAnswer4Exam($eid);
+        $result = array();
+        if ($chooseAnswerForExam) {
+            foreach ($chooseAnswerForExam as $key => $value) {
+                $chooseId = $value['choose_id'];
+                $result[$chooseId] = (isset($chooseAnswerForUser[$chooseId])
+                    && $chooseAnswerForUser[$chooseId] == $value['answer']) ? $chooseScore : 0;
+            }
+        }
+        return $result;
     }
 }

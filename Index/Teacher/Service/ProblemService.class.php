@@ -155,10 +155,25 @@ class ProblemService
     }
 
     public function doRejudgeProgramByExamIdAndUserId($eid, $userId, $programScore, $start_timeC, $end_timeC) {
-        $row_cnt = AnswerModel::instance()->getRightProgramCount($userId, $eid, $start_timeC, $end_timeC);
-        $programsum = formatToFloatScore($row_cnt * $programScore);
-        //$program over
-        return $programsum;
+        $userScoreDetail = $this->getUserProgramScoreDetailInExam($eid, $userId, $programScore, $start_timeC, $end_timeC);
+        $programSum = 0;
+        foreach ($userScoreDetail as $value) {
+            $programSum += $value;
+        }
+        return $programSum;
+    }
+
+    public function getUserProgramScoreDetailInExam($eid, $userId, $programScore, $start_timeC, $end_timeC) {
+        $result = array();
+        $programStatus = AnswerModel::instance()->getExamProgramStatus($userId, $eid, $start_timeC, $end_timeC);
+        if (empty($programStatus)) {
+            return $result;
+        }
+
+        foreach ($programStatus as $key => $value) {
+            $result[$key] = formatToFloatScore($value * $programScore);
+        }
+        return $result;
     }
 
     public function doFixStuAnswerProgramRank($eid, $userId, $startTime, $endTime) {

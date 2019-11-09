@@ -100,17 +100,24 @@ class JudgeService
 
     public function doRejudgeJudgeByExamIdAndUserId($eid, $userId, $judgeScore) {
         $judgeSum = 0;
-        $judgearr = ExamService::instance()->getUserAnswer($eid, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);;
-        $row = SqlExecuteHelper::Teacher_GetJudgeAnswer4Exam($eid);
-        if ($row) {
-            foreach ($row as $key => $value) {
-                if (isset($judgearr[$value['judge_id']])) {
-                    $myanswer = $judgearr[$value['judge_id']];
-                    if ($myanswer == $value['answer'])
-                        $judgeSum += $judgeScore;
-                }
-            }
+        $userScoreDetail = $this->getUserJudgeScoreDetailInExam($eid, $userId, $judgeScore);
+        foreach ($userScoreDetail as $value) {
+            $judgeSum += $value;
         }
         return $judgeSum;
+    }
+
+    public function getUserJudgeScoreDetailInExam($eid, $userId, $judgeScore) {
+        $judgeAnswerForUser = ExamService::instance()->getUserAnswer($eid, $userId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $judgeAnswerForExam = SqlExecuteHelper::Teacher_GetJudgeAnswer4Exam($eid);
+        $result = array();
+        if ($judgeAnswerForExam) {
+            foreach ($judgeAnswerForExam as $key => $value) {
+                $judgeId = $value['judge_id'];
+                $result[$judgeId] = (isset($judgeAnswerForUser[$judgeId])
+                    && $judgeAnswerForUser[$judgeId] == $value['answer']) ? $judgeScore : 0;
+            }
+        }
+        return $result;
     }
 }

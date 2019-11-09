@@ -120,32 +120,43 @@ class FillService {
 
     public function doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore) {
         $fillSum = 0;
-        $fillarr = ExamService::instance()->getUserAnswer($eid, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
-        $row = SqlExecuteHelper::Teacher_GetFillAnswer4Exam($eid);
-        if (empty($row)) {
-            return 0;
+        $userScoreDetail = $this->getUserFillScoreDetailInExam($eid, $userId, $allscore);
+        foreach ($userScoreDetail as $value) {
+            $fillSum += $value;
         }
+        return $fillSum;
+    }
 
-        foreach ($row as $key => $value) {
-            if (isset($fillarr[$value['fill_id']][$value['answer_id']])
-                && (!empty($fillarr[$value['fill_id']][$value['answer_id']])
-                    || $fillarr[$value['fill_id']][$value['answer_id']] == "0")
-            ) {
+    public function getUserFillScoreDetailInExam($eid, $userId, $allScore) {
+        $result = array();
+        $fillAnswerForUser = ExamService::instance()->getUserAnswer($eid, $userId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $fillAnswerForExam = SqlExecuteHelper::Teacher_GetFillAnswer4Exam($eid);
 
-                $myanswer = trim($fillarr[$value['fill_id']][$value['answer_id']]);
-                $rightans = trim($value['answer']);
-                if ($myanswer == $rightans && strlen($myanswer) == strlen($rightans)) {
+        if (empty($fillAnswerForExam)) {
+            return $result;
+        }
+        foreach ($fillAnswerForExam as $key => $value) {
+            $fillId = $value['fill_id'];
+            $answerId = $value['answer_id'];
+            if (!isset($result[$fillId])) {
+                $result[$fillId] = 0;
+            }
+
+            if (isset($fillAnswerForUser[$fillId][$answerId])
+                && (!empty($fillAnswerForUser[$fillId][$answerId]) || $fillAnswerForUser[$fillId][$answerId] == "0")) {
+                $userAnswer = trim($fillAnswerForUser[$fillId][$answerId]);
+                $rightAnswer = trim($value['answer']);
+                if ($userAnswer == $rightAnswer && strlen($userAnswer) == strlen($rightAnswer)) {
                     if ($value['kind'] == 1) {
-                        $fillSum += $allscore['fillscore'];
+                        $result[$fillId] += $allScore['fillscore'];
                     } else if ($value['kind'] == 2) {
-                        $fillSum = $fillSum + formatToFloatScore($allscore['prgans'] / $value['answernum']);
+                        $result[$fillId] += formatToFloatScore($allScore['prgans'] / $value['answernum']);
                     } else if ($value['kind'] == 3) {
-                        $fillSum = $fillSum + formatToFloatScore($allscore['prgfill'] / $value['answernum']);
+                        $result[$fillId] += formatToFloatScore($allScore['prgfill'] / $value['answernum']);
                     }
                 }
             }
         }
-        //fillover
-        return $fillSum;
+        return $result;
     }
 }
