@@ -121,7 +121,8 @@ class SqlExecuteHelper {
     public static function Teacher_GetChooseAnswer4Exam($eid) {
         $sql = "SELECT `choose_id`,`answer` " .
             "FROM `ex_choose` WHERE `choose_id` IN " .
-            "(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1')";
+            "(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='1') " .
+            "ORDER BY `private_code`, `choose_id`";
         return M()->query($sql);
     }
 
@@ -136,7 +137,8 @@ class SqlExecuteHelper {
     public static function Teacher_GetJudgeAnswer4Exam($eid) {
         $sql = "SELECT `judge_id`,`answer` " .
             "FROM `ex_judge` WHERE `judge_id` IN " .
-            "(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='2')";
+            "(SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='2') " .
+            "ORDER BY `private_code`, `judge_id`";;
         return M()->query($sql);
     }
 
@@ -152,7 +154,8 @@ class SqlExecuteHelper {
         $sql = "SELECT `fill_answer`.`fill_id`,`answer_id`,`answer`,`answernum`,`kind` " .
             "FROM `fill_answer`,`ex_fill` " .
             "WHERE `fill_answer`.`fill_id`=`ex_fill`.`fill_id` AND `fill_answer`.`fill_id` IN " .
-            "( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')";
+            "( SELECT `question_id` FROM `exp_question` WHERE `exam_id`='$eid' AND `type`='3')" .
+            " ORDER BY `private_code`, `fill_id`";;
         return M()->query($sql);
     }
 
