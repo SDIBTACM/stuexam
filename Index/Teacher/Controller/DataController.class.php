@@ -323,6 +323,7 @@ class DataController extends TemplateController
             $end_timeC = strftime("%Y-%m-%d %X", strtotime($examInfo['end_time']));
 
             $allUser = SqlExecuteHelper::Teacher_GetUserScoreList4Exam($this->eid, $sqladd);
+            $averageScore = array();
 
             $idInitial = false;
             foreach ($allUser as $user) {
@@ -344,13 +345,31 @@ class DataController extends TemplateController
                     $this->echoError('invalid problem type');
                     return;
                 }
+
+                foreach ($userScoreDetail as $pid => $score) {
+                    if (isset($averageScore[$pid])) {
+                        $averageScore[$pid] = $averageScore[$pid] + $score;
+                    } else {
+                        $averageScore[$pid] = $score;
+                    }
+                }
+
                 $result[$userId]['detail'] = $userScoreDetail;
+                $result[$userId]['nick'] = $user['nick'];
+
                 if ($idInitial == false) {
                     $problemIdList = array_keys($userScoreDetail);
                     $idInitial = true;
                 }
-                $result[$userId]['nick'] = $user['nick'];
             }
+
+            $totalUserCount = count($allUser);
+            foreach ($averageScore as $pid => $score) {
+                $averageScore[$pid] = $totalUserCount == 0 ? 0 : floatval(sprintf("%.2f", $score / $totalUserCount));
+            }
+            $result['---AVG---']['detail'] = $averageScore;
+            $result['---AVG---']['nick'] = "平均分";
+
         } while(false);
         $this->zadd('xsid', $searchUserId);
         $this->zadd('problemType', $problemType);
