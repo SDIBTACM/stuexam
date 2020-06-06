@@ -1,0 +1,61 @@
+<div class="container exam_content">
+    <h2>考试分析</h2>
+    <include file='Public:sideheader'/>
+
+    <form class='form-inline'>
+        <input type="hidden" name="eid" value="{$eid}">
+        <div class="form-group">
+            <input type="text" class="form-control input-lg search-input" name='xsid' value="{$xsid}"
+                   placeholder="查询专业或学生关键词如jk">
+        </div>
+        <div class="form-group">
+            <select class='form-control input-lg' name="problemType">
+                <option value='1'
+                <?php echo ($problemType == 1) ? 'selected' : '';?> >选择题</option>
+                <option value='2'
+                <?php echo ($problemType == 2) ? 'selected' : '';?> >判断题</option>
+                <option value='3'
+                <?php echo ($problemType == 3) ? 'selected' : '';?> >填空题</option>
+                <option value='4'
+                <?php echo ($problemType == 4) ? 'selected' : '';?> >编程题</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-default btn-lg">Search</button>
+    </form>
+    <table class="table table-hover table-bordered table-condensed">
+        <thead>
+        <tr>
+            <th>账号</th>
+            <th>姓名</th>
+            <foreach name='problemIdList' item='problemId' key='k'>
+                <if condition="$problemType eq 1">
+                    <th><a href="{:U('Teacher/Choose/index', array('id' => $problemId))}" target="_blank">{$k+1}</a></th>
+                    <elseif condition="$problemType eq 2" />
+                    <th><a href="{:U('Teacher/Judge/index', array('id' => $problemId))}" target="_blank">{$k+1}</a></th>
+                    <elseif condition="$problemType eq 3"/>
+                    <th><a href="{:U('Teacher/Fill/index', array('id' => $problemId))}" target="_blank">{$k+1}</a></th>
+                    <else />
+                    <th>{$problemId}</th>
+                </if>
+            </foreach>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name='scoreDetail' item='detail' key='k'>
+            <tr>
+                <td>{$k}</td>
+                <td>{$detail['nick']}</td>
+                <foreach name="detail['detail']" item='eachScore' key='k'>
+                    <td>{$eachScore}</td>
+                </foreach>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#exam_analysis").addClass('active');
+    });
+</script>

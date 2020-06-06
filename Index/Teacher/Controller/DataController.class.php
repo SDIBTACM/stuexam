@@ -18,7 +18,10 @@ use Teacher\Model\PrivilegeBaseModel;
 use Teacher\Model\QuestionBaseModel;
 use Teacher\Model\StudentAnswerModel;
 use Teacher\Model\StudentBaseModel;
+use Teacher\Service\ChooseService;
 use Teacher\Service\ExamService;
+use Teacher\Service\FillService;
+use Teacher\Service\JudgeService;
 use Teacher\Service\ProblemService;
 
 class DataController extends TemplateController
@@ -296,5 +299,63 @@ class DataController extends TemplateController
         $this->zadd('fillans2', $fillans2);
 
         $this->auto_display('paper');
+    }
+
+    public function getUserScoreDetail() {
+        $this->isCanWatchInfo($this->eid);
+        if (!isset($_GET['problemType'])) {
+            $this->echoError('please select any problem type');
+            return;
+        }
+
+        $searchUserId = I('get.xsid', '');
+        $sqladd = SortStuScore('stu');
+        $problemType = I('get.problemType', ChooseBaseModel::CHOOSE_PROBLEM_TYPE, 'intval');
+        $result = array();
+        $problemIdList = array();
+
+        do {
+            if (empty($searchUserId)) {
+                break;
+            }
+            $examInfo = ExamBaseModel::instance()->getById($this->eid);
+            $start_timeC = strftime("%Y-%m-%d %X", strtotime($examInfo['start_time']));
+            $end_timeC = strftime("%Y-%m-%d %X", strtotime($examInfo['end_time']));
+
+            $allUser = SqlExecuteHelper::Teacher_GetUserScoreList4Exam($this->eid, $sqladd);
+
+            $idInitial = false;
+            foreach ($allUser as $user) {
+                $userId = $user['user_id'];
+                $userScoreDetail = null;
+                if ($problemType == ChooseBaseModel::CHOOSE_PROBLEM_TYPE) {
+                    $userScoreDetail = ChooseService::instance()->getUserChooseScoreDetailInExam(
+                        $this->eid, $userId, $examInfo['choosescore']);
+                } else if ($problemType == JudgeBaseModel::JUDGE_PROBLEM_TYPE) {
+                    $userScoreDetail = JudgeService::instance()->getUserJudgeScoreDetailInExam(
+                        $this->eid, $userId, $examInfo['judgescore']);
+                } else if ($problemType == FillBaseModel::FILL_PROBLEM_TYPE) {
+                    $userScoreDetail = FillService::instance()->getUserFillScoreDetailInExam(
+                        $this->eid, $userId, $examInfo);
+                } else if ($problemType == ProblemService::PROGRAM_PROBLEM_TYPE) {
+                    $userScoreDetail = ProblemService::instance()->getUserProgramScoreDetailInExam(
+                        $this->eid, $userId, $examInfo['programscore'], $start_timeC, $end_timeC);
+                } else {
+                    $this->echoError('invalid problem type');
+                    return;
+                }
+                $result[$userId]['detail'] = $userScoreDetail;
+                if ($idInitial == false) {
+                    $problemIdList = array_keys($userScoreDetail);
+                    $idInitial = true;
+                }
+                $result[$userId]['nick'] = $user['nick'];
+            }
+        } while(false);
+        $this->zadd('xsid', $searchUserId);
+        $this->zadd('problemType', $problemType);
+        $this->zadd('scoreDetail', $result);
+        $this->zadd('problemIdList', $problemIdList);
+        $this->auto_display('scoredetail');
     }
 }

@@ -84,13 +84,11 @@ class InfoController extends TemplateController {
         $eid = intval($_POST['eid']);
 
         if (I('post.rjall')) {
-            $prirow = ExamBaseModel::instance()->getById($eid, array('start_time', 'end_time'));
-            $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
-            $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
+            $examInfo = ExamBaseModel::instance()->getById($eid);
             $userlist = M('ex_student')->field('user_id')->where('exam_id=%d', $eid)->select();
             if ($userlist) {
                 foreach ($userlist as $value) {
-                    $this->rejudgePaper($value['user_id'], $eid, $start_timeC, $end_timeC, 1);
+                    $this->rejudgePaper($value['user_id'], $examInfo, 1);
                 }
                 unset($userlist);
             }
@@ -110,11 +108,8 @@ class InfoController extends TemplateController {
     }
 
     private function doJudgeOne($eid, $userId) {
-        $field = array('start_time', 'end_time');
-        $prirow = ExamBaseModel::instance()->getById($eid, $field);
-        $start_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['start_time']));
-        $end_timeC = strftime("%Y-%m-%d %X", strtotime($prirow['end_time']));
-
+        $examInfo = ExamBaseModel::instance()->getById($eid);
+        $start_timeC = strftime("%Y-%m-%d %X", strtotime($examInfo['start_time']));
         $where = array('user_id' => $userId, 'rightstr' => "e$eid");
         $cnt1 = PrivilegeBaseModel::instance()->countNumber($where);
         if ($cnt1 == 0) {
@@ -126,19 +121,19 @@ class InfoController extends TemplateController {
         }
         $where = array("exam_id" => $eid, "user_id" => $userId);
         $mark = StudentBaseModel::instance()->countNumber($where);
-        $this->rejudgePaper($userId, $eid, $start_timeC, $end_timeC, $mark);
+        $this->rejudgePaper($userId, $examInfo, $mark);
         return true;
     }
 
-    private function rejudgePaper($userId, $eid, $start_timeC, $end_timeC, $mark) {
+    private function rejudgePaper($userId, $examInfo, $mark) {
+        $eid = $examInfo['exam_id'];
+        $start_timeC = strftime("%Y-%m-%d %X", strtotime($examInfo['start_time']));
+        $end_timeC = strftime("%Y-%m-%d %X", strtotime($examInfo['end_time']));
 
-        $allscore = ExamBaseModel::instance()->getById($eid,
-            array('choosescore', 'judgescore', 'fillscore', 'prgans', 'prgfill', 'programscore')
-        );
-        $choosesum = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($eid, $userId, $allscore['choosescore']);
-        $judgesum = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($eid, $userId, $allscore['judgescore']);
-        $fillsum = FillService::instance()->doRejudgeFillByExamIdAndUserId($eid, $userId, $allscore);
-        $programsum = ProblemService::instance()->doRejudgeProgramByExamIdAndUserId($eid, $userId, $allscore['programscore'], $start_timeC, $end_timeC);
+        $choosesum = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId($eid, $userId, $examInfo['choosescore']);
+        $judgesum = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId($eid, $userId, $examInfo['judgescore']);
+        $fillsum = FillService::instance()->doRejudgeFillByExamIdAndUserId($eid, $userId, $examInfo);
+        $programsum = ProblemService::instance()->doRejudgeProgramByExamIdAndUserId($eid, $userId, $examInfo['programscore'], $start_timeC, $end_timeC);
 
         $sum = $choosesum + $judgesum + $fillsum + $programsum;
 
