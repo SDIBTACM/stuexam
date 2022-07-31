@@ -67,6 +67,13 @@ function test_input($data) {
     return $data;
 }
 
+function encodeInputWithImage($data) {
+    $data = trim($data);
+    $data = preg_replace('/<(?!img| )/', "< ", $data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
 function formatToFloatScore($score) {
     return floatval(sprintf("%.1f", $score));
 }

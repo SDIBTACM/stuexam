@@ -14,11 +14,11 @@ class ChooseConvert
     public static function convertChooseFromPost() {
         $arr = array();
 
-        $arr['question'] = test_input($_POST['choose_des']);
-        $arr['ams'] = test_input($_POST['ams']);
-        $arr['bms'] = test_input($_POST['bms']);
-        $arr['cms'] = test_input($_POST['cms']);
-        $arr['dms'] = test_input($_POST['dms']);
+        $arr['question'] = encodeInputWithImage($_POST['choose_des']);
+        $arr['ams'] = encodeInputWithImage($_POST['ams']);
+        $arr['bms'] = encodeInputWithImage($_POST['bms']);
+        $arr['cms'] = encodeInputWithImage($_POST['cms']);
+        $arr['dms'] = encodeInputWithImage($_POST['dms']);
         $arr['answer'] = $_POST['answer'];
         $arr['easycount'] = intval($_POST['easycount']);
         $arr['isprivate'] = intval($_POST['isprivate']);
