@@ -3,6 +3,10 @@
         border:none;
         margin: 0;
     }
+	img {
+		max-height: 150px;
+		max-width: 150px;
+	}
 </style>
 <div class="container exam_content papershow" style='text-align:left'>
 <h2 style='text-align:center'>试卷一览</h2>
@@ -17,11 +21,16 @@
 				<span class="label label-info">{$pointMap['chapterName']} - {$pointMap['parent_point']} - {$pointMap['point']}</span><br/>
 			</foreach>
 		</if>
-		<pre><span class='text-danger'>({$allscore['choosescore']} 分)</span>{$numofchoose+1}.{$cans['question']|nl2br}</pre>
+		<pre><span class='text-danger'>({$allscore['choosescore']} 分)</span>{$numofchoose+1}.{$cans['question']|nl2br|htmlspecialchars_decode}</pre>
 	</div>
 	<div class="panel-body">
-		<p class="Qtext">(A) {$cans['ams']}<br/>(B) {$cans['bms']}<br/>(C) {$cans['cms']}<br/>(D) {$cans['dms']}</p>
-		<p><strong>正确答案:{$cans['answer']}</strong></p>
+		<div class="row Qtext">
+			<div class="col-md-6">(A) {$cans['ams']|htmlspecialchars_decode}</div>
+			<div class="col-md-6">(B) {$cans['bms']|htmlspecialchars_decode}</div>
+			<div class="col-md-6">(C) {$cans['cms']|htmlspecialchars_decode}</div>
+			<div class="col-md-6">(D) {$cans['dms']|htmlspecialchars_decode}</div>
+			<div class="col-md-12"><strong>正确答案:{$cans['answer']}</strong></div>
+		</div>
 	</div>
 	<div class="panel-footer">
 		<a href="javascript:void(0);" class="deltoexam" data-pid="{$cans['choose_id']}" data-type="1">[去除该题]</a>
