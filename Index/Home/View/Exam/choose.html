@@ -1,3 +1,9 @@
+<style>
+    img {
+        max-height: 150px;
+        max-width: 150px;
+    }
+</style>
 <body oncontextmenu="return false" onselectstart="return false" class="nocopy">
 <div class="container">
     <form name="chooseForm" id="chooseExam" action="{:U('Home/Choose/submitPaper')}" method="post">
@@ -8,7 +14,7 @@
         <foreach name='choosesx' item='csx' key='QuestionIndex'>
             <div class="panel panel-default">
                 <div class="panel-heading" style="position: relative">
-                    <pre class="exam_question_content"><span class="label label-danger">{$row['choosescore']} 分</span>{$QuestionIndex+1}.{$chooseans[$csx]['question']|nl2br}</pre>
+                    <pre class="exam_question_content"><span class="label label-danger">{$row['choosescore']} 分</span>{$QuestionIndex+1}.{$chooseans[$csx]['question']|nl2br|htmlspecialchars_decode}</pre>
                     <div style="position: absolute; width: 100%; height: 100%;  z-index: 20; font-size: 15px; top: 0; left: 0;">
                         <div class="myOpacity pull-left">{$Think.session.user_id}</div>
                         <div class="myOpacity pull-left">{$Think.session.user_id}</div>
@@ -20,32 +26,32 @@
 
                     <div class="radio"><label>
                         <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'A'">
-                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="A" checked>(A) <span class="Qtext">{$chooseans[$csx]['ams']}</span><br/>
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="A" checked>(A) <span class="Qtext">{$chooseans[$csx]['ams']|htmlspecialchars_decode}</span><br/>
                             <else/>
-                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="A">(A) <span class="Qtext">{$chooseans[$csx]['ams']}</span><br/>
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="A">(A) <span class="Qtext">{$chooseans[$csx]['ams']|htmlspecialchars_decode}</span><br/>
                         </if>
                     </label></div>
                     <div class="radio"><label>
                         <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'B'">
-                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="B" checked>(B) <span class="Qtext">{$chooseans[$csx]['bms']}</span><br/>
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="B" checked>(B) <span class="Qtext">{$chooseans[$csx]['bms']|htmlspecialchars_decode}</span><br/>
                             <else/>
-                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="B">(B) <span class="Qtext">{$chooseans[$csx]['bms']}</span><br/>
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="B">(B) <span class="Qtext">{$chooseans[$csx]['bms']|htmlspecialchars_decode}</span><br/>
                         </if>
                     </label></div>
                     <div class="radio"><label>
                         <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'C'">
                             <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="C"
-                                   checked>(C) <span class="Qtext">{$chooseans[$csx]['cms']}</span><br/>
+                                   checked>(C) <span class="Qtext">{$chooseans[$csx]['cms']|htmlspecialchars_decode}</span><br/>
                             <else/>
-                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="C">(C) <span class="Qtext">{$chooseans[$csx]['cms']}</span><br/>
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="C">(C) <span class="Qtext">{$chooseans[$csx]['cms']|htmlspecialchars_decode}</span><br/>
                         </if>
                     </label></div>
                     <div class="radio"><label>
                         <if condition="isset($choosearr[$chooseans[$csx]['choose_id']]) and $choosearr[$chooseans[$csx]['choose_id']] eq 'D'">
                             <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="D"
-                                   checked>(D) <span class="Qtext">{$chooseans[$csx]['dms']}</span>
+                                   checked>(D) <span class="Qtext">{$chooseans[$csx]['dms']|htmlspecialchars_decode}</span>
                             <else/>
-                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="D">(D) <span class="Qtext">{$chooseans[$csx]['dms']}</span>
+                            <input class="xzda" type="radio" name="xzda{$chooseans[$csx]['choose_id']}" value="D">(D) <span class="Qtext">{$chooseans[$csx]['dms']|htmlspecialchars_decode}</span>
                         </if>
                     </label></div>
                     </p>
