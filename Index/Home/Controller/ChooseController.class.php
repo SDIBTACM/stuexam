@@ -8,6 +8,7 @@
 
 namespace Home\Controller;
 
+use Basic\Log;
 use Home\Model\AnswerModel;
 use Teacher\Model\ChooseBaseModel;
 use Teacher\Service\ChooseService;
@@ -34,29 +35,32 @@ class ChooseController extends QuestionController
         $this->start2Exam();
 
         $chooseArr = ExamService::instance()->getUserAnswer(
-            $this->examId, $this->userInfo['user_id'], ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $this->examId, $this->userInfo['user_id'], $this->getProblemType());
         $chooseAns = ProblemService::instance()->getProblemsAndAnswer4Exam(
-            $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+            $this->examId, $this->getProblemType());
         $chooseSeq = getProblemSequence(count($chooseAns), $this->randnum);
 
         $this->zadd('choosearr', $chooseArr);
         $this->zadd('choosesx', $chooseSeq);
         $this->zadd('chooseans', $chooseAns);
         $this->zadd('questionName', ChooseBaseModel::CHOOSE_PROBLEM_NAME);
-        $this->zadd('problemType', ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        $this->zadd('problemType', $this->getProblemType());
 
         $this->auto_display('Exam:choose', 'exlayout');
     }
 
     public function saveAnswer() {
-        AnswerModel::instance()->saveProblemAnswer(
-            $this->userInfo['user_id'], $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
-        echo $this->leftTime;
+        parent::saveAnswer();
+    }
+
+    protected function getProblemType() {
+        return ChooseBaseModel::CHOOSE_PROBLEM_TYPE;
     }
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);
+        Log::info("userId:{} submit type={} paper start", $userId, $this->getProblemType());
+        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, $this->getProblemType());
         $chooseSum = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId(
             $this->examId, $userId, $this->examBase['choosescore']
         );
@@ -65,6 +69,7 @@ class ChooseController extends QuestionController
 
         $this->chooseSumScore = $chooseSum;
         $this->checkActionAfterSubmit();
+        Log::info("userId:{} submit type={} paper end", $userId, $this->getProblemType());
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }

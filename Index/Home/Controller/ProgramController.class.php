@@ -10,6 +10,7 @@ namespace Home\Controller;
 
 use Basic\Log;
 use Home\Helper\SqlExecuteHelper;
+use http\Exception\BadUrlException;
 use Teacher\Service\ProblemService;
 use Teacher\Service\StudentService;
 
@@ -41,11 +42,19 @@ class ProgramController extends QuestionController
         return true;
     }
 
+    protected function getProblemType() {
+        return ProblemService::PROGRAM_PROBLEM_TYPE;
+    }
+
+    public function saveAnswer() {
+        throw new BadUrlException("不支持该操作");
+    }
+
     public function index() {
 
         $this->start2Exam();
 
-        $programAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, ProblemService::PROGRAM_PROBLEM_TYPE);
+        $programAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, $this->getProblemType());
         $supportLanguage = array();
         foreach ($programAns as &$pans) {
             $pans['pFillNum'] = $this->getProgramFillNum($pans['program_id']);
@@ -60,13 +69,14 @@ class ProgramController extends QuestionController
 
         $this->zadd('programans', $programAns);
         $this->zadd('questionName', ProblemService::PROGRAM_PROBLEM_NAME);
-        $this->zadd('problemType', ProblemService::PROGRAM_PROBLEM_TYPE);
+        $this->zadd('problemType', $this->getProblemType());
         $this->zadd('supportLanguage', $supportLanguage);
 
         $this->auto_display('Exam:program', 'exlayout');
     }
 
     public function submitPaper() {
+        Log::info("userId:{} submit type={} paper start", $this->userInfo['user_id'], $this->getProblemType());
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
         $inArr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
@@ -78,6 +88,7 @@ class ProgramController extends QuestionController
         StudentService::instance()->submitExamPaper(
             $this->userInfo['user_id'], $this->examId, $inArr);
         ProblemService::instance()->doFixStuAnswerProgramRank($this->examId, $this->userInfo['user_id'], $start_timeC, $end_timeC);
+        Log::info("userId:{} submit type={} paper end", $this->userInfo['user_id'], $this->getProblemType());
         redirect(U('Home/Index/score'));
     }
 

@@ -2,6 +2,7 @@
 namespace Home\Controller;
 
 use Home\Helper\PrivilegeHelper;
+use Home\Helper\SessionHelper;
 use Think\Controller;
 
 class TemplateController extends Controller
@@ -31,10 +32,10 @@ class TemplateController extends Controller
     }
 
     private function initLoginUserInfo() {
-        $userId = session('user_id');
+        $userId = SessionHelper::getUserId();
         if (!empty($userId)) {
             // 目前只存userId,之后等新版会更新父类主要信息
-            $this->userInfo['user_id'] = session('user_id');
+            $this->userInfo['user_id'] = $userId;
         }
         if (empty($userId) && $this->isNeedLogin) {
             redirect('/JudgeOnline/loginpage.php', 1, 'Please Login First!!');

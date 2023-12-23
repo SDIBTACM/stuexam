@@ -80,7 +80,7 @@ class ChooseController extends AbsQuestionController {
             }
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 Log::info("user id: {} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
-                    $_SESSION['user_id'], __FUNCTION__, $id, __FUNCTION__);
+                    $this->userInfo['user_id'], __FUNCTION__, $id, __FUNCTION__);
                 $this->echoError('You have no privilege!');
             }
             $pnt = KeyPointService::instance()->getQuestionPoints($id, ChooseBaseModel::CHOOSE_PROBLEM_TYPE);

@@ -4,6 +4,7 @@ namespace Teacher\Service;
 use Basic\Log;
 use Constant\ReqResult\Result;
 use Home\Helper\PrivilegeHelper;
+use Home\Helper\SessionHelper;
 use Home\Helper\SqlExecuteHelper;
 use Teacher\Convert\ChooseConvert;
 use Teacher\Model\ChooseBaseModel;
@@ -61,11 +62,11 @@ class ChooseService
             $reqResult->setMessage("选择题修改成功!");
             $reqResult->setData("choose");
             Log::info("user id:{} choose id: {}, require: change choose info, result: success",
-                $_SESSION['user_id'], $chooseid);
+                SessionHelper::getUserId(), $chooseid);
             return $reqResult;
         } else {
             Log::warn("user id: {} exam id: {}, require: change choose info, result: FAIL, sqldate: {}, sqlresult: {}",
-                $_SESSION['user_id'], $chooseid, $arr, $result);
+                SessionHelper::getUserId(), $chooseid, $arr, $result);
             return Result::errorResult("选择题修改失败!");
         }
     }
@@ -73,7 +74,7 @@ class ChooseService
     public function addChooseInfo() {
         $reqResult = new Result();
         $arr = ChooseConvert::convertChooseFromPost();
-        $arr['creator'] = $_SESSION['user_id'];
+        $arr['creator'] = SessionHelper::getUserId();
         $arr['addtime'] = date('Y-m-d H:i:s');
 
         $privateCodeCheck = ChooseBaseModel::instance()->getByPrivateCode(
@@ -86,7 +87,7 @@ class ChooseService
         $lastId = ChooseBaseModel::instance()->insertData($arr);
         if ($lastId <= 0) {
             Log::warn("user id:{}, require: add choose, result: FAIL, sqldate: {}, sqlresult: {}",
-                $_SESSION['user_id'], $arr, $lastId);
+                SessionHelper::getUserId(), $arr, $lastId);
             return Result::errorResult("选择题添加失败!");
         }
 
@@ -96,7 +97,7 @@ class ChooseService
         );
         $reqResult->setMessage("选择题添加成功!");
         $reqResult->setData("choose");
-        Log::info("user id:{}, require: addd choose, result: success", $_SESSION['user_id']);
+        Log::info("user id:{}, require: addd choose, result: success", SessionHelper::getUserId());
         return $reqResult;
     }
 

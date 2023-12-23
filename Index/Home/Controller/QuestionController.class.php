@@ -9,6 +9,7 @@
 namespace Home\Controller;
 
 use Constant\ReqResult\Result;
+use Home\Model\AnswerModel;
 use Home\Model\ExamAdminModel;
 
 use Teacher\Model\ChooseBaseModel;
@@ -193,4 +194,14 @@ class QuestionController extends TemplateController
     public function getLeftTime() {
         return $this->leftTime;
     }
+
+    public function saveAnswer() {
+        Log::info("userId:{} save type={} paper answer start", $this->userInfo['user_id']);
+        AnswerModel::instance()->saveProblemAnswer(
+            $this->userInfo['user_id'], $this->examId, $this->getProblemType()
+        );
+        echo $this->leftTime;
+    }
+
+    protected abstract function getProblemType();
 }

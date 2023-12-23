@@ -36,7 +36,7 @@ function getproblemsearch($idKey, $problemType) {
     $problem = I('get.problem', 0, 'intval');
     if ($problem != 0 ) {
         /** 如果查询的是私有或者隐藏提库 则只能查询本人 **/
-        $creator = $_SESSION['user_id'];
+        $creator = \Home\Helper\SessionHelper::getUserId();
     }
     if (!empty($creator)) {
         $sql = $sql . " AND creator = '$creator'";
@@ -58,23 +58,25 @@ function getproblemsearch($idKey, $problemType) {
 }
 
 function set_get_key() {
-    $_SESSION['getkey'] = strtoupper(substr(MD5($_SESSION['user_id'] . rand(0, 9999999)), 0, 10));
-    return $_SESSION['getkey'];
+    $value = strtoupper(substr(MD5(\Home\Helper\SessionHelper::getUserId() . rand(0, 9999999)), 0, 10));
+    \Home\Helper\SessionHelper::setCsrfGetKey($value);
+    return $value;
 }
 
 function check_get_key() {
-    if ($_SESSION['getkey'] != $_GET['getkey'])
+    if (\Home\Helper\SessionHelper::getCsrfGetKey() != $_GET['getkey'])
         return false;
     return true;
 }
 
 function set_post_key() {
-    $_SESSION['postkey'] = strtoupper(substr(MD5($_SESSION['user_id'] . rand(0, 9999999)), 0, 10));
-    return $_SESSION['postkey'];
+    $value = strtoupper(substr(MD5(\Home\Helper\SessionHelper::getUserId() . rand(0, 9999999)), 0, 10));
+    \Home\Helper\SessionHelper::setCsrfPostKey($value);
+    return $value;
 }
 
 function check_post_key() {
-    if ($_SESSION['postkey'] != $_POST['postkey'])
+    if (\Home\Helper\SessionHelper::getCsrfPostKey() != $_POST['postkey'])
         return false;
     return true;
 }

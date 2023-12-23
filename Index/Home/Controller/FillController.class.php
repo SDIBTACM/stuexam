@@ -8,6 +8,7 @@
 
 namespace Home\Controller;
 
+use Basic\Log;
 use Home\Model\AnswerModel;
 use Teacher\Model\FillBaseModel;
 use Teacher\Service\ExamService;
@@ -33,33 +34,38 @@ class FillController extends QuestionController
 
         $this->start2Exam();
 
-        $fillArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], FillBaseModel::FILL_PROBLEM_TYPE);
-        $fillAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        $fillArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], $this->getProblemType());
+        $fillAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, $this->getProblemType());
         $fillSeq = getProblemSequence(count($fillAns), $this->randnum);
 
         $this->zadd('fillarr', $fillArr);
         $this->zadd('fillsx', $fillSeq);
         $this->zadd('fillans', $fillAns);
         $this->zadd('questionName', FillBaseModel::FILL_PROBLEM_NAME);
-        $this->zadd('problemType', FillBaseModel::FILL_PROBLEM_TYPE);
+        $this->zadd('problemType', $this->getProblemType());
 
         $this->auto_display('Exam:fill', 'exlayout');
     }
 
     public function saveAnswer() {
-        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
-        echo $this->leftTime;
+        parent::saveAnswer();
+    }
+
+    protected function getProblemType() {
+        return FillBaseModel::FILL_PROBLEM_TYPE;
     }
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, FillBaseModel::FILL_PROBLEM_TYPE);
+        Log::info("userId:{} submit type={} paper start", $userId, $this->getProblemType());
+        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, $this->getProblemType());
         $fillSum = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $this->examBase);
         $inArr['fillsum'] = $fillSum;
         StudentService::instance()->submitExamPaper($userId, $this->examId, $inArr);
 
         $this->fillSumScore = $fillSum;
         $this->checkActionAfterSubmit();
+        Log::info("userId:{} submit type={} paper end", $userId, $this->getProblemType());
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }

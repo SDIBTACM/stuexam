@@ -5,6 +5,7 @@ namespace Teacher\Service;
 use Basic\Log;
 use Constant\ReqResult\Result;
 use Home\Helper\PrivilegeHelper;
+use Home\Helper\SessionHelper;
 use Home\Helper\SqlExecuteHelper;
 use Teacher\Convert\FillConvert;
 use Teacher\Model\FillBaseModel;
@@ -34,11 +35,11 @@ class FillService {
         $field = array('creator', 'isprivate', 'private_code');
         $_fillInfo = FillBaseModel::instance()->getById($fillId, $field);
         if (empty($_fillInfo) || !PrivilegeHelper::isExamOwner($_fillInfo['creator'])) {
-            Log::info("user id: {} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $fillId);
+            Log::info("user id: {} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", SessionHelper::getUserId(), $fillId);
             return Result::errorResult("您没有权限进行此操作!");
         }
         if ($_fillInfo['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !PrivilegeHelper::isSuperAdmin()) {
-            Log::info("user id: {} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $fillId);
+            Log::info("user id: {} fill id: {}, require: change fill info, result: FAIL, reason: no privilege", SessionHelper::getUserId(), $fillId);
             return Result::errorResult("您没有权限进行此操作!");
         }
         $arr = FillConvert::convertFillFromPost();
@@ -72,9 +73,9 @@ class FillService {
             );
             $reqResult->setMessage("填空题修改成功!");
             $reqResult->setData("fill");
-            Log::info("user id: {} fill id: {}, require: change fill info, result: success", $_SESSION['user_id'], $fillId);
+            Log::info("user id: {} fill id: {}, require: change fill info, result: success", SessionHelper::getUserId(), $fillId);
         } else {
-            Log::warn("user id: {} fill id: {}, require: change fill info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $fillId, $arr, $result);
+            Log::warn("user id: {} fill id: {}, require: change fill info, result: FAIL, sqldate: {}, sqlresult: {}", SessionHelper::getUserId(), $fillId, $arr, $result);
             return Result::errorResult("填空题修改失败!");
         }
         return $reqResult;
@@ -84,7 +85,7 @@ class FillService {
         $reqResult = new Result();
         $arr = FillConvert::convertFillFromPost();
         $arr['addtime'] = date('Y-m-d H:i:s');
-        $arr['creator'] = $_SESSION['user_id'];
+        $arr['creator'] = SessionHelper::getUserId();
 
         $privateCodeCheck = FillBaseModel::instance()->getByPrivateCode(
             $arr['private_code']
@@ -95,7 +96,7 @@ class FillService {
 
         $fillId = FillBaseModel::instance()->insertData($arr);
         if ($fillId <= 0) {
-            Log::warn("user id: {}, require: add fill, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'],
+            Log::warn("user id: {}, require: add fill, result: FAIL, sqldate: {}, sqlresult: {}", SessionHelper::getUserId(),
                 $arr, $fillId);
             return Result::errorResult("填空题添加失败!");
         }
@@ -114,7 +115,7 @@ class FillService {
         );
         $reqResult->setMessage("填空题添加成功!");
         $reqResult->setData("fill");
-        Log::info("user id: {}, require: add fill, result: success", $_SESSION['user_id']);
+        Log::info("user id: {}, require: add fill, result: success", SessionHelper::getUserId());
         return $reqResult;
     }
 

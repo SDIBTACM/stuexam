@@ -4,6 +4,7 @@ namespace Teacher\Service;
 use Basic\Log;
 use Constant\ReqResult\Result;
 use Home\Helper\PrivilegeHelper;
+use Home\Helper\SessionHelper;
 use Home\Helper\SqlExecuteHelper;
 use Teacher\Convert\JudgeConvert;
 use Teacher\Model\JudgeBaseModel;
@@ -33,12 +34,12 @@ class JudgeService
         $field = array('creator', 'isprivate', 'private_code');
         $tmp = JudgeBaseModel::instance()->getById($judgeid, $field);
         if (empty($tmp) || !PrivilegeHelper::isExamOwner($tmp['creator'])) {
-            Log::info("user id:{} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
+            Log::info("user id:{} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", SessionHelper::getUserId(), $judgeid);
             return Result::errorResult("您没有权限进行此操作!");
         }
 
         if ($tmp['isprivate'] == PrivilegeBaseModel::PROBLEM_SYSTEM && !PrivilegeHelper::isSuperAdmin()) {
-            Log::info("user id: {} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $judgeid);
+            Log::info("user id: {} judge id: {}, require: change judge info, result: FAIL, reason: no privilege", SessionHelper::getUserId(), $judgeid);
             return Result::errorResult("您没有权限进行此操作!");
         }
         $arr = JudgeConvert::convertJudgeFromPost();
@@ -61,9 +62,9 @@ class JudgeService
             );
             $reqResult->setMessage("判断题修改成功!");
             $reqResult->setData("judge");
-            Log::info("user id: {} judge id: {}, require: change judge info, result: success", $_SESSION['user_id'], $judgeid);
+            Log::info("user id: {} judge id: {}, require: change judge info, result: success", SessionHelper::getUserId(), $judgeid);
         } else {
-            Log::warn("user id: {} judge id: {}, require: change judge info, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $judgeid, $arr, $result);
+            Log::warn("user id: {} judge id: {}, require: change judge info, result: FAIL, sqldate: {}, sqlresult: {}", SessionHelper::getUserId(), $judgeid, $arr, $result);
             return Result::errorResult("判断题修改失败!");
         }
         return $reqResult;
@@ -72,7 +73,7 @@ class JudgeService
     public function addJudgeInfo() {
         $reqResult = new Result();
         $arr = JudgeConvert::convertJudgeFromPost();
-        $arr['creator'] = $_SESSION['user_id'];
+        $arr['creator'] = SessionHelper::getUserId();
         $arr['addtime'] = date('Y-m-d H:i:s');
 
         $privateCodeCheck = JudgeBaseModel::instance()->getByPrivateCode(
@@ -90,9 +91,9 @@ class JudgeService
             );
             $reqResult->setMessage("判断题添加成功!");
             $reqResult->setData("judge");
-            Log::info("user id: {}, require: add judge, result: success", $_SESSION['user_id']);
+            Log::info("user id: {}, require: add judge, result: success", SessionHelper::getUserId());
         } else {
-            Log::warn("user id: {}, require: add judge, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $arr, $lastId);
+            Log::warn("user id: {}, require: add judge, result: FAIL, sqldate: {}, sqlresult: {}", SessionHelper::getUserId(), $arr, $lastId);
             return Result::errorResult("判断题修改失败!");
         }
         return $reqResult;

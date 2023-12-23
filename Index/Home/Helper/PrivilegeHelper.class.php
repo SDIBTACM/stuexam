@@ -14,18 +14,18 @@ class PrivilegeHelper {
     }
 
     public static function isSuperAdmin() {
-        return !empty(session('administrator'));
+        return !empty(SessionHelper::getAdministrator());
     }
 
     public static function isCreator() {
-        return self::isSuperAdmin() || !empty(session('contest_creator'));
+        return self::isSuperAdmin() || !empty(SessionHelper::getContestCreator());
     }
 
     public static function isProblemSetter() {
-        return self::isSuperAdmin() || !empty(session('problem_editor'));
+        return self::isSuperAdmin() || !empty(SessionHelper::getProblemEditor());
     }
 
     public static function isExamOwner($creatorId) {
-        return self::isSuperAdmin() || $creatorId == $_SESSION['user_id'];
+        return self::isSuperAdmin() || $creatorId == SessionHelper::getUserId();
     }
 }

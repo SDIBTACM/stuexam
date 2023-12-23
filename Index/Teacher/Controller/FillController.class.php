@@ -82,7 +82,7 @@ class FillController extends AbsQuestionController {
             if ($this->checkProblemPrivate($row['isprivate'], $row['creator']) == -1) {
                 $this->echoError('You have no privilege!');
                 Log::info("user id: {} {} id: {}, require: change {} info, result: FAIL, reason: private question ",
-                    $_SESSION['user_id'], __FUNCTION__, $id, __FUNCTION__);
+                    $this->userInfo['user_id'], __FUNCTION__, $id, __FUNCTION__);
 
             }
             if ($row['answernum'] != 0) {

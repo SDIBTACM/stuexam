@@ -8,6 +8,7 @@
 
 namespace Home\Controller;
 
+use Basic\Log;
 use Home\Model\AnswerModel;
 use Teacher\Model\JudgeBaseModel;
 use Teacher\Service\ExamService;
@@ -33,27 +34,31 @@ class JudgeController extends QuestionController
 
         $this->start2Exam();
 
-        $judgeArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        $judgeAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $judgeArr = ExamService::instance()->getUserAnswer($this->examId, $this->userInfo['user_id'], $this->getProblemType());
+        $judgeAns = ProblemService::instance()->getProblemsAndAnswer4Exam($this->examId, $this->getProblemType());
         $judgeSeq = getProblemSequence(count($judgeAns), $this->randnum);
 
         $this->zadd('judgearr', $judgeArr);
         $this->zadd('judgesx', $judgeSeq);
         $this->zadd('judgeans', $judgeAns);
         $this->zadd('questionName', JudgeBaseModel::JUDGE_PROBLEM_NAME);
-        $this->zadd('problemType', JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        $this->zadd('problemType', $this->getProblemType());
 
         $this->auto_display('Exam:judge', 'exlayout');
     }
 
     public function saveAnswer() {
-        AnswerModel::instance()->saveProblemAnswer($this->userInfo['user_id'], $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
-        echo $this->leftTime;
+        parent::saveAnswer();
+    }
+
+    protected function getProblemType() {
+        return JudgeBaseModel::JUDGE_PROBLEM_TYPE;
     }
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, JudgeBaseModel::JUDGE_PROBLEM_TYPE);
+        Log::info("userId:{} submit type={} paper start", $userId, $this->getProblemType());
+        AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, $this->getProblemType());
         $judgeSum = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId(
             $this->examId, $userId, $this->examBase['judgescore']
         );
@@ -62,6 +67,7 @@ class JudgeController extends QuestionController
 
         $this->judgeSumScore = $judgeSum;
         $this->checkActionAfterSubmit();
+        Log::info("userId:{} submit type={} paper end", $userId, $this->getProblemType());
         redirect(U('Home/Question/navigation', array('eid' => $this->examId)));
     }
 }

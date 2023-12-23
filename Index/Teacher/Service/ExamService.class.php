@@ -5,6 +5,7 @@ namespace Teacher\Service;
 use Basic\Log;
 use Constant\ReqResult\Result;
 use Home\Helper\PrivilegeHelper;
+use Home\Helper\SessionHelper;
 use Teacher\Convert\ExamConvert;
 use Teacher\Convert\GenerateExamConvert;
 use Teacher\Model\ChooseBaseModel;
@@ -37,7 +38,7 @@ class ExamService {
         if (empty($_examInfo) || !PrivilegeHelper::isExamOwner($_examInfo['creator'])) {
             $reqResult->setStatus(false);
             $reqResult->setMessage("You have no privilege to modify it!");
-            Log::info("user id: {} exam id: {}, require: change exam info, result: FAIL, reason: no privilege", $_SESSION['user_id'], $examId);
+            Log::info("user id: {} exam id: {}, require: change exam info, result: FAIL, reason: no privilege", SessionHelper::getUserId(), $examId);
             return $reqResult;
         }
 
@@ -46,31 +47,32 @@ class ExamService {
         if ($res !== false) {
             $reqResult->setMessage("考试修改成功!");
             $reqResult->setData("Quiz");
-            Log::info("user id: {} exam id: {}, require: change exam info, result: success", $_SESSION['user_id'], $examId);
+            Log::info("user id: {} exam id: {}, require: change exam info, result: success", SessionHelper::getUserId(), $examId);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试修改失败!");
             Log::warn("user id: {} exam id: {}, require: change exam info, result: FAIL, sqldate: {}, sqlresult: {}",
-                $_SESSION['user_id'], $examId, $data, $res);
+                SessionHelper::getUserId(), $examId, $data, $res);
         }
         return $reqResult;
     }
 
     public function addExamInfo() {
+        $userId = SessionHelper::getUserId();
         $reqResult = new Result();
         $data = ExamConvert::convertExamDataFromPost();
-        $data['creator'] = $_SESSION['user_id'];
+        $data['creator'] = $userId;
 
         $return = ExamBaseModel::instance()->insertData($data);
 
         if ($return) {
             $reqResult->setMessage("考试添加成功!");
             $reqResult->setData("Quiz");
-            Log::info("user id: {}, require: add exam, result: success", $_SESSION['user_id']);
+            Log::info("user id: {}, require: add exam, result: success", $userId);
         } else {
             $reqResult->setStatus(false);
             $reqResult->setMessage("考试添加失败!");
-            Log::warn("user id: {}, require: add exam, result: FAIL, sqldate: {}, sqlresult: {}", $_SESSION['user_id'], $data, $return);
+            Log::warn("user id: {}, require: add exam, result: FAIL, sqldate: {}, sqlresult: {}", $userId, $data, $return);
         }
         return $reqResult;
     }
@@ -154,7 +156,7 @@ class ExamService {
         $convertResult = GenerateExamConvert::generateProblem();
 
         if (! $convertResult instanceof Result) {
-            Log::warn("user id: {}, require: generate exam result: FAIL, more: {}", $_SESSION['user_id'], 'type error');
+            Log::warn("user id: {}, require: generate exam result: FAIL, more: {}", SessionHelper::getUserId(), 'type error');
             return Result::errorResult("生成试卷发生错误,类型不匹配");
         }
 
@@ -164,7 +166,7 @@ class ExamService {
 
         $problemMap = $convertResult->getData();
         if (empty($problemMap)) {
-            Log::warn("user id: {}, require: generate exam result: FAIL, more: {}", $_SESSION['user_id'], 'empty problem map');
+            Log::warn("user id: {}, require: generate exam result: FAIL, more: {}", SessionHelper::getUserId(), 'empty problem map');
             return Result::errorResult("生成的题目列表为空");
         }
 
@@ -185,7 +187,7 @@ class ExamService {
         }
 
         if ($examId <= 0) {
-            Log::error("user id: {}, require: generate exam result: FAIL, more: {}", $_SESSION['user_id'], 'ERROR');
+            Log::error("user id: {}, require: generate exam result: FAIL, more: {}", SessionHelper::getUserId(), 'ERROR');
             return Result::errorResult("考试生成失败, 请重试");
         }
 

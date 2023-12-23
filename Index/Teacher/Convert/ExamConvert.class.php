@@ -9,6 +9,8 @@
 namespace Teacher\Convert;
 
 
+use Home\Helper\SessionHelper;
+
 class ExamConvert
 {
     public static function convertExamDataFromPost() {
@@ -53,7 +55,7 @@ class ExamConvert
         $arr['title'] = "自动生成试卷占位符";
         $arr['start_time'] = "1970-01-01 09:00:00";
         $arr['end_time'] = "1970-01-02 12:00:00";
-        $arr['creator'] = $_SESSION['user_id'];
+        $arr['creator'] = SessionHelper::getUserId();
         array_merge($arr, self::generateDefaultScore());
         return $arr;
     }
