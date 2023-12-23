@@ -1,4 +1,7 @@
 <?php
+function getSessionUserId() {
+    return \Home\Helper\SessionHelper::getUserId();
+}
 
 function splitpage($table, $searchsql = "") {
     $page = I('get.page', 1, 'intval');

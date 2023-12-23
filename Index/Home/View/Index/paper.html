@@ -10,7 +10,7 @@
 <div class="container exam_content" style='text-align:left'>
     <div style="text-align:center">
         <h2>{$title|default=""} -- 错题集</h2>
-        <h4>考生账号:{$Think.session.user_id}</h4>
+        <h4>考生账号:{:getSessionUserId()}</h4>
     </div>
 
     <h4>一.选择题</h4>
