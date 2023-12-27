@@ -35,7 +35,7 @@
                 <li><a href="/">返回OJ</a></li>
                 <li id="indexnavindex"><a href="{:U('/Home')}">Exam List</a></li>
                 <li id="indexnavscore"><a href="{:U('Home/Index/score')}">个人中心</a></li>
-                <if condition="{:canAccessAdminPanel()}">
+                <if condition="canAccessAdminPanel()">
                     <li><a href="{:U('/Teacher/Quiz/showList')}">管理后台</a></li>
                 </if>
             </ul>

@@ -11,7 +11,7 @@
         <li id='exam_userscore'><a href="{:U('Teacher/Exam/userscore',array('eid' => $eid))}">考生成绩</a></li>
         <li id='exam_analysis'><a href="{:U('Teacher/Data/analysis',array('eid' => $eid))}">考试分析</a></li>
         <li id='exam_ranklist'><a href="{:U('Teacher/Data/programRank', array('eid' => $eid))}">编程排名</a></li>
-        <if condition="{:isSuperAdmin()}">
+        <if condition="isSuperAdmin()">
             <li id='exam_rejudge'><a href="{:U('Teacher/Exam/rejudge',array('eid' => $eid))}">REJUDGE</a></li>
         </if>
     </ul>
