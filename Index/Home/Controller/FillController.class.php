@@ -57,7 +57,7 @@ class FillController extends QuestionController
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        Log::info("userId:{} submit type={} paper start", $userId, $this->getProblemType());
+        Log::info("userId:{} examId:{} submit type={} paper start", $userId, $this->examId, $this->getProblemType());
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, $this->getProblemType());
         $fillSum = FillService::instance()->doRejudgeFillByExamIdAndUserId($this->examId, $userId, $this->examBase);
         $inArr['fillsum'] = $fillSum;

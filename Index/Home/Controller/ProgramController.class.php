@@ -76,7 +76,7 @@ class ProgramController extends QuestionController
     }
 
     public function submitPaper() {
-        Log::info("userId:{} submit type={} paper start", $this->userInfo['user_id'], $this->getProblemType());
+        Log::info("userId:{} examId:{} submit type={} paper start", $this->userInfo['user_id'], $this->examId, $this->getProblemType());
         $start_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['start_time']));
         $end_timeC = strftime("%Y-%m-%d %X", strtotime($this->examBase['end_time']));
         $inArr['choosesum'] = ($this->chooseSumScore == -1 ? 0 : $this->chooseSumScore);
