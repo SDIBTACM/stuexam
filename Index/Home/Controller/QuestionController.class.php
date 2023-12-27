@@ -196,7 +196,8 @@ class QuestionController extends TemplateController
     }
 
     public function saveAnswer() {
-        Log::info("userId:{} examId:{} save type={} paper answer start", $this->userInfo['user_id'], $this->examId);
+        Log::info("userId:{} examId:{} save type={} paper answer start", $this->userInfo['user_id'],
+            $this->examId, $this->getProblemType());
         AnswerModel::instance()->saveProblemAnswer(
             $this->userInfo['user_id'], $this->examId, $this->getProblemType()
         );

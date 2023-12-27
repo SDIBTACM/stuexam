@@ -104,4 +104,10 @@ class TemplateController extends Controller
         );
         $this->ajaxReturn($return, "JSON");
     }
+
+
+    protected function getUserAgent() {
+        if (!isset($_SERVER['HTTP_USER_AGENT'])) return null;
+        return $_SERVER['HTTP_USER_AGENT'];
+    }
 }

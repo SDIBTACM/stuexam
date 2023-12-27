@@ -57,7 +57,8 @@ class JudgeController extends QuestionController
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        Log::info("userId:{} examId:{} submit type={} paper start", $userId, $this->examId, $this->getProblemType());
+        Log::info("userId:{} examId:{} submit type={} paper start userUA:{}",
+            $userId, $this->examId, $this->getProblemType(), $this->getUserAgent());
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, $this->getProblemType());
         $judgeSum = JudgeService::instance()->doRejudgeJudgeByExamIdAndUserId(
             $this->examId, $userId, $this->examBase['judgescore']
