@@ -38,7 +38,7 @@ class TemplateController extends Controller
             $this->userInfo['user_id'] = $userId;
         }
         if (empty($userId) && $this->isNeedLogin) {
-            redirect('/JudgeOnline/loginpage.php', 1, 'Please Login First!!');
+            redirect('/loginpage.php', 1, 'Please Login First!!');
         }
     }
 

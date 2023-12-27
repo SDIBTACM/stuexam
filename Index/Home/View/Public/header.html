@@ -32,10 +32,10 @@
         <!-- navbar-header-end -->
         <div class="collapse navbar-collapse" id="header-navbar">
             <ul class="nav navbar-nav">
-                <li><a href="/JudgeOnline/">返回OJ</a></li>
+                <li><a href="/">返回OJ</a></li>
                 <li id="indexnavindex"><a href="{:U('/Home')}">Exam List</a></li>
                 <li id="indexnavscore"><a href="{:U('Home/Index/score')}">个人中心</a></li>
-                <if condition="null != $Think.session.administrator  or  null != $Think.session.contest_creator  or $Think.session.problem_editor neq null">
+                <if condition="{:canAccessAdminPanel()}">
                     <li><a href="{:U('/Teacher/Quiz/showList')}">管理后台</a></li>
                 </if>
             </ul>

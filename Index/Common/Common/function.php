@@ -3,6 +3,14 @@ function getSessionUserId() {
     return \Home\Helper\SessionHelper::getUserId();
 }
 
+function canAccessAdminPanel() {
+    return \Home\Helper\PrivilegeHelper::isTeacher();
+}
+
+function isSuperAdmin() {
+    \Home\Helper\PrivilegeHelper::isSuperAdmin();
+}
+
 function splitpage($table, $searchsql = "") {
     $page = I('get.page', 1, 'intval');
     $each_page = C('EACH_PAGE');
