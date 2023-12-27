@@ -32,6 +32,7 @@ $(function () {
     });
 
     $("#savePaper").click(function () {
+        reportLog("savePaper by user problemType=" + questionType);
         if (questionType == 1) {
             savePaper(chooseSaveUrl, "chooseExam");
         } else if (questionType == 2) {
@@ -93,6 +94,15 @@ function updateResult(e, spanId, problemId, examId) {
     }, 4e3);
 }
 
+function reportLog(action) {
+    $.ajax({
+        url : reportLogUrl,
+        type: "POST",
+        dataType: "html",
+        data: "action=" + action
+    });
+}
+
 function submitChoosePaper() {
     $("#chooseExam").submit();
 }
@@ -111,6 +121,7 @@ function submitProgramPaper() {
 
 function examFormSubmit() {
     var problemType = $("#problemType").val();
+    reportLog("examFormSubmit by user problemType=" + problemType);
     if (problemType == 1) {
         submitChoosePaper();
     } else if (problemType == 2) {
@@ -199,6 +210,7 @@ function GetRTime() {
         }
         var _qType = parseInt(questionType);
         if (nMS > 0 && nMS <= 1000) {
+            reportLog("examFormSubmit by robot problemType=" + _qType);
             switch (_qType) {
                 case 1 :
                     submitChoosePaper();
@@ -215,6 +227,7 @@ function GetRTime() {
         }
 
         if (nMS % savetime == 0 && nMS > savetime) {
+            reportLog("savePaper by robot problemType=" + _qType);
             switch (_qType) {
                 case 1 :
                     savePaper(chooseSaveUrl, "chooseExam");

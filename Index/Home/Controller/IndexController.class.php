@@ -1,6 +1,7 @@
 <?php
 namespace Home\Controller;
 
+use Basic\Log;
 use Home\Helper\SqlExecuteHelper;
 use Home\Model\ExamAdminModel;
 use Teacher\Model\ChooseBaseModel;
@@ -156,6 +157,11 @@ class IndexController extends TemplateController
         } else {
             $this->alertError("没有权限查看该考试的试卷", U('/Home/Index/score'));
         }
+    }
+
+    public function report() {
+        Log::info("userId:{} action:{}",
+            $this->userInfo['user_id'], I('post.action', ''));
     }
 
     private function removeAllChooseUserRightAnswer($chooseUserAnswer, &$chooseRightAnswer) {
