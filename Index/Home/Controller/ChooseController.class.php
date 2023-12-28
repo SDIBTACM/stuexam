@@ -59,8 +59,8 @@ class ChooseController extends QuestionController
 
     public function submitPaper() {
         $userId = $this->userInfo['user_id'];
-        Log::info("userId:{} examId:{} submit type={} paper start userUA:{}",
-            $userId, $this->examId, $this->getProblemType(), $this->getUserAgent());
+        Log::info("userId:{} examId:{} submit type={} paper start userUA:{} ip:{}",
+            $userId, $this->examId, $this->getProblemType(), $this->getUserAgent(), get_client_ip());
         AnswerModel::instance()->saveProblemAnswer($userId, $this->examId, $this->getProblemType());
         $chooseSum = ChooseService::instance()->doRejudgeChooseByExamIdAndUserId(
             $this->examId, $userId, $this->examBase['choosescore']
