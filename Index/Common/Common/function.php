@@ -8,7 +8,7 @@ function canAccessAdminPanel() {
 }
 
 function isSuperAdmin() {
-    \Home\Helper\PrivilegeHelper::isSuperAdmin();
+    return \Home\Helper\PrivilegeHelper::isSuperAdmin();
 }
 
 function splitpage($table, $searchsql = "") {
