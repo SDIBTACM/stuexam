@@ -19,13 +19,13 @@
 	<h4>一.选择题</h4>
 	<foreach name='chooseans' item='cans' key='numofchoose'>
 	<div class="panel panel-default">
-		<div class="panel-heading"><span class="label label-danger">{$allscore['choosescore']} 分</span>{$numofchoose+1}.{$cans['question']|nl2br|htmlspecialchars_decode}</div>
+		<div class="panel-heading"><span class="label label-danger">{$allscore['choosescore']} 分</span>{$numofchoose+1}.{$cans['question']|nl2br}</div>
 		<div class="panel-body">
 			<div class="row Qtext">
-				<div class="col-md-6">(A) {$cans['ams']|htmlspecialchars_decode}</div>
-				<div class="col-md-6">(B) {$cans['bms']|htmlspecialchars_decode}</div>
-				<div class="col-md-6">(C) {$cans['cms']|htmlspecialchars_decode}</div>
-				<div class="col-md-6">(D) {$cans['dms']|htmlspecialchars_decode}</div>
+				<div class="col-md-6">(A) {$cans['ams']}</div>
+				<div class="col-md-6">(B) {$cans['bms']}</div>
+				<div class="col-md-6">(C) {$cans['cms']}</div>
+				<div class="col-md-6">(D) {$cans['dms']}</div>
 			</div>
 		</div>
 		<div class="panel-footer">

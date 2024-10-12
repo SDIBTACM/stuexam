@@ -80,8 +80,10 @@ function test_input($data) {
 
 function encodeInputWithImage($data) {
     $data = trim($data);
-    $data = preg_replace('/<(?!img| )/', "< ", $data);
-    $data = htmlspecialchars($data);
+    $data = preg_replace_callback('/<(?!img\s*[^>]*>)[^>]+>/', function ($matches) {
+        // 使用 htmlspecialchars 对匹配到的非 img 标签进行转义
+        return htmlspecialchars($matches[0]);
+    }, $data);
     return $data;
 }
 

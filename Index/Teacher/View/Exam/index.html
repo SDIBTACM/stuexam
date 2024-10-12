@@ -21,14 +21,14 @@
 				<span class="label label-info">{$pointMap['chapterName']} - {$pointMap['parent_point']} - {$pointMap['point']}</span><br/>
 			</foreach>
 		</if>
-		<pre><span class='text-danger'>({$allscore['choosescore']} 分)</span>{$numofchoose+1}.{$cans['question']|nl2br|htmlspecialchars_decode}</pre>
+		<pre><span class='text-danger'>({$allscore['choosescore']} 分)</span>{$numofchoose+1}.{$cans['question']|nl2br}</pre>
 	</div>
 	<div class="panel-body">
 		<div class="row Qtext">
-			<div class="col-md-6">(A) {$cans['ams']|htmlspecialchars_decode}</div>
-			<div class="col-md-6">(B) {$cans['bms']|htmlspecialchars_decode}</div>
-			<div class="col-md-6">(C) {$cans['cms']|htmlspecialchars_decode}</div>
-			<div class="col-md-6">(D) {$cans['dms']|htmlspecialchars_decode}</div>
+			<div class="col-md-6">(A) {$cans['ams']}</div>
+			<div class="col-md-6">(B) {$cans['bms']}</div>
+			<div class="col-md-6">(C) {$cans['cms']}</div>
+			<div class="col-md-6">(D) {$cans['dms']}</div>
 			<div class="col-md-12"><strong>正确答案:{$cans['answer']}</strong></div>
 		</div>
 	</div>
